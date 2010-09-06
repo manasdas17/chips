@@ -1,0 +1,30 @@
+import common
+
+def write(stream):
+
+    value = stream.value
+    identifier = stream.get_identifier()
+    bits = stream.get_bits()
+
+    ports = [
+    ]
+
+    declarations = [
+    "  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(identifier, bits - 1),
+    "  signal STREAM_{0}_STB : std_logic;".format(identifier),
+    "  signal STREAM_{0}_ACK : std_logic;".format(identifier),
+    "",
+    ]
+
+    definitions = [
+    "  --STREAM {0} Repeater({1}, {2})".format(identifier, value, bits),
+    "  STREAM_{0} <= {1};".format(identifier, common.binary(value, bits)),
+    "  process",
+    "  begin",
+    "    wait until rising_edge(CLK);",
+    "    STREAM_{0}_STB <= not STREAM_{0}_ACK;".format(identifier),
+    "  end process;",
+    "",
+    ]
+
+    return ports, declarations, definitions
