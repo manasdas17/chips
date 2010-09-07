@@ -138,7 +138,7 @@ class Plugin:
         if analyze:
             subprocess.call( ''.join([
             "ghdl -a ", 
-            os.path.join("..", self.project_name),
+            os.path.join(".", self.project_name),
             ".vhd", 
             ]), shell=True)
 
