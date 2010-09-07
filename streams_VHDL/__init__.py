@@ -153,6 +153,7 @@ class Plugin:
                 parameters.append(" --wave=wave.ghw")
             if stop_cycles: 
                 parameters.append(" --stop-time={0}ns".format(stop_cycles * 10 + 20))
+            parameters.append(" --disp-time")
             subprocess.call(''.join(parameters), shell=True)
 
         os.chdir(os.path.join("..", ".."))
