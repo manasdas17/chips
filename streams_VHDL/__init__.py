@@ -158,6 +158,61 @@ class Plugin:
 
         os.chdir(os.path.join("..", ".."))
 
+    def ghdl_test(self, name, generate_wave=False, stop_cycles=False):
+
+        #enter project directory
+        if not os.path.isdir(self.project_name): 
+            if not os.path.exists(self.project_name):
+                os.mkdir(self.project_name)
+        os.chdir(self.project_name)
+
+        #enter ghdl directory
+        if not os.path.isdir("ghdl"): 
+            if not os.path.exists("ghdl"):
+                os.mkdir("ghdl")
+        os.chdir("ghdl")
+
+        #regenerate vhdl file
+        self.write_system()
+
+        subprocess.call( ''.join([
+        "ghdl -a ", 
+        os.path.join(".", self.project_name),
+        ".vhd", 
+        ]), shell=True)
+
+        subprocess.call(''.join([
+        "ghdl -e ",
+        "streams_vhdl_model"]), shell=True)
+
+        parameters = [os.path.join(".", "streams_vhdl_model")]
+        if generate_wave: 
+            parameters.append(" --wave=wave.ghw")
+        if stop_cycles: 
+            parameters.append(" --stop-time={0}ns".format(stop_cycles * 10 + 20))
+
+        pipe = subprocess.Popen(
+                ''.join(parameters), 
+                shell=True, 
+                stderr=subprocess.PIPE, 
+        )
+        pipe.wait()
+        error_message = pipe.communicate()[1]
+        return_code = pipe.returncode
+
+        os.chdir(os.path.join("..", ".."))
+
+        if return_code == 0:
+            print name,
+            print "...Pass"
+            return True
+        else:
+            print name,
+            print "...Fail"
+            print error_message
+            return False
+
+
     def xilinx_build(self, part="xc5vlx30-3-ff676", synth=True, implement=True, bitgen=True):
 
         #enter project directory

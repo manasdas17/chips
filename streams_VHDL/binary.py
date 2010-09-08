@@ -11,6 +11,7 @@ def write(stream):
     'add' : "STREAM_{0} <= ADD( STREAM_{1}, STREAM_{2})",
     'sub' : "STREAM_{0} <= SUB( STREAM_{1}, STREAM_{2})",
     'mul' : "STREAM_{0} <= MUL( STREAM_{1}, STREAM_{2})",
+    'and' : "STREAM_{0} <= BAND(STREAM_{1}, STREAM_{2})",
     'or'  : "STREAM_{0} <= BOR( STREAM_{1}, STREAM_{2})",
     'xor' : "STREAM_{0} <= BXOR(STREAM_{1}, STREAM_{2})",
     'sl'  : "STREAM_{0} <= SL(  STREAM_{1}, STREAM_{2})",
