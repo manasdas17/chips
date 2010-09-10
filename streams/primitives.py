@@ -175,7 +175,8 @@ class  Binary(Stream):
         bit_function = {
         'add' : lambda x, y : max((x, y)) + 1,
         'sub' : lambda x, y : max((x, y)) + 1,
-        'mul' : lambda x, y : (x + y),
+        'mul' : lambda x, y : x + y,
+        'div' : lambda x, y : max((x, y)),
         'and' : lambda x, y : max((x, y)),
         'or'  : lambda x, y : max((x, y)),
         'xor' : lambda x, y : max((x, y)),
@@ -200,6 +201,7 @@ class  Binary(Stream):
         'add' : lambda x, y : x + y,
         'sub' : lambda x, y : x - y,
         'mul' : lambda x, y : x * y,
+        'div' : lambda x, y : int((x*1.0)/(y*1.0)),
         'and' : lambda x, y : x & y,
         'or'  : lambda x, y : x | y,
         'xor' : lambda x, y : x ^ y,

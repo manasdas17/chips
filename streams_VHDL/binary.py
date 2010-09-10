@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import divider
 
 def write(stream):
 
@@ -6,6 +7,9 @@ def write(stream):
     bits = stream.get_bits()
     identifier_a = stream.a.get_identifier()
     identifier_b = stream.b.get_identifier()
+
+    if stream.function == 'div':
+        return divider.write(stream)
 
     expressions = {
     'add' : "STREAM_{0} <= ADD( STREAM_{1}, STREAM_{2})",
