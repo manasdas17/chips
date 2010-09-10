@@ -60,8 +60,8 @@ if not good and stop_on_fail: exit()
 
 #Test Binary //
 a, b, z = [], [], []
-for i in range(1, 8):
-    for j in range(1, 8):
+for i in range(-8, 8):
+    for j in range(-8, 0)+range(1, 8):
         a.append(i)
         b.append(j)
         z.append(int((1.0*i)/(1.0*j))%16)
@@ -75,8 +75,6 @@ simulation_plugin = streams_VHDL.Plugin()
 model.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary // test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
-
-exit()
 
 #Test Binary &
 a, b, z = [], [], []
