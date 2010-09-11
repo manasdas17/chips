@@ -61,14 +61,14 @@ if not good and stop_on_fail: exit()
 #Test Binary //
 a, b, z = [], [], []
 for i in range(-8, 8):
-    for j in range(-8, 0)+range(1, 8):
+    for j in range(-16, 0)+range(1, 16):
         a.append(i)
         b.append(j)
-        z.append(int((1.0*i)/(1.0*j))%16)
+        z.append(int((1.0*i)/(1.0*j))%32)
 
 stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(4, *z)
+stimulus_b =        Sequence(5, *b)
+expected_response = Sequence(5, *z)
 model = Asserter(expected_response == stimulus_a // stimulus_b)
 
 simulation_plugin = streams_VHDL.Plugin()

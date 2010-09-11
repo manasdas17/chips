@@ -4,6 +4,8 @@ def write(stream):
     bits = stream.get_bits()
     identifier_a = stream.a.get_identifier()
     identifier_b = stream.b.get_identifier()
+    bits_a = stream.a.get_bits()
+    bits_b = stream.b.get_bits()
 
     ports = [
     ]
@@ -31,9 +33,9 @@ def write(stream):
 "",
 "        when READ_A_B =>",
 "          if STREAM_{0}_STB = '1' and STREAM_{0}_STB = '1' then".format(identifier_a, identifier_b),
-"            A_{0} <= std_logic_vector(abs(signed(STREAM_{1})));".format(identifier, identifier_a),
-"            B_{0} <= std_logic_vector(abs(signed(STREAM_{1})));".format(identifier, identifier_b),
-"            SIGN_{0} <= STREAM_{1}({2}) xor STREAM_{3}({2});".format(identifier, identifier_a, bits-1, identifier_b),
+"            A_{0} <= std_logic_vector(abs(resize(signed(STREAM_{1}), {2})));".format(identifier, identifier_a, bits),
+"            B_{0} <= std_logic_vector(abs(resize(signed(STREAM_{1}), {2})));".format(identifier, identifier_b, bits),
+"            SIGN_{0} <= STREAM_{1}({3}) xor STREAM_{2}({4});".format(identifier, identifier_a, identifier_b, bits_a-1, bits_b-1),
 "            STREAM_{0}_ACK <= '1';".format(identifier_a),
 "            STREAM_{0}_ACK <= '1';".format(identifier_b),
 "            STATE_{0} <= DIVIDE_1;".format(identifier),
