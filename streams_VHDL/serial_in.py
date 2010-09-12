@@ -83,7 +83,11 @@ def write(stream):
 "  begin",
 "    wait until rising_edge(CLK);",
 "	 if X16CLK_EN_{0} = '1' then ".format(identifier),
-"      BIT_SPACING_{0} <= BIT_SPACING_{0} + 1;".format(identifier),
+"      if BIT_SPACING_{0} = 15 then".format(identifier),
+"        BIT_SPACING_{0} <= 0;".format(identifier),
+"      else",
+"        BIT_SPACING_{0} <= BIT_SPACING_{0} + 1;".format(identifier),
+"      end if;",
 "    end if;",
 "    case STATE_{0} is".format(identifier),
 "      when IDLE =>",
@@ -115,7 +119,7 @@ def write(stream):
 "          STATE_{0} <= RX3;".format(identifier),
 "        end if;",
 "      when RX3 =>",
-"        if X16CLK_EN_{0} = '1' and BIT_SPACING_{0} = 15 then"
+"        if X16CLK_EN_{0} = '1' and BIT_SPACING_{0} = 15 then".format(identifier),
 "          STREAM_{0}(3) <= INT_SERIAL_{0};".format(identifier),
 "          BIT_SPACING_{0} <= 0;".format(identifier),
 "          STATE_{0} <= RX4;".format(identifier),
@@ -150,7 +154,6 @@ def write(stream):
 "            STATE_{0} <= OUTPUT_DATA;".format(identifier),
 "        end if;",
 "      when OUTPUT_DATA =>",
-"          BIT_SPACING_{0} <= 0;".format(identifier),
 "          STREAM_{0}_STB <= '1';".format(identifier),
 "          if STREAM_{0}_ACK = '1' then".format(identifier),
 "            STREAM_{0}_STB <= '0';".format(identifier),
@@ -164,6 +167,7 @@ def write(stream):
 "      STREAM_{0}_STB <= '0';".format(identifier),
 "    end if; ",
 "  end process;",
+"",
     ]
 
     return ports, declarations, definitions

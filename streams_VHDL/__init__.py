@@ -29,6 +29,8 @@ import binary
 import clone
 import switch
 import lookup
+import resizer
+import formater
 
 #system
 import system
@@ -122,6 +124,18 @@ class Plugin:
 
     def write_lookup(self, stream): 
         ports, declarations, definitions = lookup.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_resizer(self, stream): 
+        ports, declarations, definitions = resizer.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_formater(self, stream): 
+        ports, declarations, definitions = formater.write(stream)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)

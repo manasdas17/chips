@@ -31,6 +31,8 @@ SerialOut = serial.SerialOut
 Switch = primitives.Switch
 Clone = primitives.Clone
 Lookup = primitives.Lookup
+Resizer = primitives.Resizer
+Formater = primitives.Formater
 
 def Rotate(*args):
     return Switch(Counter(0, len(args)-1, 1), *args)

@@ -274,6 +274,14 @@ model.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary < test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
+#Test Formater
+model = Asserter(Formater(Repeater(10))==Sequence(8, 49, 48))
+
+simulation_plugin = streams_VHDL.Plugin()
+model.write_code(simulation_plugin)
+good = good and simulation_plugin.ghdl_test("formater test ", stop_cycles=2000, generate_wave=True)
+if not good and stop_on_fail: exit()
+
 #Test Clone 
 x = Clone(Sequence(9, *range(0, 256)))
 model = Asserter(x.spawn()==x.spawn())

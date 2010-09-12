@@ -6,7 +6,9 @@ import streams_VHDL
 def stringify(x):
     return Sequence(8, *[ord(i) for i in x])
 
-model = SerialOut(SerialIn())
+model = SerialOut(
+    Formater(Repeater(10)//Repeater(2))
+)
 
 #ghdl simulation
 simulation_plugin = streams_VHDL.Plugin()

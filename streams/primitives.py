@@ -184,7 +184,7 @@ class  Binary(Stream):
         'add' : lambda x, y : max((x, y)) + 1,
         'sub' : lambda x, y : max((x, y)) + 1,
         'mul' : lambda x, y : x + y,
-        'div' : lambda x, y : max((x, y)),
+        'div' : lambda x, y : max((x, y)) + 1,
         'and' : lambda x, y : max((x, y)),
         'or'  : lambda x, y : max((x, y)),
         'xor' : lambda x, y : max((x, y)),
@@ -268,6 +268,45 @@ class Lookup(Stream):
         a = self.a.generator()
         while True:
             yield self.args[next(a)]
+
+class Resizer(Stream):
+
+    def __init__(self, source, bits):
+        Stream.__init__(self)
+        self.a = source
+        self.bits = bits
+
+    def get_bits(self): 
+        return self.bits
+
+    def write_code(self, plugin): 
+        self.a.write_code(plugin)
+        plugin.write_resizer(self)
+
+    def generator(self):
+        a = self.a.generator()
+        while True:
+            yield next(a)
+
+class Formater(Stream):
+
+    def __init__(self, source):
+        Stream.__init__(self)
+        self.a = source
+
+    def get_bits(self): 
+        return 8
+
+    def write_code(self, plugin): 
+        self.a.write_code(plugin)
+        plugin.write_formater(self)
+
+    def generator(self):
+        a = self.a.generator()
+        while True:
+            string = str(next(a))
+            for i in string:
+                yield next(ord(i))
 
 #UNIMPLEMENTED
 
