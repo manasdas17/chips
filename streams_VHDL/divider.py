@@ -1,5 +1,14 @@
-def write(stream):
+"""VHDL generation of the Binary Division operator"""
 
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "None"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "jon@jondawson.org.uk"
+__status__ = "Prototype"
+
+def write(stream):
     identifier = stream.get_identifier()
     bits = stream.get_bits()
     identifier_a = stream.a.get_identifier()

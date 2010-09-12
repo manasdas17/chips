@@ -1,3 +1,13 @@
+"""VHDL generation of the overall VHDL component"""
+
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "None"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "jon@jondawson.org.uk"
+__status__ = "Prototype"
+
 def write(
         ports, 
         declarations, 
@@ -6,7 +16,6 @@ def write(
         internal_clock = False, 
         internal_reset = False
     ):
-
 
     system_ports = []
     if not internal_clock:
@@ -24,7 +33,6 @@ def write(
 ";\n".join(system_ports), 
 "  );"
         ])
-        print system_ports
     else:
         system_ports = ""
 

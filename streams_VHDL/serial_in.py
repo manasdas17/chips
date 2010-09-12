@@ -1,4 +1,15 @@
 from __future__ import division
+
+"""VHDL generation of the SerialIn primitive"""
+
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "None"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "jon@jondawson.org.uk"
+__status__ = "Prototype"
+
 import common
 
 def write(stream):
@@ -51,24 +62,22 @@ def write(stream):
 "  begin",
 "    wait until rising_edge(CLK);",
 "    SERIAL_DEGLITCH_{0} <= SERIAL_DEGLITCH_{0}(0) & {1};".format(identifier, name),
-#"    if X16CLK_EN_{0} = '1' then".format(identifier),
-#"      if SERIAL_DEGLITCH_{0}(1) = '1' then".format(identifier),
-#"        if COUNT_{0} = 3 then".format(identifier),
-#"          INT_SERIAL_{0} <= '1';".format(identifier),
-#"        else ",
-#"          COUNT_{0} <= COUNT_{0} + 1;".format(identifier),
-#"        end if;",
-#"      else",
-#"        if COUNT_{0} = 0 then".format(identifier),
-#"          INT_SERIAL_{0} <= '0';".format(identifier),
-#"        else",
-#"          COUNT_{0} <= COUNT_{0} - 1;".format(identifier),
-#"        end if;",
-#"      end if;",
-#"    end if;",
+"    if X16CLK_EN_{0} = '1' then".format(identifier),
+"      if SERIAL_DEGLITCH_{0}(1) = '1' then".format(identifier),
+"        if COUNT_{0} = 3 then".format(identifier),
+"          INT_SERIAL_{0} <= '1';".format(identifier),
+"        else ",
+"          COUNT_{0} <= COUNT_{0} + 1;".format(identifier),
+"        end if;",
+"      else",
+"        if COUNT_{0} = 0 then".format(identifier),
+"          INT_SERIAL_{0} <= '0';".format(identifier),
+"        else",
+"          COUNT_{0} <= COUNT_{0} - 1;".format(identifier),
+"        end if;",
+"      end if;",
+"    end if;",
 "  end process;",
-"  INT_SERIAL_{0} <= SERIAL_DEGLITCH_{0}(1);".format(identifier),
-
 "",  
 "  process",
 "  begin",

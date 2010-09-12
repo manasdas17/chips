@@ -1,4 +1,15 @@
 from __future__ import division
+
+"""VHDL generation of the SerialOut Primitive"""
+
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "None"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "jon@jondawson.org.uk"
+__status__ = "Prototype"
+
 import common
 
 def write(stream):
