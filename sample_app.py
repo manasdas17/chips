@@ -3,19 +3,19 @@
 from streams import *
 import streams_VHDL
 
-a = Rotate(Repeater(1), Repeater(2))
+def stringify(x):
+    return Sequence(8, *[ord(i) for i in x])
 
-simulation_model = Printer(a)
-synthesis_model = OutPort("my_output", a)
+model = SerialOut(SerialIn())
 
+#ghdl simulation
 simulation_plugin = streams_VHDL.Plugin()
-simulation_model.write_code(simulation_plugin)
-simulation_plugin.ghdl_sim(execute=True, stop_cycles=1000, generate_wave=True)
 
-#synthesis_plugin = streams_VHDL.Plugin(internal_clock = False, internal_reset = False)
-#synthesis_model.write_code(synthesis_plugin)
-#synthesis_plugin.xilinx_build()
+model.write_code(simulation_plugin)
+simulation_plugin.ghdl_sim(execute=True, stop_cycles=10000, generate_wave=True)
 
+#xilinx synthesise
+synthesis_plugin = streams_VHDL.Plugin(internal_clock = False, internal_reset = False)
 
-#plugin.ghdl_sim(execute=True, stop_cycles=10000)
-#plugin.ghdl_sim()
+model.write_code(synthesis_plugin)
+synthesis_plugin.xilinx_build(part="xc3s200-4-ft256")

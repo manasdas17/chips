@@ -88,7 +88,7 @@ class InPort(Stream):
 ################################################################################
 class OutPort(Stream):
 
-    def __init__(self, name, a):
+    def __init__(self, a, name):
         self.name, self.a = name, a
         Stream.__init__(self)
 

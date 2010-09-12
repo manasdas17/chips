@@ -6,11 +6,13 @@ import os
 import in_port
 import repeater
 import counter
+import serial_in
 
 #sinks
 import out_port
 import printer
 import asserter
+import serial_out
 
 #combinators
 import binary
@@ -56,10 +58,22 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
+    def write_serial_in(self, stream): 
+        ports, declarations, definitions = serial_in.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
     #sinks
 
     def write_out_port(self, stream): 
         ports, declarations, definitions = out_port.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_serial_out(self, stream): 
+        ports, declarations, definitions = serial_out.write(stream)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
