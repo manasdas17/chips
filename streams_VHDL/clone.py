@@ -36,6 +36,8 @@ class Tee:
         "  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(self.y.get_identifier(), bits - 1),
         "  signal STREAM_{0}_STB : std_logic;".format(self.y.get_identifier()),
         "  signal STREAM_{0}_ACK : std_logic;".format(self.y.get_identifier()),
+        "  signal STREAM_{0}_BRK : std_logic;".format(self.y.get_identifier()),
+        "  signal STREAM_{0}_SKP : std_logic;".format(self.y.get_identifier()),
         "",
             ])
         if hasattr(self.z, 'get_definitions'):
@@ -45,6 +47,8 @@ class Tee:
         "  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(self.z.get_identifier(), bits - 1),
         "  signal STREAM_{0}_STB : std_logic;".format(self.z.get_identifier()),
         "  signal STREAM_{0}_ACK : std_logic;".format(self.z.get_identifier()),
+        "  signal STREAM_{0}_BRK : std_logic;".format(self.z.get_identifier()),
+        "  signal STREAM_{0}_SKP : std_logic;".format(self.z.get_identifier()),
         "",
             ])
         return declarations
@@ -100,6 +104,10 @@ class Tee:
         "      STATE_{0} <= TEE_INPUT_A;".format(identifier),
         "    end if;",
         "  end process;",
+        "  STREAM_{0}_BRK <= '0';".format(identifier_y),
+        "  STREAM_{0}_SKP <= '0';".format(identifier_y),
+        "  STREAM_{0}_BRK <= '0';".format(identifier_z),
+        "  STREAM_{0}_SKP <= '0';".format(identifier_z),
         "",
         ]
         if hasattr(self.y, 'get_definitions'):

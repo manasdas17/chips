@@ -28,6 +28,8 @@ def write(stream):
 "  signal STREAM_{0}          : std_logic_vector(7 downto 0);".format(identifier),
 "  signal STREAM_{0}_STB      : std_logic;".format(identifier),
 "  signal STREAM_{0}_ACK      : std_logic;".format(identifier),
+"  signal STREAM_{0}_BRK      : std_logic;".format(identifier),
+"  signal STREAM_{0}_SKP      : std_logic;".format(identifier),
 "  signal COUNT_{0}           : integer Range 0 to 3;".format(identifier),
 "  signal BIT_SPACING_{0}     : integer Range 0 to 15;".format(identifier),
 "  signal INT_SERIAL_{0}      : std_logic;".format(identifier),
@@ -167,6 +169,8 @@ def write(stream):
 "      STREAM_{0}_STB <= '0';".format(identifier),
 "    end if; ",
 "  end process;",
+"  STREAM_{0}_BRK <= '0';".format(identifier),
+"  STREAM_{0}_SKP <= '0';".format(identifier),
 "",
     ]
 

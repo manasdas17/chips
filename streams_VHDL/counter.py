@@ -1,3 +1,13 @@
+"""Generates VHDL for counter primitive"""
+
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "None"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "jon@jondawson.org.uk"
+__status__ = "Prototype"
+
 import common
 
 def write(stream):
@@ -13,6 +23,8 @@ def write(stream):
     "  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(identifier, bits - 1),
     "  signal STREAM_{0}_STB : std_logic;".format(identifier),
     "  signal STREAM_{0}_ACK : std_logic;".format(identifier),
+    "  signal STREAM_{0}_BRK : std_logic;".format(identifier),
+    "  signal STREAM_{0}_SKP : std_logic;".format(identifier),
     "",
     ]
 
@@ -34,6 +46,8 @@ def write(stream):
     "      STREAM_{0} <= {1};".format(identifier, common.binary(start, bits)),
     "    end if;",
     "  end process;",
+    "  STREAM_{0}_BRK <= '0';".format(identifier),
+    "  STREAM_{0}_SKP <= '0';".format(identifier),
     "",
     ]
 

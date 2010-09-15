@@ -39,7 +39,7 @@ class Plugin:
 
     def __init__(
             self, 
-            project_name = "streams_project",
+            project_name = "project",
             internal_clock = True,
             internal_reset = True,
             ):
