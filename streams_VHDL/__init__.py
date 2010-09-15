@@ -26,11 +26,17 @@ import serial_out
 
 #combinators
 import binary
-import clone
-import switch
 import lookup
 import resizer
 import formater
+
+#flow controllers
+import clone
+import switch
+import spinner
+import stepper
+import step
+import skip
 
 #system
 import system
@@ -110,18 +116,6 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
-    def write_clone(self, stream): 
-        ports, declarations, definitions = clone.write(stream)
-        self.ports.extend(ports)
-        self.declarations.extend(declarations)
-        self.definitions.extend(definitions)
-
-    def write_switch(self, stream): 
-        ports, declarations, definitions = switch.write(stream)
-        self.ports.extend(ports)
-        self.declarations.extend(declarations)
-        self.definitions.extend(definitions)
-
     def write_lookup(self, stream): 
         ports, declarations, definitions = lookup.write(stream)
         self.ports.extend(ports)
@@ -140,7 +134,44 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
-    #combinators
+    #flow controllers
+    def write_clone(self, stream): 
+        ports, declarations, definitions = clone.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_switch(self, stream): 
+        ports, declarations, definitions = switch.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_spinner(self, stream): 
+        ports, declarations, definitions = spinner.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_stepper(self, stream): 
+        ports, declarations, definitions = stepper.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_step(self, stream): 
+        ports, declarations, definitions = step.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_skip(self, stream): 
+        ports, declarations, definitions = skip.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    #System VHDL Generation and external tools
 
     def write_system(self):
         output_file = open(

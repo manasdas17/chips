@@ -92,6 +92,27 @@ class InPort(Stream):
         for i in self.stim:
             yield i
 
+class Skip(Stream):
+
+    def __init__(self):
+        Stream.__init__(self)
+
+    def get_bits(self): return 1
+
+    def write_code(self, plugin): 
+        plugin.write_skip(self)
+
+class Step(Stream):
+
+    def __init__(self):
+        Stream.__init__(self)
+
+    def get_bits(self): return 1
+
+    def write_code(self, plugin): 
+        plugin.write_step(self)
+
+
 #streams sinks
 ################################################################################
 class OutPort(Stream):
@@ -248,6 +269,34 @@ class Switch(Stream):
         while True:
             a = self.a[next(select)]
             yield next(a)
+
+class Spinner(Stream):
+
+    def __init__(self, *args):
+        Stream.__init__(self)
+        self.a = args
+
+    def get_bits(self): 
+        return max((i.get_bits() for i in self.a))
+
+    def write_code(self, plugin): 
+        for i in self.a:
+            i.write_code(plugin)
+        plugin.write_spinner(self)
+
+class Stepper(Stream):
+
+    def __init__(self, *args):
+        Stream.__init__(self)
+        self.a = args
+
+    def get_bits(self): 
+        return max((i.get_bits() for i in self.a))
+
+    def write_code(self, plugin): 
+        for i in self.a:
+            i.write_code(plugin)
+        plugin.write_stepper(self)
 
 class Lookup(Stream):
 
