@@ -8,37 +8,15 @@ __maintainer__ = "Jon Dawson"
 __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
-import itertools
-import primitives
-import serial
+import streams
 
-#SOURCES
-InPort = primitives.InPort
-Repeater = primitives.Repeater
-Counter = primitives.Counter
-SerialIn = serial.SerialIn
-Skip = primitives.Skip
-Step = primitives.Step
-
-def Sequence(bits, *args):
-    return Lookup(Counter(0, len(args)-1, 1), bits, *args)
-
-#SINKS
-Printer = primitives.Printer
-Asserter = primitives.Asserter
-OutPort = primitives.OutPort
-SerialOut = serial.SerialOut
+System = streams.System
 
 #COMBINATORS
-Lookup = primitives.Lookup
-Resizer = primitives.Resizer
-Formater = primitives.Formater
+Lookup = streams.Lookup
+Resizer = streams.Resizer
+Formater = streams.Formater
 
 #flow controllers
-Switch = primitives.Switch
-Spinner = primitives.Spinner
-Stepper = primitives.Stepper
-Clone = primitives.Clone
-
-def Rotate(*args):
-    return Switch(Counter(0, len(args)-1, 1), *args)
+Switch = streams.Switch
+Clone = streams.Clone

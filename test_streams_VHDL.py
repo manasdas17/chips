@@ -4,105 +4,81 @@ from streams import *
 import streams_VHDL 
 stop_on_fail = True
 
-#Test Clone 
-x = Clone(Sequence(9, *range(0, 256)))
-model = Asserter(x.spawn()==x.spawn())
+def sequence(system, *args):
+    return Lookup(system.counter(0, len(args)-1, 1), *args)
 
-simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
-good = simulation_plugin.ghdl_test("clone test ", stop_cycles=2000, generate_wave=True)
+#Test Process
+system = System()
+
+process = system.process(8)
+outstream = process.outstream()
+a = process.variable(15)
+process.procedure(
+    outstream.write(a)
+)
+system.asserter(outstream == system.repeater(15))
+
+plugin = streams_VHDL.Plugin()
+system.write_code(plugin)
+good = plugin.ghdl_test("process test 1", stop_cycles=2000, generate_wave=True)
+if not good and stop_on_fail: exit()
+
+#Test Process
+system = System()
+
+process = system.process(8)
+instream = system.repeater(15)
+outstream = process.outstream()
+a = process.variable(20)
+process.procedure(
+    instream.read(a),
+    outstream.write(a)
+)
+system.asserter(outstream == system.repeater(15))
+
+plugin = streams_VHDL.Plugin()
+system.write_code(plugin)
+good = good and plugin.ghdl_test("process test 2", stop_cycles=2000, generate_wave=True)
+if not good and stop_on_fail: exit()
+
+#Test Process
+system = System()
+
+process = system.process(8)
+feedback = process.outstream()
+count = process.outstream()
+a = process.variable(0)
+process.procedure(
+    feedback.write(a),
+    count.write(a),
+    (feedback + system.repeater(1)).read(a),
+)
+system.asserter(count == system.counter(0, 10, 1))
+
+plugin = streams_VHDL.Plugin()
+system.write_code(plugin)
+good = good and plugin.ghdl_test("process test 3", stop_cycles=2000, generate_wave=True)
+if not good and stop_on_fail: exit()
+exit()
+
+#Test Clone 
+s = System()
+x = Clone(sequence(s, *range(0, 128)))
+s.asserter(x.spawn()==x.spawn())
+
+plugin = streams_VHDL.Plugin()
+s.write_code(plugin)
+
+good = good and plugin.ghdl_test("clone test ", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
 #Test Switch 
-model = Asserter(Sequence(8,0,1,2) == Switch(Counter(0, 2, 1), Repeater(0), Repeater(1), Repeater(2)))
+s = System()
+s.asserter(sequence(s,0,1,2) == Switch(s.counter(0, 2, 1), s.repeater(0), s.repeater(1), s.repeater(2)))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("switch test ", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
-
-#Test Spinner
-model = Asserter(Sequence(8,0,1,2) == Spinner(Repeater(0), Repeater(1), Repeater(2)))
-
-simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("spinner test ", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
-
-#Test Stepper
-model = Asserter(Repeater(8) == Stepper(Repeater(8), Repeater(9), Repeater(1)))
-
-simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("stepper test ", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
-
-#Test Flow Control 1
-#Check that Step() propogates through Spinner()
-#Check that Step() increments Stepper()
-flow = Stepper(
-        Spinner(
-            Repeater(0),
-            Repeater(1),
-            Step(),
-        ),
-        Spinner(
-            Repeater(2),
-            Repeater(3),
-            Step(),
-        )
-)
-
-model = Asserter(Sequence(8, 0, 1, 2, 3) == flow)
-
-simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("flow control 1 ", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
-
-#Test Flow Control 2
-#Check that Step() does not propogate through Stepper()
-flow = Stepper(
-            Stepper(Step(), Repeater(5)),
-            Repeater(10),
-)
-
-model = Asserter(Repeater(5) == flow)
-
-simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("flow control 2 ", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
-
-#Test Flow Control 3
-#Check that Step() does not propogate through Stepper()
-flow = Spinner(
-            Spinner(Skip(), Skip(), Skip(), Repeater(5)),
-            Spinner(Skip(), Skip(), Skip(), Repeater(10)),
-)
-
-model = Asserter(Sequence(8, 5, 10) == flow)
-
-simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("flow control 3 ", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
-
-#Test Flow Control 4
-#Check that a step_if function can be constructed from primitives
-def step_if(predicate):
-    return Switch(predicate, Skip(), Step())
-
-flow = Stepper(
-            Spinner(Repeater(5), step_if(Counter(1, 5, 1) == Repeater(5))),
-            Spinner(Repeater(1), Step()),
-)
-
-model = Asserter(Sequence(8, 5, 5, 5, 5, 5, 1) == flow)
-
-simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("flow control 4 ", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
 #Test Binary +
@@ -111,15 +87,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append((i+j)%32)
+        z.append(i+j)
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(5, *z)
-model = Asserter(expected_response == stimulus_a + stimulus_b)
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == stimulus_a + stimulus_b)
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary + test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -129,15 +106,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append((i-j)%32)
+        z.append(i-j)
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(5, *z)
-model = Asserter(expected_response == stimulus_a - stimulus_b)
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == stimulus_a - stimulus_b)
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary - test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -147,15 +125,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append((i*j)%256)
+        z.append(i*j)
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(8, *z)
-model = Asserter(expected_response == stimulus_a * stimulus_b)
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == stimulus_a * stimulus_b)
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary * test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -165,15 +144,16 @@ for i in range(-8, 8):
     for j in range(-16, 0)+range(1, 16):
         a.append(i)
         b.append(j)
-        z.append(int((1.0*i)/(1.0*j))%32)
+        z.append(int((1.0*i)/(1.0*j)))
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(5, *b)
-expected_response = Sequence(5, *z)
-model = Asserter(expected_response == stimulus_a // stimulus_b)
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == stimulus_a // stimulus_b)
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary // test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -183,15 +163,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append((i&j)%16)
+        z.append(i&j)
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(4, *z)
-model = Asserter(expected_response == stimulus_a & stimulus_b)
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == stimulus_a & stimulus_b)
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary & test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -201,15 +182,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append((i|j)%16)
+        z.append(i|j)
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(4, *z)
-model = Asserter(expected_response == stimulus_a | stimulus_b)
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == stimulus_a | stimulus_b)
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary | test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -219,15 +201,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append((i^j)%16)
+        z.append(i^j)
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(4, *z)
-model = Asserter(expected_response == stimulus_a ^ stimulus_b)
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == stimulus_a ^ stimulus_b)
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary ^ test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -237,15 +220,16 @@ for i in range(-8, 8):
     for j in range(0, 8):
         a.append(i)
         b.append(j)
-        z.append((i<<j)%16)
+        z.append(i<<j)
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(4, *z)
-model = Asserter(expected_response == (stimulus_a << stimulus_b))
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == (stimulus_a << stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary << test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -255,15 +239,16 @@ for i in range(-8, 8):
     for j in range(0, 8):
         a.append(i)
         b.append(j)
-        z.append((i>>j)%16)
+        z.append(i>>j)
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(4, *z)
-model = Asserter(expected_response == (stimulus_a >> stimulus_b))
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == (stimulus_a >> stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary >> test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -273,15 +258,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append(int(i==j))
+        z.append(-int(i==j))
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(1, *z)
-model = Asserter(expected_response == (stimulus_a == stimulus_b))
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == (stimulus_a == stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary == test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -291,15 +277,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append(int(i!=j))
+        z.append(-int(i!=j))
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(1, *z)
-model = Asserter(expected_response == (stimulus_a != stimulus_b))
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == (stimulus_a != stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary != test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -309,15 +296,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append(int(i>=j))
+        z.append(-int(i>=j))
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(1, *z)
-model = Asserter(expected_response == (stimulus_a >= stimulus_b))
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == (stimulus_a >= stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary >= test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -327,15 +315,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append(int(i<=j))
+        z.append(-int(i<=j))
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(1, *z)
-model = Asserter(expected_response == (stimulus_a <= stimulus_b))
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == (stimulus_a <= stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary <= test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -345,15 +334,16 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append(int(i>j))
+        z.append(-int(i>j))
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(1, *z)
-model = Asserter(expected_response == (stimulus_a > stimulus_b))
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == (stimulus_a > stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary > test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
@@ -363,23 +353,25 @@ for i in range(-8, 8):
     for j in range(-8, 8):
         a.append(i)
         b.append(j)
-        z.append(int(i<j))
+        z.append(-int(i<j))
 
-stimulus_a =        Sequence(4, *a)
-stimulus_b =        Sequence(4, *b)
-expected_response = Sequence(1, *z)
-model = Asserter(expected_response == (stimulus_a < stimulus_b))
+s = System()
+stimulus_a =        sequence(s, *a)
+stimulus_b =        sequence(s, *b)
+expected_response = sequence(s, *z)
+s.asserter(expected_response == (stimulus_a < stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("binary < test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
 #Test Formater
-model = Asserter(Formater(Repeater(10))==Sequence(8, 49, 48))
+s = System()
+s.asserter(Formater(s.repeater(10))==sequence(s, 49, 48))
 
 simulation_plugin = streams_VHDL.Plugin()
-model.write_code(simulation_plugin)
+s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("formater test ", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
 

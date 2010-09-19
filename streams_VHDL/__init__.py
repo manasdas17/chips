@@ -33,13 +33,13 @@ import formater
 #flow controllers
 import clone
 import switch
-import spinner
-import stepper
-import step
-import skip
 
 #system
 import system
+
+#processes
+import process
+import instructions
 
 class Plugin:
 
@@ -134,7 +134,6 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
-    #flow controllers
     def write_clone(self, stream): 
         ports, declarations, definitions = clone.write(stream)
         self.ports.extend(ports)
@@ -147,29 +146,19 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
-    def write_spinner(self, stream): 
-        ports, declarations, definitions = spinner.write(stream)
-        self.ports.extend(ports)
-        self.declarations.extend(declarations)
-        self.definitions.extend(definitions)
+    #instructions
+    def write_process(self, p):
+        process.write_process(p, self)
 
-    def write_stepper(self, stream): 
-        ports, declarations, definitions = stepper.write(stream)
-        self.ports.extend(ports)
-        self.declarations.extend(declarations)
-        self.definitions.extend(definitions)
+    def write_set(self, instruction):
+        return instructions.write_set(instruction)
 
-    def write_step(self, stream): 
-        ports, declarations, definitions = step.write(stream)
-        self.ports.extend(ports)
-        self.declarations.extend(declarations)
-        self.definitions.extend(definitions)
+    def write_read(self, instruction):
+        return instructions.write_read(instruction)
 
-    def write_skip(self, stream): 
-        ports, declarations, definitions = skip.write(stream)
-        self.ports.extend(ports)
-        self.declarations.extend(declarations)
-        self.definitions.extend(definitions)
+    def write_write(self, instruction):
+        return instructions.write_write(instruction)
+
 
     #System VHDL Generation and external tools
 

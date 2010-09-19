@@ -53,7 +53,7 @@ def write(stream):
         source_identifier = source.get_identifier()
         left = source.get_bits()-1
         definitions.extend([
-"          when {0} =>".format(common.binary(index, source.get_bits())),
+"          when {0} =>".format(common.binary(index, sel_bits)),
 "            if STREAM_{0}_STB = '1' then".format(source_identifier),
 "              STREAM_{0} <= (others => STREAM_{1}({2}));".format(identifier, source_identifier, left),
 "              STREAM_{0}({2} downto 0) <= STREAM_{1};".format(identifier, source_identifier, left),
