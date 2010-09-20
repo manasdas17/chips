@@ -90,7 +90,7 @@ class Set(Unique):
         self.other = other
 
     def write_code(self, plugin): 
-        plugin.write_get(self)
+        return plugin.write_set(self)
 
     def __repr__(self):
         return '\n'.join([

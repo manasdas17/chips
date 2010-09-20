@@ -29,8 +29,6 @@ def write(stream):
     "  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(identifier, bits - 1),
     "  signal STREAM_{0}_STB : std_logic;".format(identifier),
     "  signal STREAM_{0}_ACK : std_logic;".format(identifier),
-    "  signal STREAM_{0}_BRK : std_logic;".format(identifier),
-    "  signal STREAM_{0}_SKP : std_logic;".format(identifier),
     "",
     ]
 
@@ -38,8 +36,6 @@ def write(stream):
     "  --stream {0} Resizer({1}, {2})".format(identifier, identifier_a, bits),
     "  STREAM_{1}_ACK <= STREAM_{0}_ACK;".format(identifier, identifier_a),
     "  STREAM_{0}_STB <= STREAM_{1}_STB;".format(identifier, identifier_a),
-    "  STREAM_{0}_BRK <= '0';".format(identifier),
-    "  STREAM_{0}_SKP <= '0';".format(identifier),
     expression,
     "",
     ]

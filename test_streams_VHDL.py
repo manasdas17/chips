@@ -59,6 +59,26 @@ plugin = streams_VHDL.Plugin()
 system.write_code(plugin)
 good = good and plugin.ghdl_test("process test 3", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
+
+#Test Process
+system = System()
+
+process = system.process(8)
+output = process.outstream()
+count = system.counter(0, 10, 1)
+a = process.variable(0)
+b = process.variable(0)
+process.procedure(
+        count.read(a),
+        b.set(a),
+        output.write(b)
+)
+system.asserter(output == system.counter(0, 10, 1))
+
+plugin = streams_VHDL.Plugin()
+system.write_code(plugin)
+good = good and plugin.ghdl_test("process test 4", stop_cycles=2000, generate_wave=True)
+if not good and stop_on_fail: exit()
 exit()
 
 #Test Clone 

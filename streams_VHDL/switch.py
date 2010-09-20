@@ -26,8 +26,6 @@ def write(stream):
 "  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(identifier, bits - 1),
 "  signal STREAM_{0}_STB : std_logic;".format(identifier),
 "  signal STREAM_{0}_ACK : std_logic;".format(identifier),
-"  signal STREAM_{0}_BRK : std_logic;".format(identifier),
-"  signal STREAM_{0}_SKP : std_logic;".format(identifier),
 "  signal SEL_{0}        : std_logic_vector({1} downto 0);".format(identifier, sel_bits - 1),
 "",
     ]
@@ -57,8 +55,6 @@ def write(stream):
 "            if STREAM_{0}_STB = '1' then".format(source_identifier),
 "              STREAM_{0} <= (others => STREAM_{1}({2}));".format(identifier, source_identifier, left),
 "              STREAM_{0}({2} downto 0) <= STREAM_{1};".format(identifier, source_identifier, left),
-"              STREAM_{0}_SKP <= STREAM_{1}_SKP;".format(identifier, source_identifier, left),
-"              STREAM_{0}_BRK <= STREAM_{1}_BRK;".format(identifier, source_identifier, left),
 "              STREAM_{0}_ACK <= '1';".format(source_identifier),
 "              STREAM_{0}_STB <= '1';".format(identifier),
 "              STATE_{0} <= SWITCH_OUTPUT;".format(identifier),

@@ -55,3 +55,20 @@ def write_read(instruction):
            ]
 
     return idec, idef
+
+def write_set(instruction):
+    process = instruction.variable.process.get_identifier()
+    variable = instruction.variable.get_identifier()
+    other = instruction.other.get_identifier()
+    next_instruction = instruction.next_instruction.get_identifier()
+
+    idec = [
+"INSTRUCTION_{0}".format(instruction.get_identifier()),
+           ]
+    idef = [
+"     when INSTRUCTION_{0} =>".format(instruction.get_identifier()),
+"       VARIABLE_{0} <= VARIABLE_{1};".format(variable, other),
+"       STATE_{0} <= INSTRUCTION_{1};".format(process, next_instruction),
+           ]
+
+    return idec, idef

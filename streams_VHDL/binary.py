@@ -49,8 +49,6 @@ def write(stream):
     "  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(identifier, bits - 1),
     "  signal STREAM_{0}_STB : std_logic;".format(identifier),
     "  signal STREAM_{0}_ACK : std_logic;".format(identifier),
-    "  signal STREAM_{0}_BRK : std_logic;".format(identifier),
-    "  signal STREAM_{0}_SKP : std_logic;".format(identifier),
     "",
     ]
 
@@ -81,8 +79,6 @@ def write(stream):
     "       STATE_{0} <= BINARY_INPUT;".format(identifier),
     "     end if;",
     "  end process;",
-    "  STREAM_{0}_BRK <= '0';".format(identifier),
-    "  STREAM_{0}_SKP <= '0';".format(identifier),
     "",
     ]
 
