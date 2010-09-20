@@ -49,6 +49,11 @@ class Read(Unique):
     def write_code(self, plugin): 
         return plugin.write_read(self)
 
+    def __repr__(self):
+        return '\n'.join([
+"    variable{0} <- stream{1}".format(self.variable.get_identifier(), self.instream.get_identifier()),
+        ])
+
 class  Binary(Stream, Unique):
 
     def __init__(self, a, b, function):

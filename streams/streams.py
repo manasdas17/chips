@@ -18,20 +18,29 @@ from common import Unique, Stream
 class System:
 
     def __init__(self):
-       self.outs = []
+       self.sinks = []
+       self.sources = []
        self.processes = []
 
     def repeater(self, value): 
-        return Repeater(value)
+        source =  Repeater(value)
+        self.sources.append(source)
+        return source
 
     def counter(self, first, last, step): 
-        return Counter(first, last, step)
+        source =  Counter(first, last, step)
+        self.sources.append(source)
+        return source
 
     def in_port(self, name, bits=8): 
-        return Counter(first, last, step)
+        source =  Counter(first, last, step)
+        self.sources.append(source)
+        return source
 
     def serial_in(self, name): 
-        return SerialIn(name)
+        source =  SerialIn(name)
+        self.sources.append(source)
+        return source
 
     def process(self, bits):
         p = Process(bits)
@@ -40,26 +49,44 @@ class System:
 
     def printer(self, stream):
         p = Printer(stream)
-        self.outs.append(p)
+        self.sinks.append(p)
 
     def asserter(self, stream): 
         a = Asserter(stream)
-        self.outs.append(a)
+        self.sinks.append(a)
 
     def out_port(self, stream, name):
         o = OutPort(stream, name)
-        self.outs.append(o)
+        self.sinks.append(o)
 
     def serial_out(self, stream, name):
         s = SerialOut(stream, name)
-        self.outs.append(s)
+        self.sinks.append(s)
 
     def write_code(self, plugin): 
-        for i in self.outs:
+        for i in self.sinks:
             i.write_code(plugin)
         for i in self.processes:
             i.write_code(plugin)
         plugin.write_system()
+
+    def __repr__(self):
+        return '\n'.join([
+"SYSTEM",
+"======",
+"",
+"sources",
+"------",
+'\n'.join((i.__repr__() for i in self.sources)),
+"",
+"sinks",
+"------",
+'\n'.join((i.__repr__() for i in self.sinks)),
+"",
+"processes",
+"------",
+'\n'.join((i.__repr__() for i in self.processes))
+        ])
 
 #streams sources
 ################################################################################
@@ -77,6 +104,13 @@ class Repeater(Stream, Unique):
     def write_code(self, plugin): 
         plugin.write_repeater(self)
 
+    def __repr__(self):
+        return '\n'.join([
+        "  repeater( value = ", 
+        self.value, 
+        ")"
+        ])
+
 class Counter(Stream, Unique):
 
     def __init__(self, start, stop, step):
@@ -92,6 +126,17 @@ class Counter(Stream, Unique):
     def write_code(self, plugin): 
         plugin.write_counter(self)
 
+    def __repr__(self):
+        return '\n'.join([
+        "  counter( start = ", 
+        self.start, 
+        "stop = ", 
+        self.stop, 
+        "step = ", 
+        self.step, 
+        ")"
+        ])
+
 class InPort(Stream, Unique):
 
     def __init__(self, name, bits):
@@ -102,6 +147,15 @@ class InPort(Stream, Unique):
 
     def write_code(self, plugin): 
         plugin.write_in_port(self)
+
+    def __repr__(self):
+        return '\n'.join([
+        "  in_port( name = ", 
+        self.name, 
+        "bits = ", 
+        self.bits, 
+        ")"
+        ])
 
 class SerialIn(Stream, Unique):
 
@@ -116,8 +170,16 @@ class SerialIn(Stream, Unique):
     def write_code(self, plugin): 
         plugin.write_serial_in(self)
 
-    def generator(self): 
-        raise Exception()
+    def __repr__(self):
+        return '\n'.join([
+        "  serial_in( name = ", 
+        self.name, 
+        "clock_rate = ", 
+        self.clock_rate, 
+        "baud_rate", 
+        self.baud_rate, 
+        ")"
+        ])
 
 #streams sinks
 ################################################################################
@@ -134,6 +196,13 @@ class OutPort(Unique):
         self.a.write_code(plugin)
         plugin.write_out_port(self)
 
+    def __repr__(self):
+        return '\n'.join([
+        "  out_port( name = ", 
+        self.name, 
+        ")"
+        ])
+
 class Asserter(Unique):
 
     def __init__(self, a):
@@ -147,6 +216,11 @@ class Asserter(Unique):
         self.a.write_code(plugin)
         plugin.write_asserter(self)
 
+    def __repr__(self):
+        return '\n'.join([
+        "  asserter()", 
+        ])
+
 class Printer(Unique):
 
     def __init__(self, a):
@@ -159,6 +233,11 @@ class Printer(Unique):
     def write_code(self, plugin): 
         self.a.write_code(plugin)
         plugin.write_printer(self)
+
+    def __repr__(self):
+        return '\n'.join([
+        "  printer()", 
+        ])
 
 class SerialOut(Unique):
 
@@ -177,8 +256,16 @@ class SerialOut(Unique):
         self.a.write_code(plugin)
         plugin.write_serial_out(self)
 
-    def generator(self): 
-        raise Exception()
+    def __repr__(self):
+        return '\n'.join([
+        "  serial_out( name = ", 
+        self.name, 
+        "clock_rate = ", 
+        self.clock_rate, 
+        "baud_rate", 
+        self.baud_rate, 
+        ")"
+        ])
 
 #streams combinators
 ################################################################################

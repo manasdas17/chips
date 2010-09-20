@@ -24,7 +24,7 @@ def write_write(instruction):
 "       STREAM_{0} <= VARIABLE_{1};".format(stream, variable),
 "       STREAM_{0}_STB <= '1';".format(stream),
 "       if STREAM_{0}_ACK = '1' then".format(stream),
-"         STREAM_{0}_ACK <= '0';".format(stream),
+"         STREAM_{0}_STB <= '0';".format(stream),
 "         STATE_{0} <= INSTRUCTION_{1};".format(process, next_instruction),
 "       end if;",
            ]

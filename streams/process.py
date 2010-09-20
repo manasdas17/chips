@@ -77,6 +77,11 @@ class Variable(Unique):
     def get_bits(self):
         return self.process.get_bits()
 
+    def __repr__(self):
+        return '\n'.join([
+"    variable {0} intialised : {1}".format(self.get_identifier(), self.initial),
+        ])
+
 class Set(Unique):
 
     def __init__(self, variable, other):
@@ -86,6 +91,11 @@ class Set(Unique):
 
     def write_code(self, plugin): 
         plugin.write_get(self)
+
+    def __repr__(self):
+        return '\n'.join([
+"    variable {0} <- variable {1}".format(self.variable.get_identifier(), self.other.get_identifier()),
+        ])
 
 class OutStream(Stream, Unique):
 
@@ -102,6 +112,11 @@ class OutStream(Stream, Unique):
     def write_code(self, plugin): 
         pass
 
+    def __repr__(self):
+        return '\n'.join([
+"    stream {0}".format(self.get_identifier()),
+        ])
+
 class Write(Unique):
 
     def __init__(self, outstream, variable):
@@ -112,12 +127,16 @@ class Write(Unique):
     def write_code(self, plugin): 
         return plugin.write_write(self)
 
+    def __repr__(self):
+        return '\n'.join([
+"    stream {0} <- variable {1}".format(self.outstream.get_identifier(), self.variable.get_identifier()),
+        ])
+
 class Process(Unique):
 
     def __init__(self, bits):
         self.bits = bits
         self.variables = []
-        self.instreams = []
         self.outstreams = []
         Unique.__init__(self)
 
@@ -147,3 +166,22 @@ class Process(Unique):
             if hasattr(i, 'instream'):
                 i.instream.write_code(plugin)
         plugin.write_process(self)
+
+    def __repr__(self):
+        return '\n'.join([
+"  process {0}".format(self.get_identifier()),
+"  =============",
+"",
+"  variables",
+"  ---------",
+'\n'.join((i.__repr__() for i in self.variables)),
+"",
+"  out_streams",
+"  -----------",
+'\n'.join((i.__repr__() for i in self.outstreams)),
+"",
+"  instructions",
+"  -----------",
+'\n'.join((i.__repr__() for i in self.instructions)),
+"",
+        ])

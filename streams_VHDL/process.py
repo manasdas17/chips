@@ -13,9 +13,6 @@ import common
 
 def write_process(process, plugin):
 
-    for i in process.instreams:
-        i.stream.write_code(plugin)
-
     plugin.definitions.extend([
 "  process",
 "  begin",
