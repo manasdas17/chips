@@ -42,8 +42,8 @@ class System:
         self.sources.append(source)
         return source
 
-    def process(self, bits):
-        p = Process(bits)
+    def process(self, **args):
+        p = Process(**args)
         self.processes.append(p)
         return p
 
@@ -105,11 +105,7 @@ class Repeater(Stream, Unique):
         plugin.write_repeater(self)
 
     def __repr__(self):
-        return '\n'.join([
-        "  repeater( value = ", 
-        self.value, 
-        ")"
-        ])
+        return "Repeater(value={0})".format(self.value) 
 
 class Counter(Stream, Unique):
 
@@ -127,15 +123,7 @@ class Counter(Stream, Unique):
         plugin.write_counter(self)
 
     def __repr__(self):
-        return '\n'.join([
-        "  counter( start = ", 
-        self.start, 
-        "stop = ", 
-        self.stop, 
-        "step = ", 
-        self.step, 
-        ")"
-        ])
+        return "Counter(start={0}, stop={1}, step={2})".format(self.start, self.stop, self.bits)
 
 class InPort(Stream, Unique):
 

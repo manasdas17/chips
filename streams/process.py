@@ -12,77 +12,52 @@ __status__ = "Prototype"
 
 from common import Unique, Stream
 
-class Expression:
-    def __add__(self, other): return BinaryExpression(self, other, 'add')
-    def __sub__(self, other): return BinaryExpression(self, other, 'sub')
-    def __mul__(self, other): return BinaryExpression(self, other, 'mul')
-    def __mod__(self, other): return BinaryExpression(self, other, 'mod')
-    def __floordiv__(self, other): return BinaryExpression(self, other, 'div')
-    def __and__(self, other): return BinaryExpression(self, other, 'and')
-    def __or__(self, other): return BinaryExpression(self, other, 'or')
-    def __xor__(self, other): return BinaryExpression(self, other, 'xor')
-    def __rshift__(self, other): return BinaryExpression(self, other, 'sr')
-    def __lshift__(self, other): return BinaryExpression(self, other, 'sl')
-    def __eq__(self, other): return BinaryExpression(self, other, 'eq')
-    def __ne__(self, other): return BinaryExpression(self, other, 'ne')
-    def __gt__(self, other): return BinaryExpression(self, other, 'gt')
-    def __ge__(self, other): return BinaryExpression(self, other, 'ge')
-    def __lt__(self, other): return BinaryExpression(self, other, 'lt')
-    def __le__(self, other): return BinaryExpression(self, other, 'le')
+def is_process(thing):
+    if hasattr(thing, "what_are_you"):
+        if thing.what_are_you() == 'Process':
+            return True
+    return False
 
-class  BinaryExpression(Expression):
+def is_loop(thing):
+    if hasattr(thing, "what_are_you"):
+        if thing.what_are_you() == 'Loop':
+            return True
+    return False
 
-    def __init__(self, a, b, function):
-        self.a, self.b, self.function = a, b, function
-        Stream.__init__(self)
+class Instruction:
 
-    def get_bits(self):
-        bit_function = {
-        'add' : lambda x, y : max((x, y)) + 1,
-        'sub' : lambda x, y : max((x, y)) + 1,
-        'mul' : lambda x, y : x + y,
-        'div' : lambda x, y : max((x, y)) + 1,
-        'and' : lambda x, y : max((x, y)),
-        'or'  : lambda x, y : max((x, y)),
-        'xor' : lambda x, y : max((x, y)),
-        'sl'  : lambda x, y : x+((2**(y-1))-1),
-        'sr'  : lambda x, y : x,
-        'eq'  : lambda x, y : 1,
-        'ne'  : lambda x, y : 1,
-        'lt'  : lambda x, y : 1,
-        'le'  : lambda x, y : 1,
-        'gt'  : lambda x, y : 1,
-        'ge'  : lambda x, y : 1,
-        }
-        return bit_function[self.function](self.a.get_bits(), self.b.get_bits())
+    def get_enclosing_process(self):
+        if is_process(self.parent):
+            return self.parent
+        elif hasattr(self.parent, 'parent'):
+            return self.parent.get_enclosing_process()
+        else:
+            raise SyntaxError()
 
-    def write_code(self, plugin): 
-        self.a.write_code(plugin)
-        self.b.write_code(plugin)
-        plugin.write_binary_expression(self)
+    def get_enclosing_loop(self):
+        if is_loop(self.parent):
+            return self.parent
+        elif hasattr(self.parent, 'parent'):
+            return self.parent.get_enclosing_loop()
+        else:
+            raise SyntaxError()
 
 class Variable(Unique):
 
-    def __init__(self, process, initial):
+    def __init__(self, initial):
         self.initial = initial
-        self.process = process
         Unique.__init__(self)
 
     def set(self, value):
         return Set(self, value)
 
-    def get(self, value):
-        return Get(self)
-
     def get_bits(self):
-        return self.process.get_bits()
+        return self.parent.get_bits()
 
     def __repr__(self):
-        return '\n'.join([
-"    variable {0} intialised : {1}".format(self.get_identifier(), self.initial),
-        ])
+        return "Variable({0})".format(self.initial)
 
-class Set(Unique):
+class Set(Unique, Instruction):
 
     def __init__(self, variable, other):
         Unique.__init__(self)
@@ -93,31 +68,26 @@ class Set(Unique):
         return plugin.write_set(self)
 
     def __repr__(self):
-        return '\n'.join([
-"    variable {0} <- variable {1}".format(self.variable.get_identifier(), self.other.get_identifier()),
-        ])
+        return "Set({0}, {1})".format(self.variable, self.other)
 
-class OutStream(Stream, Unique):
+class Output(Stream, Unique):
 
-    def __init__(self, process):
+    def __init__(self):
         Unique.__init__(self)
-        self.process = process
 
     def write(self, variable): 
         return Write(self, variable)
 
     def get_bits(self):
-        return self.process.get_bits()
+        return self.parent.get_bits()
 
     def write_code(self, plugin): 
         pass
 
     def __repr__(self):
-        return '\n'.join([
-"    stream {0}".format(self.get_identifier()),
-        ])
+        return "Output()"
 
-class Write(Unique):
+class Write(Unique, Instruction):
 
     def __init__(self, outstream, variable):
         Unique.__init__(self)
@@ -128,30 +98,99 @@ class Write(Unique):
         return plugin.write_write(self)
 
     def __repr__(self):
-        return '\n'.join([
-"    stream {0} <- variable {1}".format(self.outstream.get_identifier(), self.variable.get_identifier()),
-        ])
+        return "Write({0}, {1})".format(self.outstream, self.variable)
+
+class Break(Unique, Instruction):
+
+    def __init__(self):
+        Unique.__init__(self)
+
+    def write_code(self, plugin): 
+        return plugin.write_break(self)
+
+    def __repr__(self):
+        return "Break()"
+
+class Loop(Unique, Instruction):
+
+    def __init__(self, *instructions):
+        Unique.__init__(self)
+
+        for child in instructions:
+            child.parent = self
+
+        self.instructions = instructions
+        for instruction, next_instruction in zip(instructions, instructions[1:]+instructions[:1]):
+                instruction.next_instruction = next_instruction
+
+    def write_code(self, plugin): 
+        return plugin.write_loop(self)
+
+    def what_are_you(self):
+        return "Loop"
+
+    def __repr__(self):
+        return "Loop({0})".format(self.instructions)
+
+class If(Unique, Instruction):
+    pass
+#
+#    def __init__(self, predicate):
+#        Unique.__init__(self)
+#
+#
+#    def Then(self, *instructions):
+#
+#        for child in instructions:
+#            child.parent = self
+#
+#        for instruction, next_instruction in zip(instructions, instructions[1:]):
+#                instruction.next_instruction = next_instruction
+#
+#        instructions[-1].next_instruction = parent.next_instruction
+#
+#        self.consequent = instructions
+#        return self #for method chaining
+#
+#    def Else(self, *instructions):
+#        for child in instructions:
+#            child.parent = self
+#
+#        for instruction, next_instruction in zip(instructions, instructions[1:]):
+#                instruction.next_instruction = next_instruction
+#        instructions[-1].next_instruction = parent.next_instruction
+#
+#        self.alternate = instructions
+#        return self #for method chaining
+#
+#    def If(self, predicate): #for method chaining
+#        _if = If(predicate)
+#        _if.parent = self
+#        return _if
+#
+#    def write_code(self, plugin): 
+#        return plugin.write_if(self)
+#
+#    def what_are_you(self):
+#        return "If"
+#
+#    def __repr__(self):
+#        return "If({0}, {1})".format(self.condition, self.instructions)
 
 class Process(Unique):
 
-    def __init__(self, bits):
-        self.bits = bits
-        self.variables = []
-        self.outstreams = []
+    def __init__(self, bits=8, inputs=(), outputs=(), variables=(), instructions=()):
         Unique.__init__(self)
 
-    def variable(self, initial): 
-        v = Variable(self, initial)
-        self.variables.append(v)
-        return v
-
-    def outstream(self): 
-        o = OutStream(self)
-        self.outstreams.append(o)
-        return o
-
-    def procedure(self, *instructions): 
+        self.bits = bits
+        self.inputs = inputs
+        self.outputs = outputs
+        self.variables = variables
         self.instructions = instructions
+
+        for child in outputs + variables + instructions:
+            child.parent = self
+
         for i in xrange(len(instructions)):
             if i == len(instructions)-1:
                 instructions[i].next_instruction = instructions[i]
@@ -162,26 +201,20 @@ class Process(Unique):
         return self.bits
 
     def write_code(self, plugin): 
-        for i in self.instructions:
-            if hasattr(i, 'instream'):
-                i.instream.write_code(plugin)
+        for i in self.inputs:
+            i.write_code(plugin)
         plugin.write_process(self)
+
+    def what_are_you(self):
+        return "Process"
 
     def __repr__(self):
         return '\n'.join([
-"  process {0}".format(self.get_identifier()),
-"  =============",
-"",
-"  variables",
-"  ---------",
-'\n'.join((i.__repr__() for i in self.variables)),
-"",
-"  out_streams",
-"  -----------",
-'\n'.join((i.__repr__() for i in self.outstreams)),
-"",
-"  instructions",
-"  -----------",
-'\n'.join((i.__repr__() for i in self.instructions)),
-"",
+            "Process(",
+            "    bits = {0},".format(self.bits),
+            "    inputs = {0},".format(self.inputs),
+            "    outputs = {0},".format(self.outputs),
+            "    variables = {0},".format(self.variables),
+            "    instructions = {0},".format(self.instructions),
+            ")"
         ])

@@ -159,6 +159,12 @@ class Plugin:
     def write_write(self, instruction):
         return instructions.write_write(instruction)
 
+    def write_loop(self, instruction):
+        return instructions.write_loop(instruction, self)
+
+    def write_break(self, instruction):
+        return instructions.write_break(instruction, self)
+
 
     #System VHDL Generation and external tools
 

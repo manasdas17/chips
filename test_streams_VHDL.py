@@ -10,12 +10,17 @@ def sequence(system, *args):
 #Test Process
 system = System()
 
-process = system.process(8)
-outstream = process.outstream()
-a = process.variable(15)
-process.procedure(
-    outstream.write(a)
+a = Variable(15)
+outstream = Output()
+
+process = system.process(
+    outputs = (outstream,),
+    variables = (a,),
+    instructions = (
+        outstream.write(a),
+    )
 )
+
 system.asserter(outstream == system.repeater(15))
 
 plugin = streams_VHDL.Plugin()
@@ -26,13 +31,18 @@ if not good and stop_on_fail: exit()
 #Test Process
 system = System()
 
-process = system.process(8)
 instream = system.repeater(15)
-outstream = process.outstream()
-a = process.variable(20)
-process.procedure(
-    instream.read(a),
-    outstream.write(a)
+outstream = Output()
+a = Variable(20)
+
+process = system.process(
+    inputs = (instream,),
+    outputs = (outstream,),
+    variables = (a,),
+    instructions = (
+        instream.read(a),
+        outstream.write(a)
+    )
 )
 system.asserter(outstream == system.repeater(15))
 
@@ -44,14 +54,19 @@ if not good and stop_on_fail: exit()
 #Test Process
 system = System()
 
-process = system.process(8)
-feedback = process.outstream()
-count = process.outstream()
-a = process.variable(0)
-process.procedure(
-    feedback.write(a),
-    count.write(a),
-    (feedback + system.repeater(1)).read(a),
+feedback = Output()
+count = Output()
+a = Variable(0)
+i = (feedback + system.repeater(1))
+process = system.process(
+    inputs = (i,),
+    outputs = (count, feedback),
+    variables = (a,),
+    instructions = (
+        feedback.write(a),
+        count.write(a),
+        i.read(a),
+    )
 )
 system.asserter(count == system.counter(0, 10, 1))
 
@@ -62,16 +77,27 @@ if not good and stop_on_fail: exit()
 
 #Test Process
 system = System()
-
-process = system.process(8)
-output = process.outstream()
 count = system.counter(0, 10, 1)
-a = process.variable(0)
-b = process.variable(0)
-process.procedure(
-        count.read(a),
-        b.set(a),
-        output.write(b)
+
+output = Output()
+a = Variable(0)
+b = Variable(0)
+
+process = system.process(
+    bits = 8,
+    inputs = (count,),
+    outputs = (output,),
+    variables = (
+        a,
+        b
+    ),
+    instructions = (
+        Loop(
+            count.read(a),
+            b.set(a),
+            output.write(b)
+        ),
+    )
 )
 system.asserter(output == system.counter(0, 10, 1))
 
@@ -79,7 +105,47 @@ plugin = streams_VHDL.Plugin()
 system.write_code(plugin)
 good = good and plugin.ghdl_test("process test 4", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
-exit()
+
+#Test Process
+system = System()
+count = system.counter(0, 10, 1)
+
+output = Output()
+a = Variable(0)
+b = Variable(0)
+
+process = system.process(
+    bits = 8,
+
+    inputs = (count,),
+
+    outputs = (output,),
+
+    variables = (
+        a,
+        b
+    ),
+
+    instructions = (
+        Loop(
+            count.read(a),
+            b.set(a),
+            output.write(b),
+            Break(),
+        ),
+        Loop(
+            count.read(a),
+            b.set(a),
+            output.write(b)
+        ),
+    )
+)
+system.asserter(output == system.counter(0, 10, 1))
+
+plugin = streams_VHDL.Plugin()
+system.write_code(plugin)
+good = good and plugin.ghdl_test("process test 5", stop_cycles=2000, generate_wave=True)
+if not good and stop_on_fail: exit()
 
 #Test Clone 
 s = System()

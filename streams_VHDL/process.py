@@ -31,7 +31,7 @@ def write_process(process, plugin):
 "    if RST = '1' then",
 "      STATE_{0} <= INSTRUCTION_{1};".format(process.get_identifier(), process.instructions[0].get_identifier()),
     ])
-    for i in process.outstreams:
+    for i in process.outputs:
         plugin.definitions.extend([
 "      STREAM_{0}_STB <= '0';".format(i.get_identifier()),
         ])
@@ -53,7 +53,7 @@ def write_process(process, plugin):
 "  TYPE PROCESS_{0}_STATE_TYPE is ({1});".format(process.get_identifier(), ', '.join(ideclarations)),
 "  signal STATE_{0} : PROCESS_{0}_STATE_TYPE;".format(process.get_identifier())
     ])
-    for i in process.outstreams:
+    for i in process.outputs:
         plugin.declarations.extend([
 "  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(i.get_identifier(), i.get_bits()-1),
 "  signal STREAM_{0}_STB : std_logic;".format(i.get_identifier()),
