@@ -17,16 +17,19 @@ process = system.process(
     outputs = (outstream,),
     variables = (a,),
     instructions = (
-        outstream.write(a),
+        Instruction("OP_IMM", 10, immediate=10),
+        Instruction("OP_WRITE_1", 10),
+        Instruction("OP_JMP", immediate = 0),
+        Instruction("OP_JMP", immediate = 2),
     )
 )
 
-system.asserter(outstream == system.repeater(15))
+system.printer(outstream)
 
 plugin = streams_VHDL.Plugin()
 system.write_code(plugin)
-good = plugin.ghdl_test("process test 1", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
+good = plugin.ghdl_test("process_test", stop_cycles=2000, generate_wave=True)
+exit()
 
 #Test Process
 system = System()
@@ -146,6 +149,38 @@ plugin = streams_VHDL.Plugin()
 system.write_code(plugin)
 good = good and plugin.ghdl_test("process test 5", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
+
+#Test If 1
+system = System()
+output = Output()
+a = Variable(0)
+b = Variable(0)
+
+process = system.process(
+    bits = 8,
+
+    outputs = (output,),
+
+    variables = (
+        a,
+        b,
+    ),
+
+    instructions = (
+        Loop(
+            If( (Constant(0),),
+                output.write(a),
+            ),
+        ),
+    ),
+)
+system.asserter(output == system.repeater(0))
+
+plugin = streams_VHDL.Plugin()
+system.write_code(plugin)
+good = good and plugin.ghdl_test("if test 1", stop_cycles=2000, generate_wave=True)
+if not good and stop_on_fail: exit()
+exit()
 
 #Test Clone 
 s = System()

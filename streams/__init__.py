@@ -8,7 +8,7 @@ __maintainer__ = "Jon Dawson"
 __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
-import streams, process
+import streams, process, instruction
 
 System = streams.System
 
@@ -23,7 +23,8 @@ Clone = streams.Clone
 
 #process instructions
 Output = process.Output
-Loop = process.Loop
-Variable = process.Variable
-Break = process.Break
-If = process.If
+Loop = instruction.Loop
+Variable = instruction.Variable
+Break = instruction.Break
+Continue = instruction.Continue
+If = instruction.If

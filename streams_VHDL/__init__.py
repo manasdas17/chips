@@ -151,19 +151,26 @@ class Plugin:
         process.write_process(p, self)
 
     def write_set(self, instruction):
-        return instructions.write_set(instruction)
+        return instructions.write_set(instruction, self)
 
     def write_read(self, instruction):
-        return instructions.write_read(instruction)
+        return instructions.write_read(instruction, self)
 
     def write_write(self, instruction):
-        return instructions.write_write(instruction)
+        return instructions.write_write(instruction, self)
 
     def write_loop(self, instruction):
         return instructions.write_loop(instruction, self)
 
     def write_break(self, instruction):
         return instructions.write_break(instruction, self)
+
+    def write_if(self, instruction):
+        return instructions.write_if(instruction, self)
+
+    #expressions
+    def write_constant(self, instruction):
+        return instructions.write_constant(instruction, self)
 
 
     #System VHDL Generation and external tools
