@@ -11,20 +11,31 @@ __status__ = "Prototype"
 import streams, process, instruction
 
 System = streams.System
+Process = process.Process
 
 #COMBINATORS
 Lookup = streams.Lookup
 Resizer = streams.Resizer
 Formater = streams.Formater
 
-#flow controllers
-Switch = streams.Switch
-Clone = streams.Clone
+#SOURCES
+InPort = streams.InPort
+SerialIn = streams.SerialIn
+Counter = streams.Counter
+Repeater = streams.Repeater
 
-#process instructions
-Output = process.Output
+#SINKS
+OutPort = streams.OutPort
+SerialOut = streams.SerialOut
+Printer = streams.Printer
+Asserter = streams.Asserter
+
+#PROCESS INSTRUCTIONS
+Output = streams.Output #also a source
 Loop = instruction.Loop
 Variable = instruction.Variable
 Break = instruction.Break
 Continue = instruction.Continue
 If = instruction.If
+Block = instruction.Block
+Wait = instruction.Wait

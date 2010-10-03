@@ -11,6 +11,68 @@ __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
 
+class StreamsProcessError(Exception):
+    """Error in definition of process instructions"""
+
+    def __init__(self, message):
+       self.message = message 
+
+class Read:
+    def __init__(self, stream, variable):
+        """Do not directly call this method, it is called automatically
+         Use stream.read(variable)"""
+        self.variable = variable
+        self.stream = stream
+
+    def set_process(self, process):
+        self.process=process
+        #have to explicitly test for identity because we have overriden __eq__
+        for i in process.inputs:
+            if i is self.stream: break
+        else:
+            process.inputs.append(self.stream)
+
+    def initialise(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        return self.variable.initialise(rmap)
+
+    def comp(self, rmap):
+        """compile an expression into a list of machine instructions"""
+        instructions = [
+          Instruction("OP_READ_{0}".format(self.stream.get_identifier()), self.variable.register) 
+        ]
+        return instructions
+
+class Write:
+    def __init__(self, stream, expression):
+        """Do not directly call this method, it is called automatically
+         Use stream.write(expression)"""
+        self.expression = constantize(expression)
+        self.stream = stream
+
+    def set_process(self, process):
+        self.process=process
+        self.stream.set_process(process)
+        self.expression.set_process(process)
+        #have to explicitly test for identity because we have overriden __eq__
+        for i in process.outputs:
+            if i is self.stream: break
+        else:
+            process.outputs.append(self.stream)
+
+    def initialise(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        return self.expression.initialise(rmap)
+
+    def comp(self, rmap):
+        """compile an expression into a list of machine instructions"""
+        instructions = self.expression.comp(rmap)
+        instructions.append(
+          Instruction("OP_WRITE_{0}".format(self.stream.get_identifier()), rmap.tos) 
+        )
+        return instructions
+
+
 ################################################################################
 
 class RegisterMap:
@@ -33,7 +95,7 @@ class Instruction:
 
 ################################################################################
 
-def constantise(possible_constant):
+def constantize(possible_constant):
     if hasattr(possible_constant, "comp"):
         return possible_constant
     else:
@@ -42,38 +104,38 @@ def constantise(possible_constant):
 class Expression:
     """Do not directly instantiate this class
     It is here to imbue derived expression classes with operators"""
-    def __add__(self, other): return Binary(self, constantise(other), 'OP_ADD')
-    def __sub__(self, other): return Binary(self, constantise(other), 'OP_SUB')
-    def __mul__(self, other): return Binary(self, constantise(other), 'OP_MUL')
-    def __mod__(self, other): return Binary(self, constantise(other), 'OP_MOD')
-    def __floordiv__(self, other): return Binary(self, constantise(other), 'OP_DIV')
-    def __and__(self, other): return Binary(self, constantise(other), 'OP_BAND')
-    def __or__(self, other): return Binary(self, constantise(other), 'OP_BOR')
-    def __xor__(self, other): return Binary(self, constantise(other), 'OP_BXOR')
-    def __rshift__(self, other): return Binary(self, constantise(other), 'OP_SR')
-    def __lshift__(self, other): return Binary(self, constantise(other), 'OP_SL')
-    def __eq__(self, other): return Binary(self, constantise(other), 'OP_EQ')
-    def __ne__(self, other): return Binary(self, constantise(other), 'OP_NE')
-    def __gt__(self, other): return Binary(self, constantise(other), 'OP_GT')
-    def __ge__(self, other): return Binary(self, constantise(other), 'OP_GE')
-    def __lt__(self, other): return Binary(constantise(other), self, 'OP_GT')
-    def __le__(self, other): return Binary(constantise(other), self, 'OP_GE')
-    def __radd__(other, self): return Binary(self, constantise(other), 'OP_ADD')
-    def __rsub__(other, self): return Binary(self, constantise(other), 'OP_SUB')
-    def __rmul__(other, self): return Binary(self, constantise(other), 'OP_MUL')
-    def __rmod__(other, self): return Binary(self, constantise(other), 'OP_MOD')
-    def __rfloordiv__(other, self): return Binary(self, constantise(other), 'OP_DIV')
-    def __rand__(other, self): return Binary(self, constantise(other), 'OP_BAND')
-    def __ror__(other, self): return Binary(self, constantise(other), 'OP_BOR')
-    def __rxor__(other, self): return Binary(self, constantise(other), 'OP_BXOR')
-    def __rrshift__(other, self): return Binary(self, constantise(other), 'OP_SR')
-    def __rlshift__(other, self): return Binary(self, constantise(other), 'OP_SL')
-    def __req__(other, self): return Binary(self, constantise(other), 'OP_EQ')
-    def __rne__(other, self): return Binary(self, constantise(other), 'OP_NE')
-    def __rgt__(other, self): return Binary(self, constantise(other), 'OP_GT')
-    def __rge__(other, self): return Binary(self, constantise(other), 'OP_GE')
-    def __rlt__(other, self): return Binary(constantise(other), self, 'OP_GT')
-    def __rle__(other, self): return Binary(constantise(other), self, 'OP_GE')
+    def __add__(self, other): return Binary(self, constantize(other), 'OP_ADD')
+    def __sub__(self, other): return Binary(self, constantize(other), 'OP_SUB')
+    def __mul__(self, other): return Binary(self, constantize(other), 'OP_MUL')
+    def __mod__(self, other): return Binary(self, constantize(other), 'OP_MOD')
+    def __floordiv__(self, other): return Binary(self, constantize(other), 'OP_DIV')
+    def __and__(self, other): return Binary(self, constantize(other), 'OP_BAND')
+    def __or__(self, other): return Binary(self, constantize(other), 'OP_BOR')
+    def __xor__(self, other): return Binary(self, constantize(other), 'OP_BXOR')
+    def __rshift__(self, other): return Binary(self, constantize(other), 'OP_SR')
+    def __lshift__(self, other): return Binary(self, constantize(other), 'OP_SL')
+    def __eq__(self, other): return Binary(self, constantize(other), 'OP_EQ')
+    def __ne__(self, other): return Binary(self, constantize(other), 'OP_NE')
+    def __gt__(self, other): return Binary(self, constantize(other), 'OP_GT')
+    def __ge__(self, other): return Binary(self, constantize(other), 'OP_GE')
+    def __lt__(self, other): return Binary(constantize(other), self, 'OP_GT')
+    def __le__(self, other): return Binary(constantize(other), self, 'OP_GE')
+    def __radd__(other, self): return Binary(self, constantize(other), 'OP_ADD')
+    def __rsub__(other, self): return Binary(self, constantize(other), 'OP_SUB')
+    def __rmul__(other, self): return Binary(self, constantize(other), 'OP_MUL')
+    def __rmod__(other, self): return Binary(self, constantize(other), 'OP_MOD')
+    def __rfloordiv__(other, self): return Binary(self, constantize(other), 'OP_DIV')
+    def __rand__(other, self): return Binary(self, constantize(other), 'OP_BAND')
+    def __ror__(other, self): return Binary(self, constantize(other), 'OP_BOR')
+    def __rxor__(other, self): return Binary(self, constantize(other), 'OP_BXOR')
+    def __rrshift__(other, self): return Binary(self, constantize(other), 'OP_SR')
+    def __rlshift__(other, self): return Binary(self, constantize(other), 'OP_SL')
+    def __req__(other, self): return Binary(self, constantize(other), 'OP_EQ')
+    def __rne__(other, self): return Binary(self, constantize(other), 'OP_NE')
+    def __rgt__(other, self): return Binary(self, constantize(other), 'OP_GT')
+    def __rge__(other, self): return Binary(self, constantize(other), 'OP_GE')
+    def __rlt__(other, self): return Binary(constantize(other), self, 'OP_GT')
+    def __rle__(other, self): return Binary(constantize(other), self, 'OP_GE')
 
 ################################################################################
 
@@ -85,6 +147,11 @@ class Binary(Expression):
         self.left = left
         self.right = right
         self.operation = operation
+
+    def set_process(self, process):
+        self.process=process
+        self.left.set_process(process)
+        self.right.set_process(process)
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""
@@ -128,6 +195,14 @@ class Variable(Expression):
         accecpt value from -128 to 127 for example."""
         return self.parent.get_bits()
 
+    def set_process(self, process):
+        self.process=process
+        #have to explicitly test for identity because we have overriden __eq__
+        for i in process.variables:
+            if i is self: break
+        else:
+            process.variables.append(self)
+
     def __repr__(self):
         """Remember that variables are signed, so an 8 bit variable can
         accecpt value from -128 to 127 for example."""
@@ -157,13 +232,16 @@ class Constant(Expression):
     def __repr__(self):
         return "Constant({0})".format(self.initial)
 
+    def set_process(self, process):
+        self.process=process
+
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""
         return []
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return [Instruction("OP_LIT", rmap.tos, immediate=self.constant)]
+        return [Instruction("OP_IMM", rmap.tos, immediate=self.constant)]
 
 ################################################################################
 
@@ -190,10 +268,16 @@ class Statement:
         """Enable an statement to act as a list of machine instructions"""
         rmap = RegisterMap()
         instructions = self.initialise(rmap) + self.comp(rmap)
+        instructions.append(Instruction("LABEL", label="END"))
+        instructions.append(Instruction("OP_JMP", immediate="END"))
+        instructions.append(Instruction("OP_JMP", immediate=0))
         instructions = calculate_jumps(instructions)
         return instructions.__iter__()
 
     def is_loop(self):
+        return False
+
+    def is_process(self):
         return False
 
     def get_enclosing_loop(self):
@@ -202,7 +286,15 @@ class Statement:
         elif hasattr(self.parent, 'parent'):
             return self.parent.get_enclosing_loop()
         else:
-            raise SyntaxError()
+            raise StreamsProcessError("Break() must be within a loop")
+
+    def get_enclosing_process(self):
+        if self.parent.is_process():
+            return self.parent
+        elif hasattr(self.parent, 'parent'):
+            return self.parent.get_enclosing_process()
+        else:
+            raise StreamsProcessError()
 
 ################################################################################
 
@@ -218,6 +310,11 @@ class Loop(Statement):
 
     def __repr__(self):
         return "Loop({0})".format(self.instruction)
+
+    def set_process(self, process):
+        self.process=process
+        for i in self.instructions:
+            i.set_process(process)
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""
@@ -245,12 +342,19 @@ class If(Statement):
     def __init__(self, condition, *instructions):
         for child in instructions:
             child.parent = self
-        self.conditionals = [(condition, instructions)]
+        self.conditionals = [(constantize(condition), instructions)]
 
     def Elsif(self, condition, *instructions):
         for child in instructions:
             child.parent = self
-        self.conditionals.append((condition, instructions))
+        self.conditionals.append((constantize(condition), instructions))
+
+    def set_process(self, process):
+        self.process=process
+        for condition, instructions in self.conditionals:
+            condition.set_process(process)
+            for instruction in instructions:
+                instruction.set_process(process)
 
     def __repr__(self):
         return "If({0})".format(self.instruction)
@@ -283,11 +387,14 @@ class If(Statement):
 class Break(Statement):
 
     def __repr__(self):
-        return "Break({0})".format(self.instruction)
+        return "Break()"
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""
         return []
+
+    def set_process(self, process):
+        self.process=process
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
@@ -296,10 +403,39 @@ class Break(Statement):
 
 ################################################################################
 
+class Wait(Statement):
+    def __init__(self, clock_cycles):
+        self.clock_cycles = int(clock_cycles)
+
+    def __repr__(self):
+        return "Wait({0})".format(self.clock_cycles)
+
+    def initialise(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        return []
+
+    def set_process(self, process):
+        self.process=process
+        if self.clock_cycles in process.timeouts:
+            self.timer_number = process.timeouts[self.clock_cycles]
+        else:
+            self.timer_number = process.timer_number
+            process.timer_number += 1
+            process.timeouts[self.clock_cycles]=self.timer_number
+
+    def comp(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        return [Instruction("OP_WAIT_{0}".format(self.timer_number))]
+
+################################################################################
+
 class Continue(Statement):
 
     def __repr__(self):
-        return "Continue({0})".format(self.instruction)
+        return "Continue()".format(self.instruction)
+
+    def set_process(self, process):
+        self.process=process
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""
@@ -314,7 +450,7 @@ class Continue(Statement):
 
 class Block(Statement):
 
-    def __init__(self, *instructions):
+    def __init__(self, instructions):
         """A block of statements
 
         Accepts an arbitrary number of statements as arguments, and executes
@@ -326,6 +462,11 @@ class Block(Statement):
             this_ins.next_instruction = next_ins
 
         self.instructions = instructions
+
+    def set_process(self, process):
+        self.process=process
+        for i in instructions:
+            i.set_process(process)
 
     def what_are_you(self):
         return "Block"
@@ -354,10 +495,14 @@ class Set(Statement):
         """Do not instantiate Set directly.
         Use Variable.set() method"""
         self.variable = variable
-        self.expression = expression
+        self.expression = constantize(expression)
 
     def __repr__(self):
-        return "Set({0}, {1})".format(self.variable, self.other)
+        return "Set({0}, {1})".format(self.variable, self.expression)
+
+    def set_process(self, process):
+        self.process=process
+        self.expression.set_process(process)
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""

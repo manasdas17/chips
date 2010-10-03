@@ -13,7 +13,7 @@ import common
 from math import ceil, log
 
 def address_bits(length):
-    if length == 0:
+    if length <= 1:
         return 1
     else:
         return int(ceil(log(length, 2)))
@@ -27,18 +27,20 @@ def write_process(process, plugin):
     operations = [
       "OP_ADD", "OP_SUB", "OP_MUL", "OP_DIV", "OP_BAND", "OP_BOR", "OP_BXOR", 
       "OP_SL", "OP_SR", "OP_EQ", "OP_NE", "OP_GT", "OP_GE", "OP_JMP", "OP_JMPF", 
-      "OP_IMM"
+      "OP_IMM", "OP_MOVE", "WAIT"
     ]
+    process_instructions = tuple(process.instructions)
     number_of_operations = len(operations) + len(process.inputs) + len(process.outputs)
     process_id = process.get_identifier()
     process_bits = process.get_bits()
-    num_instructions = len(process.instructions)
-    registers = [i.srca for i in process.instructions] + [i.srcb for i in process.instructions]
+    num_instructions = len(process_instructions)
+    registers = [i.srca for i in process_instructions] + [i.srcb for i in process_instructions]
     num_registers = max([0] +registers) + 1
     instruction_address_bits = address_bits(num_instructions)
     register_address_bits = address_bits(num_registers)
     operation_bits = address_bits(number_of_operations)
     instruction_bits = operation_bits + register_address_bits + max((register_address_bits, process_bits))
+
 
 ################################################################################
 #GENERATE ADDITIONAL INSTRUCTIONS FOR READING INPUT STREAMS
@@ -48,41 +50,51 @@ def write_process(process, plugin):
     read_inputs = []
     input_instructions = []
     for i in process.inputs:
-        read_inputs.extend([
-"      when READ_STREAM_{0} =>".format(i.get_identifier()),
-"        if STREAM_{0}_STB = '1' then".format(i.get_identifier()),
-"          STREAM_{0}_ACK <= '1';".format(i.get_identifier()),
-"          REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= STD_RESIZE(STREAM_{1}, {2});".format(process_id, i.get_identifier(), process_bits),
-"          STATE_{0} <= ACK_STREAM_{1};".format(process.get_identifier(), i.get_identifier()),
-"        end if;",
-"      when ACK_STREAM_{0} =>".format(i.get_identifier()),
-"        STREAM_{0}_ACK <= '0';".format(i.get_identifier()),
-"        STATE_{0} <= EXECUTE_{0};".format(process.get_identifier()),
-        ])
         input_instructions.extend([
 "          when OP_READ_{0}_{1} =>".format(i.get_identifier(), process_id),
 "            STATE_{0} <= READ_STREAM_{1};".format(process_id, i.get_identifier()),
 "            PC_{0} <= PC_{0};".format(process_id),
-"            RESULT := REGA;".format(process_id),
+"            READ_DEST := to_integer(unsigned(SRCA_{0}));".format(process_id),
+        ])
+        read_inputs.extend([
+"      when READ_STREAM_{0} =>".format(i.get_identifier()),
+"        if STREAM_{0}_STB = '1' then".format(i.get_identifier()),
+"          STREAM_{0}_ACK <= '1';".format(i.get_identifier()),
+"          REGISTERS_{0}(READ_DEST) <= STD_RESIZE(STREAM_{1}, {2});".format(process_id, i.get_identifier(), process_bits),
+"          STATE_{0} <= ACK_STREAM_{1};".format(process.get_identifier(), i.get_identifier()),
+"        end if;",
+"      when ACK_STREAM_{0} =>".format(i.get_identifier()),
+"        STREAM_{0}_ACK <= '0';".format(i.get_identifier()),
+"        STATE_{0} <= EXECUTE;".format(process.get_identifier()),
         ])
         operations.append("OP_READ_{0}".format(i.get_identifier()))
         states.append("READ_STREAM_{0}".format(i.get_identifier()))
         states.append("ACK_STREAM_{0}".format(i.get_identifier()))
         reset_streams.append(
-"      STREAM_{0}_ACK <= '0';".format(i.instream.get_identifier()),
+"      STREAM_{0}_ACK <= '0';".format(i.get_identifier()),
         )
 
 ################################################################################
-#GENERATE ADDITIONAL INSTRUCTIONS FOR WRITEING OUTPUT STREAMS
+#GENERATE ADDITIONAL INSTRUCTIONS FOR WRITING OUTPUT STREAMS
 ################################################################################
 
     write_outputs = []
     output_instructions = []
+    output_instructions_fetch = []
     for i in process.outputs:
         plugin.declarations.extend([
 "  signal STREAM_{0}       : std_logic_vector({1} downto 0);".format(i.get_identifier(), i.get_bits()-1),
 "  signal STREAM_{0}_STB   : std_logic;".format(i.get_identifier()),
 "  signal STREAM_{0}_ACK   : std_logic;".format(i.get_identifier()),
+        ])
+        output_instructions_fetch.extend([
+"          when OP_WRITE_{0}_{1} =>".format(i.get_identifier(), process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+        ])
+        output_instructions.extend([
+"          when OP_WRITE_{0}_{1} =>".format(i.get_identifier(), process_id),
+"            STATE_{0} <= WRITE_STREAM_{1};".format(process_id, i.get_identifier()),
+"            PC_{0} <= PC_{0};".format(process_id),
         ])
         write_outputs.extend([
 "      when WRITE_STREAM_{0} =>".format(i.get_identifier()),
@@ -93,12 +105,6 @@ def write_process(process, plugin):
 "          STATE_{0} <= EXECUTE;".format(process.get_identifier(), i.get_identifier()),
 "        end if;",
         ])
-        output_instructions.extend([
-"          when OP_WRITE_{0}_{1} =>".format(i.get_identifier(), process_id),
-"            STATE_{0} <= WRITE_STREAM_{1};".format(process_id, i.get_identifier()),
-"            PC_{0} <= PC_{0};".format(process_id),
-"            RESULT := REGA;".format(process_id),
-        ])
         operations.append("OP_WRITE_{0}".format(i.get_identifier()))
         states.append("WRITE_STREAM_{0}".format(i.get_identifier()))
         reset_streams.append(
@@ -106,11 +112,39 @@ def write_process(process, plugin):
         )
 
 ################################################################################
+#GENERATE ADDITIONAL INSTRUCTIONS FOR WRITING TIMERS
+################################################################################
+
+
+    timer_instructions = []
+    timer_count = []
+    for timeout, timer in process.timeouts.iteritems():
+        plugin.declarations.extend([
+"  signal TIMER_{0}_{1} : integer range 0 to {2};".format(timer, process_id, timeout-1),
+        ])
+        timer_instructions.extend([
+"          when OP_WAIT_{0}_{1} =>".format(timer, process_id),
+"            STATE_{0} <= COUNT_{1};".format(process_id, timer),
+"            TIMER_{0}_{1} <= {2};".format(timer, process_id, timeout-1),
+"            PC_{0} <= PC_{0};".format(process_id),
+        ])
+        timer_count.extend([
+"      when COUNT_{0} =>".format(timer),
+"        if TIMER_{0}_{1} = 0 then".format(timer, process_id),
+"          STATE_{0} <= EXECUTE;".format(process_id),
+"        else",
+"          TIMER_{0}_{1} <= TIMER_{0}_{1} - 1;".format(timer, process_id),
+"        end if;",
+        ])
+        operations.append("OP_WAIT_{0}".format(timer))
+        states.append("COUNT_{0}".format(timer))
+
+################################################################################
 #GENERATE INSTRUCTION CONSTANTS
 ################################################################################
 
     instructions = []
-    for index, instruction in enumerate(process.instructions):
+    for index, instruction in enumerate(process_instructions):
         operation = instruction.operation
         srca = instruction.srca if instruction.srca else 0
         srcb = instruction.srcb if instruction.srcb else 0
@@ -161,9 +195,9 @@ def write_process(process, plugin):
     operation_lo = operation_hi-operation_bits+1
     srca_hi = operation_lo-1
     srca_lo = srca_hi-register_address_bits+1
-    srcb_hi = srca_lo-1
-    srcb_lo = srcb_hi-register_address_bits+1
-    immediate_hi = srcb_hi
+    srcb_lo = 0
+    srcb_hi = srcb_lo+register_address_bits-1
+    immediate_hi = srca_lo-1
     immediate_lo = 0
 
     plugin.definitions.extend([
@@ -180,13 +214,14 @@ def write_process(process, plugin):
 "  end process;",
 "",
 "  process",
-"    variable REGA    : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
-"    variable REGB    : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
-"    variable RESULT  : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
-"    variable FLAG_EQ : std_logic;".format(process_id),
-"    variable FLAG_NE : std_logic;".format(process_id),
-"    variable FLAG_GT : std_logic;".format(process_id),
-"    variable FLAG_GE : std_logic;".format(process_id),
+"    variable REGA    : std_logic_vector({0} downto 0);".format(process_bits-1),
+"    variable REGB    : std_logic_vector({0} downto 0);".format(process_bits-1),
+"    variable READ_DEST : integer range 0 to {0};".format(register_address_bits-1),
+"    variable RESULT  : std_logic_vector({0} downto 0);".format(process_bits-1),
+"    variable FLAG_EQ : std_logic;",
+"    variable FLAG_NE : std_logic;",
+"    variable FLAG_GT : std_logic;",
+"    variable FLAG_GE : std_logic;",
 "  begin",
 "    wait until rising_edge(CLK);",
 "    case STATE_{0} is".format(process_id),
@@ -196,9 +231,54 @@ def write_process(process, plugin):
 "      when EXECUTE =>",
 "        PC_{0} <= PC_{0} + 1;".format(process_id),
 "",
-"        --fetch register operands",
-"        REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
-"        REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"        --FETCH_OPERANDS",
+"        case OPERATION_{0} is".format(process_id),
+"          when OP_MOVE_{0} => ".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_MUL_{0}  => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_ADD_{0}  => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_SUB_{0}  => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_BAND_{0} => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_BOR_{0}  => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_BXOR_{0} => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_SL_{0}   => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_SR_{0}   => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_EQ_{0}   => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_NE_{0}   => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_GT_{0}   => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_GE_{0}   => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_IMM_{0}  => ".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"          when OP_DIV_{0} =>".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+'\n'.join(output_instructions_fetch),
+"          when others => null;",
+"        end case;",
 "",
 "        --share comparator logic",
 "        if REGA = REGB then".format(process_id),
@@ -218,39 +298,66 @@ def write_process(process, plugin):
 "",
 "        --execute instructions",
 "        case OPERATION_{0} is".format(process_id),
-"          when OP_MUL_{0}  => RESULT := STD_RESIZE( MUL(REGA, REGB), {0});".format(process_id, process_bits),
-"          when OP_ADD_{0}  => RESULT := STD_RESIZE( ADD(REGA, REGB), {0});".format(process_id, process_bits),
-"          when OP_SUB_{0}  => RESULT := STD_RESIZE( SUB(REGA, REGB), {0});".format(process_id, process_bits),
-"          when OP_BAND_{0} => RESULT := STD_RESIZE(BAND(REGA, REGB), {0});".format(process_id, process_bits),
-"          when OP_BOR_{0}  => RESULT := STD_RESIZE( BOR(REGA, REGB), {0});".format(process_id, process_bits),
-"          when OP_BXOR_{0} => RESULT := STD_RESIZE(BXOR(REGA, REGB), {0});".format(process_id, process_bits),
-"          when OP_SL_{0}   => RESULT := STD_RESIZE(  SL(REGA, REGB), {0});".format(process_id, process_bits),
-"          when OP_SR_{0}   => RESULT := STD_RESIZE(  SR(REGA, REGB), {0});".format(process_id, process_bits),
-"          when OP_EQ_{0}   => RESULT := (others => FLAG_EQ);".format(process_id),
-"          when OP_NE_{0}   => RESULT := (others => FLAG_NE);".format(process_id),
-"          when OP_GT_{0}   => RESULT := (others => FLAG_GT);".format(process_id),
-"          when OP_GE_{0}   => RESULT := (others => FLAG_GE);".format(process_id),
-"          when OP_IMM_{0}  => RESULT := IMMEDIATE_{0};".format(process_id),
+"          when OP_MOVE_{0} => ".format(process_id),
+"            RESULT := REGB;".format(process_id, process_bits),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_MUL_{0}  => ".format(process_id),
+"            RESULT := STD_RESIZE( MUL(REGA, REGB), {0});".format(process_bits),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_ADD_{0}  => ".format(process_id),
+"            RESULT := STD_RESIZE( ADD(REGA, REGB), {0});".format(process_bits),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_SUB_{0}  => ".format(process_id),
+"            RESULT := STD_RESIZE( SUB(REGA, REGB), {0});".format(process_bits),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_BAND_{0} => ".format(process_id),
+"            RESULT := STD_RESIZE(BAND(REGA, REGB), {0});".format(process_bits),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_BOR_{0}  => ".format(process_id),
+"            RESULT := STD_RESIZE( BOR(REGA, REGB), {0});".format(process_bits),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_BXOR_{0} => ".format(process_id),
+"            RESULT := STD_RESIZE(BXOR(REGA, REGB), {0});".format(process_bits),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_SL_{0}   => ".format(process_id),
+"            RESULT := STD_RESIZE(  SL(REGA, REGB), {0});".format(process_bits),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_SR_{0}   => ".format(process_id),
+"            RESULT := STD_RESIZE(  SR(REGA, REGB), {0});".format(process_bits),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_EQ_{0}   => ".format(process_id),
+"            RESULT := (others => FLAG_EQ);".format(process_id),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_NE_{0}   => ".format(process_id),
+"            RESULT := (others => FLAG_NE);".format(process_id),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_GT_{0}   => ".format(process_id),
+"            RESULT := (others => FLAG_GT);".format(process_id),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_GE_{0}   => ".format(process_id),
+"            RESULT := (others => FLAG_GE);".format(process_id),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
+"          when OP_IMM_{0}  => ".format(process_id),
+"            RESULT := IMMEDIATE_{0};".format(process_id),
+"            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
 "          when OP_DIV_{0} =>".format(process_id),
 "            STATE_{0} <= DIVIDE_0;".format(process_id),
 "            PC_{0} <= PC_{0};".format(process_id),
-"            RESULT := REGA;",
 "          when OP_JMP_{0} =>".format(process_id),
 "            STATE_{0} <= STALL;".format(process_id),
 "            PC_{0} <= resize(unsigned(IMMEDIATE_{0}), {1});".format(process_id, instruction_address_bits),
-"            RESULT := REGA;",
 "          when OP_JMPF_{0} =>".format(process_id),
 "            if ZERO_{0} = '1' then".format(process_id),
 "              STATE_{0} <= STALL;".format(process_id),
 "              PC_{0} <= resize(unsigned(IMMEDIATE_{0}), {1});".format(process_id, instruction_address_bits),
 "            end if;".format(process_id),
-"            RESULT := REGA;",
 '\n'.join(output_instructions),
 '\n'.join(input_instructions),
+'\n'.join(timer_instructions),
 "          when others => null;",
 "        end case;",
+"",
 "        --write back results",
-"        REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
 "        if RESULT = {1} then".format(process_id, common.binary(0, process_bits)),
 "          ZERO_{0} <= '1';".format(process_id),
 "        else",
@@ -258,6 +365,7 @@ def write_process(process, plugin):
 "        end if;",
 '\n'.join(read_inputs),
 '\n'.join(write_outputs),
+'\n'.join(timer_count),
 "      when DIVIDE_0 => STATE_{0} <= EXECUTE;".format(process_id),
 "    end case;",
 "    if RST = '1' then",

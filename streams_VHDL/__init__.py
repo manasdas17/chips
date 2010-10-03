@@ -30,16 +30,11 @@ import lookup
 import resizer
 import formater
 
-#flow controllers
-import clone
-import switch
-
 #system
 import system
 
 #processes
 import process
-import instructions
 
 class Plugin:
 
@@ -55,6 +50,7 @@ class Plugin:
         self.declarations = []
         self.definitions = []
         self.ports = []
+        self.processes = []
 
     #sources
 
@@ -134,44 +130,8 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
-    def write_clone(self, stream): 
-        ports, declarations, definitions = clone.write(stream)
-        self.ports.extend(ports)
-        self.declarations.extend(declarations)
-        self.definitions.extend(definitions)
-
-    def write_switch(self, stream): 
-        ports, declarations, definitions = switch.write(stream)
-        self.ports.extend(ports)
-        self.declarations.extend(declarations)
-        self.definitions.extend(definitions)
-
-    #instructions
     def write_process(self, p):
         process.write_process(p, self)
-
-    def write_set(self, instruction):
-        return instructions.write_set(instruction, self)
-
-    def write_read(self, instruction):
-        return instructions.write_read(instruction, self)
-
-    def write_write(self, instruction):
-        return instructions.write_write(instruction, self)
-
-    def write_loop(self, instruction):
-        return instructions.write_loop(instruction, self)
-
-    def write_break(self, instruction):
-        return instructions.write_break(instruction, self)
-
-    def write_if(self, instruction):
-        return instructions.write_if(instruction, self)
-
-    #expressions
-    def write_constant(self, instruction):
-        return instructions.write_constant(instruction, self)
-
 
     #System VHDL Generation and external tools
 
@@ -188,46 +148,6 @@ class Plugin:
                 self.internal_clock, 
                 self.internal_reset
         )
-
-    def ghdl_sim(self, analyze=True, elaborate=True, execute=False, generate_wave=False, stop_cycles=False):
-
-        #enter project directory
-        if not os.path.isdir(self.project_name): 
-            if not os.path.exists(self.project_name):
-                os.mkdir(self.project_name)
-        os.chdir(self.project_name)
-
-        #enter ghdl directory
-        if not os.path.isdir("ghdl"): 
-            if not os.path.exists("ghdl"):
-                os.mkdir("ghdl")
-        os.chdir("ghdl")
-
-        #regenerate vhdl file
-        self.write_system()
-
-        if analyze:
-            subprocess.call( ''.join([
-            "ghdl -a ", 
-            os.path.join(".", self.project_name),
-            ".vhd", 
-            ]), shell=True)
-
-        if elaborate:
-            subprocess.call(''.join([
-            "ghdl -e ",
-            "streams_vhdl_model"]), shell=True)
-
-        if execute:
-            parameters = [os.path.join(".", "streams_vhdl_model")]
-            if generate_wave: 
-                parameters.append(" --wave=wave.ghw")
-            if stop_cycles: 
-                parameters.append(" --stop-time={0}ns".format(stop_cycles * 10 + 20))
-            parameters.append(" --disp-time")
-            subprocess.call(''.join(parameters), shell=True)
-
-        os.chdir(os.path.join("..", ".."))
 
     def ghdl_test(self, name, generate_wave=False, stop_cycles=False):
 

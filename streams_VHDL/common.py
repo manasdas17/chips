@@ -10,6 +10,7 @@ __status__ = "Prototype"
 
 def binary(integer, bits=None):
     """Returns binary string representation of an integer"""
+    if bits == 0 : return '"0"'
     mask = (1<<(bits-1))
     string = '"'
     while mask:

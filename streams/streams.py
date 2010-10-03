@@ -13,80 +13,69 @@ __status__ = "Prototype"
 from math import log
 
 from process import Process
-from common import Unique, Stream
+from common import how_many_bits, Unique
+from instruction import Write, Read
 
 class System:
+    """A Streams System
 
-    def __init__(self):
-       self.sinks = []
-       self.sources = []
-       self.processes = []
+    A streams system is a container for data sources, data sinks, and processes.
+    Typically a System is used to describe a single device"""
 
-    def repeater(self, value): 
-        source =  Repeater(value)
-        self.sources.append(source)
-        return source
+    def __init__(self, sinks=(), processes=()):
+       """Create a streams System
 
-    def counter(self, first, last, step): 
-        source =  Counter(first, last, step)
-        self.sources.append(source)
-        return source
+            Arguments:
+              sinks              A sequence object listing all data sinks"""
 
-    def in_port(self, name, bits=8): 
-        source =  Counter(first, last, step)
-        self.sources.append(source)
-        return source
+       self.sinks = sinks
 
-    def serial_in(self, name): 
-        source =  SerialIn(name)
-        self.sources.append(source)
-        return source
-
-    def process(self, **args):
-        p = Process(**args)
-        self.processes.append(p)
-        return p
-
-    def printer(self, stream):
-        p = Printer(stream)
-        self.sinks.append(p)
-
-    def asserter(self, stream): 
-        a = Asserter(stream)
-        self.sinks.append(a)
-
-    def out_port(self, stream, name):
-        o = OutPort(stream, name)
-        self.sinks.append(o)
-
-    def serial_out(self, stream, name):
-        s = SerialOut(stream, name)
-        self.sinks.append(s)
-
-    def write_code(self, plugin): 
+    def write_code(self, plugin):
         for i in self.sinks:
             i.write_code(plugin)
-        for i in self.processes:
-            i.write_code(plugin)
-        plugin.write_system()
 
     def __repr__(self):
-        return '\n'.join([
-"SYSTEM",
-"======",
-"",
-"sources",
-"------",
-'\n'.join((i.__repr__() for i in self.sources)),
-"",
-"sinks",
-"------",
-'\n'.join((i.__repr__() for i in self.sinks)),
-"",
-"processes",
-"------",
-'\n'.join((i.__repr__() for i in self.processes))
-        ])
+        return "System(sinks={0})".format(self.sinks)
+
+# Stream Classes
+################################################################################
+
+class Stream:
+
+    def __add__(self, other): return Binary(self, repeaterize(other), 'add')
+    def __sub__(self, other): return Binary(self, repeaterize(other), 'sub')
+    def __mul__(self, other): return Binary(self, repeaterize(other), 'mul')
+    def __mod__(self, other): return Binary(self, repeaterize(other), 'mod')
+    def __floordiv__(self, other): return Binary(self, repeaterize(other), 'div')
+    def __and__(self, other): return Binary(self, repeaterize(other), 'and')
+    def __or__(self, other): return Binary(self, repeaterize(other), 'or')
+    def __xor__(self, other): return Binary(self, repeaterize(other), 'xor')
+    def __rshift__(self, other): return Binary(self, repeaterize(other), 'sr')
+    def __lshift__(self, other): return Binary(self, repeaterize(other), 'sl')
+    def __eq__(self, other): return Binary(self, repeaterize(other), 'eq')
+    def __ne__(self, other): return Binary(self, repeaterize(other), 'ne')
+    def __gt__(self, other): return Binary(self, repeaterize(other), 'gt')
+    def __ge__(self, other): return Binary(self, repeaterize(other), 'ge')
+    def __lt__(self, other): return Binary(self, repeaterize(other), 'lt')
+    def __le__(self, other): return Binary(self, repeaterize(other), 'le')
+    def __radd__(other, self): return Binary(self, repeaterize(other), 'add')
+    def __rsub__(other, self): return Binary(self, repeaterize(other), 'sub')
+    def __rmul__(other, self): return Binary(self, repeaterize(other), 'mul')
+    def __rmod__(other, self): return Binary(self, repeaterize(other), 'mod')
+    def __rfloordiv__(other, self): return Binary(self, repeaterize(other), 'div')
+    def __rand__(other, self): return Binary(self, repeaterize(other), 'and')
+    def __ror__(other, self): return Binary(self, repeaterize(other), 'or')
+    def __rxor__(other, self): return Binary(self, repeaterize(other), 'xor')
+    def __rrshift__(other, self): return Binary(self, repeaterize(other), 'sr')
+    def __rlshift__(other, self): return Binary(self, repeaterize(other), 'sl')
+    def __req__(other, self): return Binary(self, repeaterize(other), 'eq')
+    def __rne__(other, self): return Binary(self, repeaterize(other), 'ne')
+    def __rgt__(other, self): return Binary(self, repeaterize(other), 'gt')
+    def __rge__(other, self): return Binary(self, repeaterize(other), 'ge')
+    def __rlt__(other, self): return Binary(self, repeaterize(other), 'lt')
+    def __rle__(other, self): return Binary(self, repeaterize(other), 'le')
+    def read(self, variable):
+        return Read(self, variable)
 
 #streams sources
 ################################################################################
@@ -137,13 +126,7 @@ class InPort(Stream, Unique):
         plugin.write_in_port(self)
 
     def __repr__(self):
-        return '\n'.join([
-        "  in_port( name = ", 
-        self.name, 
-        "bits = ", 
-        self.bits, 
-        ")"
-        ])
+        return "InPort(name={0}, bits={1})".format(self.name, self.bits)
 
 class SerialIn(Stream, Unique):
 
@@ -171,6 +154,29 @@ class SerialIn(Stream, Unique):
 
 #streams sinks
 ################################################################################
+
+class Output(Stream, Unique):
+
+    def __init__(self):
+        """create a process output"""
+        Unique.__init__(self)
+
+    def write(self, variable): 
+        """write an expression to the process output"""
+        return Write(self, variable)
+
+    def get_bits(self):
+        return self.process.get_bits()
+
+    def set_process(self, process):
+        self.process = process
+
+    def write_code(self, plugin): 
+        self.process.write_code(plugin)
+
+    def __repr__(self):
+        return "Output() at {0}".format(id(self))
+
 class OutPort(Unique):
 
     def __init__(self, a, name):
@@ -257,6 +263,45 @@ class SerialOut(Unique):
 
 #streams combinators
 ################################################################################
+
+def repeaterize(potential_repeater):
+    if hasattr(potential_repeater, "write_code"):
+        return potential_repeater
+    else:
+        return Repeater(int(potential_repeater))
+
+
+
+class  Binary(Stream, Unique):
+
+    def __init__(self, a, b, function):
+        self.a, self.b, self.function = a, b, function
+        Unique.__init__(self)
+
+    def get_bits(self):
+        bit_function = {
+        'add' : lambda x, y : max((x, y)) + 1,
+        'sub' : lambda x, y : max((x, y)) + 1,
+        'mul' : lambda x, y : x + y,
+        'div' : lambda x, y : max((x, y)) + 1,
+        'and' : lambda x, y : max((x, y)),
+        'or'  : lambda x, y : max((x, y)),
+        'xor' : lambda x, y : max((x, y)),
+        'sl'  : lambda x, y : x+((2**(y-1))-1),
+        'sr'  : lambda x, y : x,
+        'eq'  : lambda x, y : 1,
+        'ne'  : lambda x, y : 1,
+        'lt'  : lambda x, y : 1,
+        'le'  : lambda x, y : 1,
+        'gt'  : lambda x, y : 1,
+        'ge'  : lambda x, y : 1,
+        }
+        return bit_function[self.function](self.a.get_bits(), self.b.get_bits())
+
+    def write_code(self, plugin): 
+        self.a.write_code(plugin)
+        self.b.write_code(plugin)
+        plugin.write_binary(self)
 class _Spawn(Stream, Unique):
 
     def __init__(self, clone):
@@ -268,38 +313,6 @@ class _Spawn(Stream, Unique):
 
     def write_code(self, plugin): 
         self.clone._write_code(self, plugin)
-
-class Clone:
-
-    def __init__(self, a):
-        self.a = a
-        self._spawn = []
-
-    def spawn(self):
-        _spawn = _Spawn(self)
-        self._spawn.append(_spawn)
-        return _spawn
-
-    def _write_code(self, spawn, plugin):
-        if spawn is self._spawn[0]:
-            self.a.write_code(plugin)
-            plugin.write_clone(self)
-
-class Switch(Stream, Unique):
-
-    def __init__(self, select, *args):
-        self.select = select
-        self.a = args
-        Unique.__init__(self)
-
-    def get_bits(self): 
-        return max((i.get_bits() for i in self.a))
-
-    def write_code(self, plugin): 
-        for i in self.a:
-            i.write_code(plugin)
-        self.select.write_code(plugin)
-        plugin.write_switch(self)
 
 class Lookup(Stream, Unique):
 
@@ -342,11 +355,3 @@ class Formater(Stream, Unique):
     def write_code(self, plugin): 
         self.a.write_code(plugin)
         plugin.write_formater(self)
-
-def how_many_bits(num):
-    if num > 0 :
-        return int(log(num, 2)) + 2
-    elif num < -1:
-        return int(log(abs(num)-1, 2)) + 2
-    else:
-        return 1
