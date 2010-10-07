@@ -135,7 +135,7 @@ class Plugin:
 
     #System VHDL Generation and external tools
 
-    def write_system(self):
+    def write_system(self, s):
         output_file = open(
                 ''.join([self.project_name, ".vhd"]),
                 'w'
@@ -164,7 +164,7 @@ class Plugin:
         os.chdir("ghdl")
 
         #regenerate vhdl file
-        self.write_system()
+        self.write_system(None)
 
         subprocess.call( ''.join([
         "ghdl -a ", 

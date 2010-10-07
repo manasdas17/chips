@@ -33,6 +33,7 @@ class System:
     def write_code(self, plugin):
         for i in self.sinks:
             i.write_code(plugin)
+        plugin.write_system(self)
 
     def __repr__(self):
         return "System(sinks={0})".format(self.sinks)
