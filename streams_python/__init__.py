@@ -8,7 +8,11 @@ __maintainer__ = "Jon Dawson"
 __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
+from process import Process
+
 class Plugin:
+    def __init__(self):
+        self.processes = []
 
     #sources
     def write_repeater(self, stream): 
@@ -45,7 +49,9 @@ class Plugin:
         source = stream.a.generator()
         def printer():
             while True:
-                print next(source)
+                data = next(source)
+                if data is not None:
+                    print data
                 yield None
         stream.generator = printer
 
@@ -53,7 +59,9 @@ class Plugin:
         source = stream.a.generator()
         def asserter():
             while True:
-                assert next(source)
+                data = next(source)
+                if data is not None:
+                    assert data
                 yield None
         stream.generator = asserter
 
@@ -81,7 +89,15 @@ class Plugin:
         function = functions[stream.function]
         def binary():
             while True:
-                yield function(next(source_a), next(source_b))
+                while True:
+                    a = next(source_a)
+                    if a is not None:
+                        break
+                while True:
+                    b = next(source_b)
+                    if b is not None:
+                        break
+                yield function(a, b)
         stream.generator=binary
 
 
@@ -91,23 +107,33 @@ class Plugin:
         source = stream.a.generator()
         def lookup():
             for i in source:
-                yield args[i]
+                if i is not None:
+                    yield args[i]
         stream.generator=lookup
 
     def write_resizer(self, stream): 
-        pass
+        source = stream.a.generator()
+        bits = stream.get_bits()
+        sign_bits = -(2**(bits-1))
+        def resizer(val):
+            while True:
+                val = next(source)
+                if val is not None:
+                    yield val | sign_bits if val & sign_bits else val & ~sign_bits
 
     def write_formater(self, stream): 
         source = stream.a.generator()
         def formater():
             while True:
-                string = str(next(source))
-                for i in string:
-                    yield(ord(i))
+                data = next(source)
+                if data is not None:
+                    string = str(data)
+                    for i in string:
+                        yield(ord(i))
         stream.generator=formater
 
     def write_process(self, p):
-        pass
+        Process(p)
 
     def write_system(self, system):
         self.generators = [i.generator for i in system.sinks]
