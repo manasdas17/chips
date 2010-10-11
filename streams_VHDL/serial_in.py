@@ -40,6 +40,7 @@ def write(stream):
 
 
     definitions = [
+"  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
 "  --serial input port baud rate generator",
 "  process",
 "  begin",

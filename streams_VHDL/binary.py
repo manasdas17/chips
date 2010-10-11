@@ -53,6 +53,7 @@ def write(stream):
     ]
 
     definitions = [
+    "  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
     "  --STREAM {0} Binary({1}, {2}, '{3}')".format(identifier, identifier_a, identifier_b, stream.function),
     "  process",
     "  begin",

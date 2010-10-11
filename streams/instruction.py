@@ -11,6 +11,8 @@ __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
 
+from inspect import currentframe, getsourcefile
+
 class StreamsProcessError(Exception):
     """Error in definition of process instructions"""
 
@@ -23,6 +25,8 @@ class Read:
          Use stream.read(variable)"""
         self.variable = variable
         self.stream = stream
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def set_process(self, process):
         self.process=process
@@ -39,7 +43,7 @@ class Read:
     def comp(self, rmap):
         """compile an expression into a list of machine instructions"""
         instructions = [
-          Instruction("OP_READ_{0}".format(self.stream.get_identifier()), self.variable.register) 
+          Instruction("OP_READ_{0}".format(self.stream.get_identifier()), self.variable.register, lineno=self.lineno, filename=self.filename) 
         ]
         return instructions
 
@@ -49,6 +53,8 @@ class Write:
          Use stream.write(expression)"""
         self.expression = constantize(expression)
         self.stream = stream
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def set_process(self, process):
         self.process=process
@@ -68,7 +74,7 @@ class Write:
         """compile an expression into a list of machine instructions"""
         instructions = self.expression.comp(rmap)
         instructions.append(
-          Instruction("OP_WRITE_{0}".format(self.stream.get_identifier()), rmap.tos) 
+          Instruction("OP_WRITE_{0}".format(self.stream.get_identifier()), rmap.tos, lineno=self.lineno, filename=self.filename) 
         )
         return instructions
 
@@ -83,12 +89,14 @@ class RegisterMap:
 
 class Instruction:
     def __init__(self, operation, srca=None, srcb=None, immediate=None, 
-            label=None):
+            label=None, lineno=None, filename=None):
         self.operation = operation
         self.srca = srca
         self.srcb = srcb
         self.immediate = immediate
         self.label = label
+        self.filename = filename
+        self.lineno = lineno
     def __repr__(self):
         s = "Instruction(operation={0}, srca={1}, srcb={2}, immediate={3})"
         return s.format(self.operation, self.srca, self.srcb, self.immediate)
@@ -147,6 +155,8 @@ class Binary(Expression):
         self.left = left
         self.right = right
         self.operation = operation
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def set_process(self, process):
         self.process=process
@@ -163,7 +173,7 @@ class Binary(Expression):
         rmap.tos += 1
         instructions.extend(self.right.comp(rmap))
         instructions.extend(
-          [Instruction(self.operation, rmap.tos-1, rmap.tos)]
+          [Instruction(self.operation, rmap.tos-1, rmap.tos, lineno=self.lineno, filename=self.filename)]
         )
         rmap.tos -= 1
         return instructions
@@ -179,6 +189,8 @@ class Variable(Expression):
         The variable gets initiated to this value at reset.
         
         To assign an expression to a variable use the .set() method"""
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         self.initial = initial
 
     def set(self, value):
@@ -213,13 +225,13 @@ class Variable(Expression):
         if not hasattr(self, "register"):
             self.register = rmap.tos
             rmap.tos+=1
-            return [Instruction("OP_IMM", self.register, None, self.initial)]
+            return [Instruction("OP_IMM", self.register, None, self.initial, lineno=self.lineno, filename=self.filename)]
         else:
             return []
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return [Instruction("OP_MOVE", rmap.tos, self.register)]
+        return [Instruction("OP_MOVE", rmap.tos, self.register, lineno=self.lineno, filename=self.filename)]
 
 ################################################################################
 
@@ -228,6 +240,8 @@ class Constant(Expression):
     def __init__(self, constant):
         """Do not directly call this method, it is called automatically"""
         self.constant = constant
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def __repr__(self):
         return "Constant({0})".format(self.initial)
@@ -241,7 +255,7 @@ class Constant(Expression):
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return [Instruction("OP_IMM", rmap.tos, immediate=self.constant)]
+        return [Instruction("OP_IMM", rmap.tos, immediate=self.constant, lineno=self.lineno, filename=self.filename)]
 
 ################################################################################
 
@@ -272,6 +286,8 @@ class Statement:
         instructions.append(Instruction("OP_JMP", immediate="END"))
         instructions.append(Instruction("OP_JMP", immediate=0))
         instructions = calculate_jumps(instructions)
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         return instructions.__iter__()
 
     def is_loop(self):
@@ -304,6 +320,8 @@ class Loop(Statement):
         for child in instructions:
             child.parent = self
         self.instructions = instructions
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def is_loop(self):
         return True
@@ -328,11 +346,11 @@ class Loop(Statement):
         instructions = []
         self.start_of_loop = "START_{0}".format(id(self))
         self.end_of_loop = "END_{0}".format(id(self))
-        instructions.append(Instruction("LABEL", label = self.start_of_loop))
+        instructions.append(Instruction("LABEL", label = self.start_of_loop, lineno=self.lineno, filename=self.filename))
         for instruction in self.instructions:
             instructions.extend(instruction.comp(rmap))
-        instructions.append(Instruction("OP_JMP", immediate = self.start_of_loop)) 
-        instructions.append(Instruction("LABEL", label = self.end_of_loop))
+        instructions.append(Instruction("OP_JMP", immediate = self.start_of_loop, lineno=self.lineno, filename=self.filename)) 
+        instructions.append(Instruction("LABEL", label = self.end_of_loop, lineno=self.lineno, filename=self.filename))
         return instructions
 
 ################################################################################
@@ -343,6 +361,8 @@ class If(Statement):
         for child in instructions:
             child.parent = self
         self.conditionals = [(constantize(condition), instructions)]
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def Elsif(self, condition, *instructions):
         for child in instructions:
@@ -386,6 +406,10 @@ class If(Statement):
 
 class Break(Statement):
 
+    def __init__(self):
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+
     def __repr__(self):
         return "Break()"
 
@@ -399,13 +423,15 @@ class Break(Statement):
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
         end_of_loop = self.get_enclosing_loop().end_of_loop
-        return [Instruction("OP_JMP", immediate = end_of_loop)]
+        return [Instruction("OP_JMP", immediate = end_of_loop, lineno=self.lineno, filename=self.filename)]
 
 ################################################################################
 
 class Wait(Statement):
     def __init__(self, clock_cycles):
         self.clock_cycles = int(clock_cycles)
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def __repr__(self):
         return "Wait({0})".format(self.clock_cycles)
@@ -425,11 +451,15 @@ class Wait(Statement):
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return [Instruction("OP_WAIT_{0}".format(self.timer_number))]
+        return [Instruction("OP_WAIT_{0}".format(self.timer_number), lineno=self.lineno, filename=self.filename)]
 
 ################################################################################
 
 class Continue(Statement):
+
+    def __init__(self):
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def __repr__(self):
         return "Continue()".format(self.instruction)
@@ -444,7 +474,7 @@ class Continue(Statement):
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
         start_of_loop = self.get_enclosing_loop().start_of_loop
-        return [Instruction("OP_JMP", immediate = start_of_loop)]
+        return [Instruction("OP_JMP", immediate = start_of_loop, lineno=self.lineno, filename=self.filename)]
 
 ################################################################################
 
@@ -496,6 +526,8 @@ class Set(Statement):
         Use Variable.set() method"""
         self.variable = variable
         self.expression = constantize(expression)
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def __repr__(self):
         return "Set({0}, {1})".format(self.variable, self.expression)
@@ -512,7 +544,7 @@ class Set(Statement):
         """Do not directly call this method, it is called automatically"""
         instructions = self.expression.comp(rmap)
         instructions.append(
-            Instruction("OP_MOVE", self.variable.register, rmap.tos)
+            Instruction("OP_MOVE", self.variable.register, rmap.tos, lineno=self.lineno, filename=self.filename)
         )
         return instructions
 

@@ -12,6 +12,7 @@ __status__ = "Prototype"
 
 from common import Unique
 from instruction import Write, Block
+from inspect import currentframe, getsourcefile
 
 class Process(Unique):
 
@@ -26,6 +27,8 @@ class Process(Unique):
         self.timer_number = 0
         for i in instructions:
             i.set_process(self)
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
 
     def is_process(self):
         return True

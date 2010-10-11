@@ -410,6 +410,32 @@ s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer < test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
+#Test Chain
+expected_response = sequence(0, 1, 2, 3, 4, 5, 6)
+z = Output()
+Process(8, 
+    Loop(
+        z.write(0),
+        z.write(1),
+        z.write(2),
+        z.write(3),
+        z.write(4),
+        z.write(5),
+        z.write(6),
+    )
+)
+s=System(
+    (
+        Asserter( expected_response == z),
+        #Printer(z),
+    )
+)
+
+simulation_plugin = streams_VHDL.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.ghdl_test("chain test ", stop_cycles=1000, generate_wave=True)
+if not good and stop_on_fail: exit()
+
 #Test Binary +
 a, b, z = [], [], []
 for i in range(-8, 8):
@@ -687,4 +713,5 @@ simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("formater test ", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
+
 print "All Tests PASS"

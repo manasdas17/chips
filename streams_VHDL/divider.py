@@ -35,6 +35,7 @@ def write(stream):
     ]
 
     definitions = [
+"  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
 "  process",
 "  begin",
 "    wait until rising_edge(CLK);",

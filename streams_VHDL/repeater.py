@@ -27,6 +27,7 @@ def write(stream):
     ]
 
     definitions = [
+    "  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
     "  --STREAM {0} Repeater({1}, {2})".format(identifier, value, bits),
     "  STREAM_{0} <= {1};".format(identifier, common.binary(value, bits)),
     "  process",

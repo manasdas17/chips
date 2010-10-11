@@ -42,6 +42,7 @@ def write(stream):
 
 
     definitions = [
+"  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
 "  --STREAM {0} Formater({1})".format(identifier, identifier_a),
 "  process",
 "    variable CARRY_{0} : std_logic_vector({1} downto 0);".format(identifier, num_digits),

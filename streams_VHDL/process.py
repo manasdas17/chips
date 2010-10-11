@@ -151,15 +151,31 @@ def write_process(process, plugin):
         srca = instruction.srca if instruction.srca else 0
         srcb = instruction.srcb if instruction.srcb else 0
         immediate = instruction.immediate if instruction.immediate else 0
-        instructions.append(
-            "{0} => {1}_{2} & {3} & {4}".format(
-                index, 
-                operation, 
-                process_id,
-                common.binary(srca, register_address_bits),
-                common.binary(immediate | srcb, process_bits)
+        if index == len(process_instructions)-1:
+            instructions.append(
+                "{0} => {1}_{2} & {3} & {4}); -- file: {5} line: {6}".format(
+                    index, 
+                    operation, 
+                    process_id,
+                    common.binary(srca, register_address_bits),
+                    common.binary(immediate | srcb, process_bits),
+                    instruction.filename,
+                    instruction.lineno
+                )
             )
-        )
+        else:
+            instructions.append(
+                "{0} => {1}_{2} & {3} & {4}, -- file: {5} line: {6}".format(
+                    index, 
+                    operation, 
+                    process_id,
+                    common.binary(srca, register_address_bits),
+                    common.binary(immediate | srcb, process_bits),
+                    instruction.filename,
+                    instruction.lineno
+                )
+            )
+
 
     for index, operation in enumerate(operations):
         plugin.declarations.append(
@@ -191,7 +207,7 @@ def write_process(process, plugin):
 "  signal REMAINDER_{0}    : std_logic_vector({1} downto 0);".format(process_id, process_bits - 1),
 "  signal COUNT_{0}        : integer range 0 to {1};".format(process_id, process_bits),
 "  signal SIGN_{0}         : std_logic;".format(process_id),
-"  signal INSTRUCTIONS_{0} : INSTRUCTIONS_TYPE_{0} := (\n{1});".format(process_id, ',\n'.join(instructions)),
+"  signal INSTRUCTIONS_{0} : INSTRUCTIONS_TYPE_{0} := (\n{1}".format(process_id, '\n'.join(instructions)),
     ])
     
 

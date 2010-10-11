@@ -33,6 +33,7 @@ def write(stream):
     ]
 
     definitions = [
+    "  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
     "  --stream {0} Resizer({1}, {2})".format(identifier, identifier_a, bits),
     "  STREAM_{1}_ACK <= STREAM_{0}_ACK;".format(identifier, identifier_a),
     "  STREAM_{0}_STB <= STREAM_{1}_STB;".format(identifier, identifier_a),

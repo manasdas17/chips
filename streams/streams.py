@@ -15,6 +15,7 @@ from math import log
 from process import Process
 from common import how_many_bits, Unique
 from instruction import Write, Read
+from inspect import currentframe, getsourcefile
 
 class System:
     """A Streams System
@@ -29,6 +30,8 @@ class System:
               sinks              A sequence object listing all data sinks"""
 
        self.sinks = sinks
+       self.filename = getsourcefile(currentframe().f_back)
+       self.lineno = currentframe().f_back.f_lineno
 
     def write_code(self, plugin):
         for i in self.sinks:
@@ -86,6 +89,8 @@ class Repeater(Stream, Unique):
     def __init__(self, value):
         self.value = value
         self.bits = how_many_bits(value)
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self): 
@@ -104,6 +109,8 @@ class Counter(Stream, Unique):
         self.stop = stop 
         self.step = step 
         self.bits = max((how_many_bits(start), how_many_bits(stop)))
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self): 
@@ -119,6 +126,8 @@ class InPort(Stream, Unique):
 
     def __init__(self, name, bits):
         self.name, self.bits = name, bits
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self): return self.bits
@@ -135,6 +144,8 @@ class SerialIn(Stream, Unique):
         self.name = name
         self.clock_rate = clock_rate
         self.baud_rate = baud_rate
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self): return 8
@@ -160,6 +171,8 @@ class Output(Stream, Unique):
 
     def __init__(self):
         """create a process output"""
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def write(self, variable): 
@@ -182,6 +195,8 @@ class OutPort(Unique):
 
     def __init__(self, a, name):
         self.name, self.a = name, a
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self): 
@@ -202,6 +217,8 @@ class Asserter(Unique):
 
     def __init__(self, a):
         self.a = a
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self): 
@@ -219,6 +236,8 @@ class Asserter(Unique):
 class Printer(Unique):
 
     def __init__(self, a):
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         self.a = a
         Unique.__init__(self)
 
@@ -241,6 +260,8 @@ class SerialOut(Unique):
         self.name = name
         self.clock_rate = clock_rate
         self.baud_rate = baud_rate
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         assert a.get_bits()==8
         Unique.__init__(self)
 
@@ -277,6 +298,8 @@ class  Binary(Stream, Unique):
 
     def __init__(self, a, b, function):
         self.a, self.b, self.function = a, b, function
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self):
@@ -303,10 +326,13 @@ class  Binary(Stream, Unique):
         self.a.write_code(plugin)
         self.b.write_code(plugin)
         plugin.write_binary(self)
+
 class _Spawn(Stream, Unique):
 
     def __init__(self, clone):
         self.clone = clone
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self):
@@ -321,6 +347,8 @@ class Lookup(Stream, Unique):
         self.a = source
         self.args = args
         self.bits = max((how_many_bits(i) for i in args))
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self): 
@@ -335,6 +363,8 @@ class Resizer(Stream, Unique):
     def __init__(self, source, bits):
         self.a = source
         self.bits = bits
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self): 
@@ -348,6 +378,8 @@ class Formater(Stream, Unique):
 
     def __init__(self, source):
         self.a = source
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
     def get_bits(self): 

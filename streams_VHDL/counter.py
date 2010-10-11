@@ -27,6 +27,7 @@ def write(stream):
     ]
 
     definitions = [
+    "  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
     "  --STREAM {0} Counter({1}, {2}, {3}, {4})".format(identifier, start, stop, step, bits),
     "  process",
     "  begin",

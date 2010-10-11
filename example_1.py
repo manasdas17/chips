@@ -5,7 +5,7 @@
 from streams import *
 
 #the streams_VHDL library provides the VHDL code generation plugin
-import streams_VHDL
+import streams_python
 
 #Example 1 outputing a stream of numbers
 
@@ -14,6 +14,7 @@ out=Output()
 
 Process(8,
     Loop(
+        out.write(1),
         out.write(2),
         out.write(3),
         Break(),
@@ -25,10 +26,10 @@ system = System(
 )
 
 #create a code generator plugin
-vhdl_plugin = streams_VHDL.Plugin()
+vhdl_plugin = streams_python.Plugin()
 
 #write the system to the code generator plugin
 system.write_code(vhdl_plugin)
 
 #simulate using an external vhdl simulator
-vhdl_plugin.ghdl_test("Example 1 : Hello world ... part I", stop_cycles=2000, generate_wave=True)
+vhdl_plugin.python_test("Example 1 : Hello world ... part I", stop_cycles=2000)
