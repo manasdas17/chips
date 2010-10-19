@@ -10,6 +10,16 @@ __status__ = "Prototype"
 
 from process import Process
 
+def sign(x):
+    return -1 if x < 0 else 1
+
+def c_style_modulo(x, y):
+    return sign(x)*(abs(x)%abs(y))
+
+def c_style_division(x, y):
+    return sign(x)*sign(y)*(abs(x)//abs(y))
+
+
 class Plugin:
     def __init__(self):
         self.processes = []
@@ -45,13 +55,33 @@ class Plugin:
     def write_serial_out(self, stream): 
         pass
 
-    def write_printer(self, stream): 
+    def write_ascii_printer(self, stream): 
+        source = stream.a.generator()
+        def printer():
+            while True:
+                data = next(source)
+                if data is not None:
+                    print chr(data&0xff)
+                yield None
+        stream.generator = printer
+
+    def write_decimal_printer(self, stream): 
         source = stream.a.generator()
         def printer():
             while True:
                 data = next(source)
                 if data is not None:
                     print data
+                yield None
+        stream.generator = printer
+
+    def write_hex_printer(self, stream): 
+        source = stream.a.generator()
+        def printer():
+            while True:
+                data = next(source)
+                if data is not None:
+                    print hex(data)
                 yield None
         stream.generator = printer
 
@@ -71,7 +101,8 @@ class Plugin:
             'add' : lambda a, b: a+b,
             'sub' : lambda a, b: a-b,
             'mul' : lambda a, b: a*b,
-            'div' : lambda a, b: int((1.0*a)/(1.0*b)),
+            'div' : lambda a, b: c_style_division(a, b),
+            'mod' : lambda a, b: c_style_modulo(a, b),
             'and' : lambda a, b: a&b,
             'or'  : lambda a, b: a|b,
             'xor' : lambda a, b: a^b,
@@ -105,10 +136,14 @@ class Plugin:
     def write_lookup(self, stream): 
         args = stream.args
         source = stream.a.generator()
+        print source
         def lookup():
             for i in source:
+                print i
                 if i is not None:
                     yield args[i]
+                else:
+                    yield None
         stream.generator=lookup
 
     def write_resizer(self, stream): 
@@ -121,7 +156,7 @@ class Plugin:
                 if val is not None:
                     yield val | sign_bits if val & sign_bits else val & ~sign_bits
 
-    def write_formater(self, stream): 
+    def write_decimal_formatter(self, stream): 
         source = stream.a.generator()
         def formater():
             while True:
@@ -132,11 +167,31 @@ class Plugin:
                         yield(ord(i))
         stream.generator=formater
 
+    def write_hex_formatter(self, stream): 
+        source = stream.a.generator()
+        def formater():
+            while True:
+                data = next(source)
+                if data is not None:
+                    string = hex(data)
+                    for i in string:
+                        yield(ord(i))
+        stream.generator=formater
+
     def write_process(self, p):
         Process(p)
 
     def write_system(self, system):
         self.generators = [i.generator for i in system.sinks]
+
+    def start_sim(self):
+        self.iterators = [i() for i in self.generators]
+
+    def step_sim(self):
+        for i in self.processes:
+            i.execute()
+        for i in self.iterators:
+            next(i)
 
     def python_test(self, name, stop_cycles=100):
 
@@ -145,6 +200,7 @@ class Plugin:
             for i in range(stop_cycles):
                 for i in iterators:
                     next(i)
+                
         except AssertionError:
             print name,
             print "...Fail"

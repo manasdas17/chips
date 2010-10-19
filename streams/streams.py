@@ -11,32 +11,76 @@ __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
 from math import log
+from inspect import currentframe, getsourcefile
+from collections import deque
 
 from process import Process
 from common import how_many_bits, Unique
 from instruction import Write, Read
-from inspect import currentframe, getsourcefile
+from exceptions import StreamsConstructionError
+
+def sign(x):
+    return -1 if x < 0 else 1
+
+def c_style_modulo(x, y):
+    return sign(x)*(abs(x)%abs(y))
+
+def c_style_division(x, y):
+    return sign(x)*sign(y)*(abs(x)//abs(y))
 
 class System:
     """A Streams System
 
-    A streams system is a container for data sources, data sinks, and processes.
+    A streams system is a container for data sources, data.receivers, and processes.
     Typically a System is used to describe a single device"""
 
     def __init__(self, sinks=(), processes=()):
        """Create a streams System
 
             Arguments:
-              sinks              A sequence object listing all data sinks"""
+              sinks              A sequence object listing all data.receivers"""
 
        self.sinks = sinks
        self.filename = getsourcefile(currentframe().f_back)
        self.lineno = currentframe().f_back.f_lineno
 
+       #begin system enumeration process
+       self.streams = []
+       self.processes = []
+       for i in self.sinks:
+           i.set_system(self)
+
     def write_code(self, plugin):
         for i in self.sinks:
             i.write_code(plugin)
         plugin.write_system(self)
+
+    def reset(self):
+        for i in self.processes:
+            i.reset()
+        for i in self.streams:
+            i.reset()
+
+    def execute(self, steps=1):
+        for i in range(steps):
+            for i in self.processes:
+                i.execute()
+            for i in self.sinks:
+                i.execute()
+
+    def test(self, name, stop_cycles=False):
+        self.reset()
+        try:
+            self.execute(stop_cycles)
+        except AssertionError:
+            print name,
+            print "...Fail"
+            return True
+
+        print name,
+        print "...Pass"
+        return True
+
 
     def __repr__(self):
         return "System(sinks={0})".format(self.sinks)
@@ -81,6 +125,14 @@ class Stream:
     def read(self, variable):
         return Read(self, variable)
 
+    def set_system(self, system):
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("Stream is allready part of a system", self.filename, self.lineno)
+        self.system = system
+        system.streams.append(self)
+        if hasattr(self, "a"): self.a.set_system(system)
+        if hasattr(self, "b"): self.b.set_system(system)
+
 #streams sources
 ################################################################################
 
@@ -102,6 +154,12 @@ class Repeater(Stream, Unique):
     def __repr__(self):
         return "Repeater(value={0})".format(self.value) 
 
+    def reset(self):
+        pass
+
+    def get(self):
+        return self.value
+
 class Counter(Stream, Unique):
 
     def __init__(self, start, stop, step):
@@ -119,6 +177,17 @@ class Counter(Stream, Unique):
     def write_code(self, plugin): 
         plugin.write_counter(self)
 
+    def reset(self):
+        self.count = self.start
+
+    def get(self):
+        val = self.count
+        if self.count == self.stop:
+            self.count = self.start
+        else:
+            self.count += self.step
+        return val
+
     def __repr__(self):
         return "Counter(start={0}, stop={1}, step={2})".format(self.start, self.stop, self.bits)
 
@@ -134,6 +203,12 @@ class InPort(Stream, Unique):
 
     def write_code(self, plugin): 
         plugin.write_in_port(self)
+
+    def reset(self):
+        raise SimulationError("Inport ignored in native simulation")
+
+    def get(self):
+        raise SimulationError("Inport ignored in native simulation")
 
     def __repr__(self):
         return "InPort(name={0}, bits={1})".format(self.name, self.bits)
@@ -153,6 +228,12 @@ class SerialIn(Stream, Unique):
     def write_code(self, plugin): 
         plugin.write_serial_in(self)
 
+    def reset(self):
+        raise SimulationError("SerialIn ignored in native simulation")
+
+    def get(self):
+        raise SimulationError("SerialIn ignored in native simulation")
+
     def __repr__(self):
         return '\n'.join([
         "  serial_in( name = ", 
@@ -164,8 +245,6 @@ class SerialIn(Stream, Unique):
         ")"
         ])
 
-#streams sinks
-################################################################################
 
 class Output(Stream, Unique):
 
@@ -175,6 +254,19 @@ class Output(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
 
+    def set_system(self, system):
+        Stream.set_system(self, system)
+        if hasattr(self.process, "system"):
+            if self.process.system is not system:
+                raise StreamsConstructionError("process is allready part of another system", process.filename, process.lineno)
+        self.process.set_system(system)
+
+    def set_process(self, process):
+        if hasattr(self, "process"):
+            if self.process is not process:
+                raise StreamsConstructionError("Output is allready part of a process", self.filename, self.lineno)
+        self.process = process
+
     def write(self, variable): 
         """write an expression to the process output"""
         return Write(self, variable)
@@ -182,14 +274,26 @@ class Output(Stream, Unique):
     def get_bits(self):
         return self.process.get_bits()
 
-    def set_process(self, process):
-        self.process = process
-
     def write_code(self, plugin): 
         self.process.write_code(plugin)
 
+    def reset(self):
+        self.fifo=deque()
+
+    def put(self, data):
+        self.fifo.append(data)
+
+    def get(self):
+        try:
+            return self.fifo.popleft()
+        except IndexError:
+            return None
+
     def __repr__(self):
         return "Output() at {0}".format(id(self))
+
+#streams sinks
+################################################################################
 
 class OutPort(Unique):
 
@@ -198,6 +302,17 @@ class OutPort(Unique):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def set_system(self, system):
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
+        self.system = system
+        system.streams.append(self)
+        self.a.set_system(system)
 
     def get_bits(self): 
         return self.a.get_bits()
@@ -205,6 +320,12 @@ class OutPort(Unique):
     def write_code(self, plugin): 
         self.a.write_code(plugin)
         plugin.write_out_port(self)
+
+    def reset(self):
+        pass
+
+    def execute(self):
+        self.a.get()
 
     def __repr__(self):
         return '\n'.join([
@@ -220,6 +341,16 @@ class Asserter(Unique):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+    def set_system(self, system):
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
+        self.system = system
+        system.streams.append(self)
+        self.a.set_system(system)
 
     def get_bits(self): 
         return self.a.get_bits()
@@ -228,30 +359,132 @@ class Asserter(Unique):
         self.a.write_code(plugin)
         plugin.write_asserter(self)
 
+    def reset(self):
+        pass
+
+    def execute(self):
+        val = self.a.get()
+        if val is not None:
+            assert val, "Python Streams Assertion failure file: {0} line: {1}".format(self.filename, self.lineno)
+
     def __repr__(self):
         return '\n'.join([
         "  asserter()", 
         ])
 
-class Printer(Unique):
+class DecimalPrinter(Unique):
 
     def __init__(self, a):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         self.a = a
         Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+    def set_system(self, system):
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
+        self.system = system
+        system.streams.append(self)
+        self.a.set_system(system)
 
     def get_bits(self): 
         return self.a.get_bits()
 
     def write_code(self, plugin): 
         self.a.write_code(plugin)
-        plugin.write_printer(self)
+        plugin.write_decimal_printer(self)
+
+    def reset(self):
+        self.a.reset()
+
+    def execute(self):
+        val = self.a.get()
+        if val is not None:
+            print val
 
     def __repr__(self):
-        return '\n'.join([
-        "  printer()", 
-        ])
+        return "DecimalPrinter"
+
+class HexPrinter(Unique):
+
+    def __init__(self, a):
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        self.a = a
+        Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def set_system(self, system):
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
+        self.system = system
+        system.streams.append(self)
+        self.a.set_system(system)
+
+    def get_bits(self): 
+        return self.a.get_bits()
+
+    def write_code(self, plugin): 
+        self.a.write_code(plugin)
+        plugin.write_hex_printer(self)
+
+    def reset(self):
+        pass
+
+    def execute(self):
+        val = self.a.get()
+        if val is not None:
+            print hex(val)[2:]
+
+    def __repr__(self):
+        return "HexPrinter()"
+
+class AsciiPrinter(Unique):
+
+    def __init__(self, a):
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        self.a = a
+        Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def set_system(self, system):
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
+        self.system = system
+        system.streams.append(self)
+        self.a.set_system(system)
+
+    def get_bits(self): 
+        return self.a.get_bits()
+
+    def write_code(self, plugin): 
+        self.a.write_code(plugin)
+        plugin.write_ascii_printer(self)
+
+    def reset(self):
+        self.string = []
+
+    def execute(self):
+        val = self.a.get()
+        if val is not None:
+            if val == 0:
+                print ''.join(self.string)
+                self.string = []
+            else:
+                self.string.append(chr(val&0xff))
+
+    def __repr__(self):
+        return "AsciiPrinter()"
 
 class SerialOut(Unique):
 
@@ -264,6 +497,17 @@ class SerialOut(Unique):
         self.lineno = currentframe().f_back.f_lineno
         assert a.get_bits()==8
         Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def set_system(self, system):
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
+        self.system = system
+        system.streams.append(self)
+        self.a.set_system(system)
 
     def get_bits(self): 
         return a
@@ -271,6 +515,12 @@ class SerialOut(Unique):
     def write_code(self, plugin): 
         self.a.write_code(plugin)
         plugin.write_serial_out(self)
+
+    def reset(self):
+        pass
+
+    def execute(self):
+        self.a.get()
 
     def __repr__(self):
         return '\n'.join([
@@ -294,13 +544,44 @@ def repeaterize(potential_repeater):
 
 
 
+functions = {
+    'add' : lambda a, b: a+b,
+    'sub' : lambda a, b: a-b,
+    'mul' : lambda a, b: a*b,
+    'div' : lambda a, b: c_style_division(a, b),
+    'mod' : lambda a, b: c_style_modulo(a, b),
+    'and' : lambda a, b: a&b,
+    'or'  : lambda a, b: a|b,
+    'xor' : lambda a, b: a^b,
+    'sl'  : lambda a, b: a<<b,
+    'sr'  : lambda a, b: a>>b,
+    'eq'  : lambda a, b: -int(a==b),
+    'ne'  : lambda a, b: -int(a!=b),
+    'lt'  : lambda a, b: -int(a<b),
+    'le'  : lambda a, b: -int(a<=b),
+    'gt'  : lambda a, b: -int(a>b),
+    'ge'  : lambda a, b: -int(a>=b),
+}
 class  Binary(Stream, Unique):
 
     def __init__(self, a, b, function):
         self.a, self.b, self.function = a, b, function
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
+        self.function = functions[function]
+        self.stored_a = None
+        self.stored_b = None
         Unique.__init__(self)
+
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+        if hasattr(self.b, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.b.receiver = self
 
     def get_bits(self):
         bit_function = {
@@ -308,6 +589,7 @@ class  Binary(Stream, Unique):
         'sub' : lambda x, y : max((x, y)) + 1,
         'mul' : lambda x, y : x + y,
         'div' : lambda x, y : max((x, y)) + 1,
+        'mod' : lambda x, y : max((x, y)),
         'and' : lambda x, y : max((x, y)),
         'or'  : lambda x, y : max((x, y)),
         'xor' : lambda x, y : max((x, y)),
@@ -327,19 +609,22 @@ class  Binary(Stream, Unique):
         self.b.write_code(plugin)
         plugin.write_binary(self)
 
-class _Spawn(Stream, Unique):
+    def reset(self):
+        pass
 
-    def __init__(self, clone):
-        self.clone = clone
-        self.filename = getsourcefile(currentframe().f_back)
-        self.lineno = currentframe().f_back.f_lineno
-        Unique.__init__(self)
-
-    def get_bits(self):
-        return self.clone.a.get_bits()
-
-    def write_code(self, plugin): 
-        self.clone._write_code(self, plugin)
+    def get(self):
+        if self.stored_a is None:
+            self.stored_a = self.a.get()
+        if self.stored_b is None:
+            self.stored_b = self.b.get()
+        if self.stored_a is None:
+            return None
+        if self.stored_b is None:
+            return None
+        val = self.function(self.stored_a, self.stored_b)
+        self.stored_a = None
+        self.stored_b = None
+        return val
 
 class Lookup(Stream, Unique):
 
@@ -350,6 +635,10 @@ class Lookup(Stream, Unique):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
 
     def get_bits(self): 
         return self.bits
@@ -357,6 +646,14 @@ class Lookup(Stream, Unique):
     def write_code(self, plugin): 
         self.a.write_code(plugin)
         plugin.write_lookup(self)
+
+    def reset(self):
+        self.a.reset()
+
+    def get(self):
+        val = self.a.get()
+        if val is None: return None
+        return self.args[val]
 
 class Resizer(Stream, Unique):
 
@@ -366,6 +663,10 @@ class Resizer(Stream, Unique):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
 
     def get_bits(self): 
         return self.bits
@@ -374,17 +675,78 @@ class Resizer(Stream, Unique):
         self.a.write_code(plugin)
         plugin.write_resizer(self)
 
-class Formater(Stream, Unique):
+    def reset(self):
+        pass
+
+    def get(self):
+        val = self.a.get()
+        if val is None: return None
+        return resize(val, self.get_bits)
+
+class DecimalFormatter(Stream, Unique):
 
     def __init__(self, source):
         self.a = source
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
 
     def get_bits(self): 
         return 8
 
+    def get_num_digits(self):
+        return len(str(2**(self.a.get_bits()-1)))
+
     def write_code(self, plugin): 
         self.a.write_code(plugin)
-        plugin.write_formater(self)
+        plugin.write_decimal_formatter(self)
+
+    def reset(self):
+        self.string = []
+
+    def get(self):
+        if self.string:
+            return ord(self.string.popleft())
+        else:
+            val = self.a.get()
+            if val is None: return None
+            self.string = deque(str(val))
+            return ord(self.string.popleft())
+
+class HexFormatter(Stream, Unique):
+
+    def __init__(self, source):
+        self.a = source
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def get_bits(self): 
+        return 8
+
+    def get_num_digits(self):
+        return int((self.a.get_bits()-1)/4.0)
+
+    def write_code(self, plugin): 
+        self.a.write_code(plugin)
+        plugin.write_hex_formatter(self)
+
+    def reset(self):
+        self.string = []
+
+    def get(self):
+        if self.string:
+            return ord(self.string.popleft())
+        else:
+            val = self.a.get()
+            if val is None: return None
+            self.string = deque(hex(val)[2:])
+            return ord(self.string.popleft())

@@ -29,7 +29,6 @@ class Read:
         self.lineno = currentframe().f_back.f_lineno
 
     def set_process(self, process):
-        self.process=process
         #have to explicitly test for identity because we have overriden __eq__
         for i in process.inputs:
             if i is self.stream: break
@@ -147,13 +146,51 @@ class Expression:
 
 ################################################################################
 
+class Evaluate(Expression):
+
+    def __init__(self, *instructions):
+        """Define a block of code that can be treated as an expression"""
+        self.instructions = instructions
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        for child in instructions:
+            child.parent = self
+
+    def set_process(self, process):
+        for i in self.instructions:
+            i.set_process(process)
+
+    def is_eval(self):
+        return True
+
+    def initialise(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        instructions = []
+        for instruction in self.instructions:
+            instructions.extend(instruction.initialise(rmap))
+        return instructions
+
+    def comp(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        instructions = []
+        self.end_of_eval = "END_{0}".format(id(self))
+        instruction = []
+        for instruction in self.instructions:
+            instructions.extend(instruction.comp(rmap))
+        instructions.append(Instruction("LABEL", label = self.end_of_eval, lineno=self.lineno, filename=self.filename))
+        instructions.append(Instruction("OP_MOVE", rmap.tos, 0, lineno=self.lineno, filename=self.filename))
+        return instructions
+
+
+################################################################################
+
 class Binary(Expression):
 
     def __init__(self, left, right, operation):
         """Do not directly instantiate this class
         It is created automatically by operators +, -, * ..."""
-        self.left = left
-        self.right = right
+        self.left = constantize(left)
+        self.right = constantize(right)
         self.operation = operation
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
@@ -244,7 +281,7 @@ class Constant(Expression):
         self.lineno = currentframe().f_back.f_lineno
 
     def __repr__(self):
-        return "Constant({0})".format(self.initial)
+        return "Constant({0})".format(self.constant)
 
     def set_process(self, process):
         self.process=process
@@ -281,6 +318,7 @@ class Statement:
     def __iter__(self):
         """Enable an statement to act as a list of machine instructions"""
         rmap = RegisterMap()
+        rmap.tos += 1 #reserve location 0 for evaluate blocks
         instructions = self.initialise(rmap) + self.comp(rmap)
         instructions.append(Instruction("LABEL", label="END"))
         instructions.append(Instruction("OP_JMP", immediate="END"))
@@ -296,6 +334,9 @@ class Statement:
     def is_process(self):
         return False
 
+    def is_eval(self):
+        return False
+
     def get_enclosing_loop(self):
         if self.parent.is_loop():
             return self.parent
@@ -304,6 +345,14 @@ class Statement:
         else:
             raise StreamsProcessError("Break() must be within a loop")
 
+    def get_enclosing_eval(self):
+        if self.parent.is_eval():
+            return self.parent
+        elif hasattr(self.parent, 'parent'):
+            return self.parent.get_enclosing_eval()
+        else:
+            raise StreamsProcessError("Value() must be within a evaluate block")
+
     def get_enclosing_process(self):
         if self.parent.is_process():
             return self.parent
@@ -311,6 +360,33 @@ class Statement:
             return self.parent.get_enclosing_process()
         else:
             raise StreamsProcessError()
+
+################################################################################
+
+class Value(Statement):
+    def __init__(self, expression):
+        """Set the value of an evaluate block, and cease execution of the block"""
+        self.expression = constantize(expression)
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+
+    def __repr__(self):
+        return "Value()"
+
+    def initialise(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        return self.expression.initialise(rmap)
+
+    def set_process(self, process):
+        self.process=process
+
+    def comp(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        end_of_eval = self.get_enclosing_eval().end_of_eval
+        instructions = self.expression.comp(rmap)
+        instructions.append(Instruction("OP_MOVE", 0, rmap.tos, lineno=self.lineno, filename=self.filename))
+        instructions.append(Instruction("OP_JMP", immediate = end_of_eval, lineno=self.lineno, filename=self.filename))
+        return instructions
 
 ################################################################################
 
@@ -327,7 +403,7 @@ class Loop(Statement):
         return True
 
     def __repr__(self):
-        return "Loop({0})".format(self.instruction)
+        return "Loop({0})".format(self.instructions)
 
     def set_process(self, process):
         self.process=process
@@ -364,10 +440,11 @@ class If(Statement):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
 
-    def Elsif(self, condition, *instructions):
+    def ElsIf(self, condition, *instructions):
         for child in instructions:
             child.parent = self
         self.conditionals.append((constantize(condition), instructions))
+        return self
 
     def set_process(self, process):
         self.process=process
@@ -377,7 +454,7 @@ class If(Statement):
                 instruction.set_process(process)
 
     def __repr__(self):
-        return "If({0})".format(self.instruction)
+        return "If({0})".format(self.conditionals)
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""
@@ -392,14 +469,17 @@ class If(Statement):
         """Do not directly call this method, it is called automatically"""
         machine_instructions = []
         i = 0
+        skip_to_end = "SKIP_{0}".format(id(self))
         for condition, instructions in self.conditionals:
             skip_to_if_false = "SKIP_{0}_{1}".format(id(self), i)
             machine_instructions.extend(condition.comp(rmap))
             machine_instructions.append(Instruction("OP_JMPF", rmap.tos, immediate=skip_to_if_false))
             for instruction in instructions:
                 machine_instructions.extend(instruction.comp(rmap))
+            machine_instructions.append(Instruction("OP_JMP", immediate=skip_to_end))
             machine_instructions.append(Instruction("LABEL", label=skip_to_if_false))
             i+=1
+        machine_instructions.append(Instruction("LABEL", label=skip_to_end))
         return machine_instructions
 
 ################################################################################
@@ -495,14 +575,14 @@ class Block(Statement):
 
     def set_process(self, process):
         self.process=process
-        for i in instructions:
+        for i in self.instructions:
             i.set_process(process)
 
     def what_are_you(self):
         return "Block"
 
     def __repr__(self):
-        return "Block({0})".format(self.instruction)
+        return "Block({0})".format(self.instructions)
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""

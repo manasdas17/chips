@@ -10,6 +10,7 @@ __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
 import divider
+import modulo
 
 def write(stream):
 
@@ -20,6 +21,8 @@ def write(stream):
 
     if stream.function == 'div':
         return divider.write(stream)
+    if stream.function == 'mod':
+        return modulo.write(stream)
 
     expressions = {
     'add' : "STREAM_{0} <= ADD( STREAM_{1}, STREAM_{2})",

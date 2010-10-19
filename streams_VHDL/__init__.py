@@ -20,7 +20,9 @@ import serial_in
 
 #sinks
 import out_port
-import printer
+import decimal_printer
+import hex_printer
+import ascii_printer
 import asserter
 import serial_out
 
@@ -28,7 +30,8 @@ import serial_out
 import binary
 import lookup
 import resizer
-import formater
+import decimal_formatter
+import hex_formatter
 
 #system
 import system
@@ -92,8 +95,8 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
-    def write_printer(self, stream): 
-        ports, declarations, definitions = printer.write(stream)
+    def write_decimal_printer(self, stream): 
+        ports, declarations, definitions = decimal_printer.write(stream)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
@@ -124,8 +127,14 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
-    def write_formater(self, stream): 
-        ports, declarations, definitions = formater.write(stream)
+    def write_decimal_formatter(self, stream): 
+        ports, declarations, definitions = decimal_formatter.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_hex_formatter(self, stream): 
+        ports, declarations, definitions = hex_formatter.write(stream)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
@@ -166,15 +175,33 @@ class Plugin:
         #regenerate vhdl file
         self.write_system(None)
 
-        subprocess.call( ''.join([
+        pipe = subprocess.Popen( ''.join([
         "ghdl -a ", 
         os.path.join(".", self.project_name),
         ".vhd", 
         ]), shell=True)
+        pipe.wait()
+        error_message = pipe.communicate()[1]
+        return_code = pipe.returncode
 
-        subprocess.call(''.join([
+        if return_code != 0:
+            print name,
+            print "...Fail"
+            print error_message
+            return False
+
+        pipe = subprocess.Popen.(''.join([
         "ghdl -e ",
         "streams_vhdl_model"]), shell=True)
+        pipe.wait()
+        error_message = pipe.communicate()[1]
+        return_code = pipe.returncode
+
+        if return_code != 0:
+            print name,
+            print "...Fail"
+            print error_message
+            return False
 
         parameters = [os.path.join(".", "streams_vhdl_model")]
         if generate_wave: 
@@ -191,17 +218,17 @@ class Plugin:
         error_message = pipe.communicate()[1]
         return_code = pipe.returncode
 
-        os.chdir(os.path.join("..", ".."))
-
-        if return_code == 0:
-            print name,
-            print "...Pass"
-            return True
-        else:
+        if return_code != 0:
             print name,
             print "...Fail"
             print error_message
             return False
+
+        os.chdir(os.path.join("..", ".."))
+
+        print name,
+        print "...Pass"
+        return True
 
 
     def xilinx_build(self, part="xc5vlx30-3-ff676", synth=True, implement=True, bitgen=True):

@@ -21,7 +21,32 @@ def write(stream):
     bits = stream.get_bits()
     bits_a = stream.a.get_bits()
     identifier_a = stream.a.get_identifier()
-    num_digits = int(ceil(bits/4))
+    num_digits = stream.get_num_digits()
+
+    def upper(x):
+        return min(((x*4)+3, bits_a-1))
+
+    def lower(x):
+        return i*4
+
+    def padding(x):
+        bits = (upper(x) - lower(x)) + 1
+        padding = 4-bits
+        if padding == 0:
+            return ""
+        else:
+            string = ['"']
+            for i in range(bits):
+                string.append("0")
+            string.append('" & ')
+            return ''.join(string)
+
+    nibbles = []
+    for i in range(num_digits):
+        nibbles.append(
+"        NIBBLE({0}) := {1}BINARY_{2}({3} downto {4});".format(i, padding(i), identifier, upper(i), lower(i))
+        )
+
 
     ports = [
     ]
@@ -31,11 +56,8 @@ def write(stream):
     "  signal STREAM_{0}_STB : std_logic;".format(identifier),
     "  signal STREAM_{0}_ACK : std_logic;".format(identifier),
     "  signal SIGN_{0}       : std_logic;".format(identifier),
-    "  signal STATE_{0}      : FORMATER_STATE_TYPE;".format(identifier),
-    "  type SHIFTER_{0}_TYPE is array (0 to {1}) of std_logic_vector(3 downto 0);".format(identifier, num_digits - 1),
+    "  signal STATE_{0}      : HEX_FORMATER_STATE_TYPE;".format(identifier),
     "  signal BINARY_{0}     : std_logic_vector({1} downto 0);".format(identifier, bits_a - 1),
-    "  signal SHIFTER_{0}    : SHIFTER_{0}_TYPE;".format(identifier),
-    "  signal COUNT_{0}      : integer range 0 to {1};".format(identifier, bits_a -2),
     "  signal CURSOR_{0}     : integer range 0 to {1};".format(identifier, num_digits-1),
     "",
     ]
@@ -43,9 +65,10 @@ def write(stream):
 
     definitions = [
 "  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
-"  --STREAM {0} Formater({1})".format(identifier, identifier_a),
+"  --STREAM {0} HexFormater({1})".format(identifier, identifier_a),
 "  process",
-"    variable CARRY_{0} : std_logic_vector({1} downto 0);".format(identifier, num_digits),
+"    type NIBBLE_TYPE is array (0 to {0}) of std_logic_vector(3 downto 0);".format(num_digits-1),
+"    variable NIBBLE : NIBBLE_TYPE;",
 "  begin",
 "    wait until rising_edge(CLK);",
 "    case STATE_{0} is".format(identifier),
@@ -54,41 +77,9 @@ def write(stream):
 "        if STREAM_{0}_STB = '1' then".format(identifier_a),
 "          STREAM_{0}_ACK <= '1';".format(identifier_a),
 "          SIGN_{0} <= STREAM_{1}({2});".format(identifier, identifier_a, bits_a-1),
-'          SHIFTER_{0} <= (others => "0000");'.format(identifier),
 "          BINARY_{0} <= std_logic_vector(abs(signed(STREAM_{1})));".format(identifier, identifier_a),
-"          COUNT_{0} <= {1};".format(identifier, bits_a-2),
-"          STATE_{0} <= SHIFT;".format(identifier),
-"        end if;",
-"",
-"      when SHIFT =>",
-"        STREAM_{0}_ACK <= '0';".format(identifier_a),
-"        CARRY_{0} := (Others => '0');".format(identifier),
-"        CARRY_{0}(0) := BINARY_{0}({1});".format(identifier, bits_a-2),
-"        for DIGIT in 0 to {1} loop".format(identifier, num_digits-1),
-"            case SHIFTER_{0}(DIGIT) is".format(identifier),
-'                when "0101" =>',
-"                  CARRY_{0}(DIGIT+1) := '1';".format(identifier),
-'                  SHIFTER_{0}(DIGIT) <= "000" & CARRY_{0}(DIGIT);'.format(identifier),
-'                when "0110" =>',
-"                  CARRY_{0}(DIGIT+1) := '1';".format(identifier),
-'                  SHIFTER_{0}(DIGIT) <= "001" & CARRY_{0}(DIGIT);'.format(identifier),
-'                when "0111" =>',
-"                  CARRY_{0}(DIGIT+1) := '1';".format(identifier),
-'                  SHIFTER_{0}(DIGIT) <= "010" & CARRY_{0}(DIGIT);'.format(identifier),
-'                when "1000" =>',
-"                  CARRY_{0}(DIGIT+1) := '1';".format(identifier),
-'                  SHIFTER_{0}(DIGIT) <= "011" & CARRY_{0}(DIGIT);'.format(identifier),
-"                when others =>",
-"                  CARRY_{0}(DIGIT+1) := '0';".format(identifier),
-'                  SHIFTER_{0}(DIGIT) <= SHIFTER_{0}(DIGIT)(2 downto 0) & CARRY_{0}(DIGIT);'.format(identifier),
-"            end case;",
-"        end loop;",
-"        BINARY_{0} <= BINARY_{0}({1} downto 0) & '0';".format(identifier, bits_a-2),
-"        if COUNT_{0} = 0 then".format(identifier),
-"          STATE_{0} <= OUTPUT_SIGN;".format(identifier),
 "          CURSOR_{0} <= {1};".format(identifier, num_digits-1),
-"        else",
-"          COUNT_{0} <= COUNT_{0} - 1;".format(identifier),
+"          STATE_{0} <= OUTPUT_SIGN;".format(identifier),
 "        end if;",
 "",
 "      when OUTPUT_SIGN =>",
@@ -97,15 +88,33 @@ def write(stream):
 "          STREAM_{0}_STB <= '1';".format(identifier),
 "          if STREAM_{0}_ACK = '1' then".format(identifier),
 "            STREAM_{0}_STB <= '0';".format(identifier),
-"            STATE_{0} <= OUTPUT_Z;".format(identifier),
+"            STATE_{0} <= OUTPUT_DIGITS;".format(identifier),
 "          end if;",
-"        else",
-"          STATE_{0} <= OUTPUT_Z;".format(identifier),
 "        end if;",
 "",
-"      when OUTPUT_Z =>",
+"      when OUTPUT_DIGITS =>",
+"        STREAM_{0}_ACK <= '0';".format(identifier_a),
+"\n".join(nibbles),
+"        case NIBBLE(CURSOR_{0}) is".format(identifier),
+'            when X"0" => STREAM_{0} <= X"30";'.format(identifier),
+'            when X"1" => STREAM_{0} <= X"31";'.format(identifier),
+'            when X"2" => STREAM_{0} <= X"32";'.format(identifier),
+'            when X"3" => STREAM_{0} <= X"33";'.format(identifier),
+'            when X"4" => STREAM_{0} <= X"34";'.format(identifier),
+'            when X"5" => STREAM_{0} <= X"35";'.format(identifier),
+'            when X"6" => STREAM_{0} <= X"36";'.format(identifier),
+'            when X"7" => STREAM_{0} <= X"37";'.format(identifier),
+'            when X"8" => STREAM_{0} <= X"38";'.format(identifier),
+'            when X"9" => STREAM_{0} <= X"39";'.format(identifier),
+'            when X"A" => STREAM_{0} <= X"61";'.format(identifier),
+'            when X"B" => STREAM_{0} <= X"62";'.format(identifier),
+'            when X"C" => STREAM_{0} <= X"63";'.format(identifier),
+'            when X"D" => STREAM_{0} <= X"64";'.format(identifier),
+'            when X"E" => STREAM_{0} <= X"65";'.format(identifier),
+'            when X"F" => STREAM_{0} <= X"66";'.format(identifier),
+'            when others => null;',
+"        end case;",
 "        STREAM_{0}_STB <= '1';".format(identifier),
-'        STREAM_{0} <= "0011" & SHIFTER_{0}(CURSOR_{0});'.format(identifier, num_digits-1),
 "        if STREAM_{0}_ACK = '1' then".format(identifier),
 "          STREAM_{0}_STB <= '0';".format(identifier),
 "          if CURSOR_{0} = 0 then".format(identifier),

@@ -27,7 +27,7 @@ def write_process(process, plugin):
     operations = [
       "OP_ADD", "OP_SUB", "OP_MUL", "OP_DIV", "OP_BAND", "OP_BOR", "OP_BXOR", 
       "OP_SL", "OP_SR", "OP_EQ", "OP_NE", "OP_GT", "OP_GE", "OP_JMP", "OP_JMPF", 
-      "OP_IMM", "OP_MOVE", "WAIT"
+      "OP_IMM", "OP_MOVE", "WAIT", "OP_MOD"
     ]
     process_instructions = tuple(process.instructions)
     number_of_operations = len(operations) + len(process.inputs) + len(process.outputs)
@@ -208,6 +208,7 @@ def write_process(process, plugin):
 "  signal COUNT_{0}        : integer range 0 to {1};".format(process_id, process_bits),
 "  signal SIGN_{0}         : std_logic;".format(process_id),
 "  signal INSTRUCTIONS_{0} : INSTRUCTIONS_TYPE_{0} := (\n{1}".format(process_id, '\n'.join(instructions)),
+"  signal MOD_DIV_{0}      : std_logic;".format(process_id),
     ])
     
 
@@ -243,6 +244,7 @@ def write_process(process, plugin):
 "    variable REGB    : std_logic_vector({0} downto 0);".format(process_bits-1),
 "    variable DEST    : integer range 0 to {0};".format(num_registers-1),
 "    variable RESULT  : std_logic_vector({0} downto 0);".format(process_bits-1),
+"    variable MODULO  : unsigned({0} downto 0);".format(process_bits-1),
 "    variable FLAG_EQ : std_logic;",
 "    variable FLAG_NE : std_logic;",
 "    variable FLAG_GT : std_logic;",
@@ -299,6 +301,9 @@ def write_process(process, plugin):
 "          when OP_IMM_{0}  => ".format(process_id),
 "            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
 "          when OP_DIV_{0} =>".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_MOD_{0} =>".format(process_id),
 "            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
 "            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
 '\n'.join(output_instructions_fetch),
@@ -366,9 +371,18 @@ def write_process(process, plugin):
 "            RESULT := IMMEDIATE_{0};".format(process_id),
 "            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
 "          when OP_DIV_{0} =>".format(process_id),
+"            MOD_DIV_{0} <= '1';".format(process_id),
 "            A_{0} <= std_logic_vector(abs(signed(REGA)));".format(process_id),
 "            B_{0} <= std_logic_vector(abs(signed(REGB)));".format(process_id),
 "            SIGN_{0} <= REGA({1}) xor REGB({1});".format(process_id, process_bits-1),
+"            DEST := to_integer(unsigned(SRCA_{0}));".format(process_id),
+"            STATE_{0} <= DIVIDE_0;".format(process_id),
+"            PC_{0} <= PC_{0};".format(process_id),
+"          when OP_MOD_{0} =>".format(process_id),
+"            MOD_DIV_{0} <= '0';".format(process_id),
+"            A_{0} <= std_logic_vector(abs(signed(REGA)));".format(process_id),
+"            B_{0} <= std_logic_vector(abs(signed(REGB)));".format(process_id),
+"            SIGN_{0} <= REGA({1});".format(process_id, process_bits-1),
 "            DEST := to_integer(unsigned(SRCA_{0}));".format(process_id),
 "            STATE_{0} <= DIVIDE_0;".format(process_id),
 "            PC_{0} <= PC_{0};".format(process_id),
@@ -420,10 +434,19 @@ def write_process(process, plugin):
 "       end if;",
 "",
 "     when DIVIDE_2 =>",
-"      if SIGN_{0} = '1' then --if negative".format(process_id),
-"        REGISTERS_{0}(DEST) <= std_logic_vector(not(signed(QUOTIENT_{0}))+1);".format(process_id),
+"      if MOD_DIV_{0} = '1' then --if division".format(process_id),
+"        if SIGN_{0} = '1' then --if negative".format(process_id),
+"          REGISTERS_{0}(DEST) <= std_logic_vector(-signed(QUOTIENT_{0}));".format(process_id),
+"        else",
+"          REGISTERS_{0}(DEST) <= QUOTIENT_{0};".format(process_id),
+"        end if;",
 "      else",
-"        REGISTERS_{0}(DEST) <= QUOTIENT_{0};".format(process_id),
+"        MODULO := unsigned(SHIFTER_{0})/2;".format(process_id),
+"        if SIGN_{0} = '1' then --if negative".format(process_id),
+"          REGISTERS_{0}(DEST) <= std_logic_vector(0-MODULO);".format(process_id),
+"        else",
+"          REGISTERS_{0}(DEST) <= std_logic_vector(  MODULO);".format(process_id),
+"        end if;",
 "      end if;",
 "      STATE_{0} <= EXECUTE;".format(process_id),
 "      PC_{0} <= PC_{0} + 1;".format(process_id),
