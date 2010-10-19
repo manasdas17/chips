@@ -4,9 +4,6 @@ from streams import *
 import streams_VHDL 
 stop_on_fail = True
 
-def sequence(*args):
-    return Lookup(Counter(0, len(args)-1, 1), *args)
-
 def sign(x):
     return -1 if x < 0 else 1
 
@@ -19,10 +16,8 @@ def c_style_division(x, y):
 #test_feedback
 lookup = Output()
 lookedup = Lookup(lookup, 0, 1, 2, 3)
-
-#create a process to calculate coordinates
-RightAssensions = Sequence()
-Declinations = Sequence()
+x = Variable(0)
+outstream = Output()
 
 Process(10, #gives integer range -512 to 512
     Loop(
@@ -44,7 +39,7 @@ Process(10, #gives integer range -512 to 512
 #Join the elements together into a system
 s=System(
         sinks=(
-            Asserter(outstream==sequence(0, 1, 2, 3)),
+            Asserter(outstream==Sequence(0, 1, 2, 3)),
         )
 )
 
@@ -57,8 +52,8 @@ simulation_plugin.ghdl_test("feedback test ", stop_cycles=10000, generate_wave=T
 #Test Evaluate
 a = range(-8, 8)
 z = [i>0 for i in a]
-stimulus_a =        sequence(*a)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 z = Output()
@@ -91,9 +86,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i+j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -118,9 +113,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i-j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -145,9 +140,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i*j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -172,9 +167,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(c_style_division(i, j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -199,9 +194,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(c_style_modulo(i, j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -226,9 +221,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i&j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -253,9 +248,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i|j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -280,9 +275,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i^j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -307,9 +302,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i<<j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -334,9 +329,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i>>j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -361,9 +356,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i==j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -388,9 +383,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i!=j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -415,9 +410,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i>=j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -442,9 +437,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i<=j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 
 a = Variable(0)
 b = Variable(0)
@@ -469,9 +464,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i>j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 a = Variable(0)
 b = Variable(0)
 z = Output()
@@ -495,9 +490,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i<j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 a = Variable(0)
 b = Variable(0)
 z = Output()
@@ -514,7 +509,7 @@ good = good and simulation_plugin.ghdl_test("integer < test ", stop_cycles=1000,
 if not good and stop_on_fail: exit()
 
 #Test Chain
-expected_response = sequence(0, 1, 2, 3, 4, 5, 6)
+expected_response = Sequence(0, 1, 2, 3, 4, 5, 6)
 z = Output()
 Process(8, 
     Loop(
@@ -547,9 +542,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i+j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == stimulus_a + stimulus_b),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -565,9 +560,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i-j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == stimulus_a - stimulus_b),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -583,9 +578,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i*j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == stimulus_a * stimulus_b),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -601,9 +596,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(c_style_division(i, j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == stimulus_a // stimulus_b),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -619,9 +614,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(c_style_modulo(i, j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == stimulus_a % stimulus_b),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -637,9 +632,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i&j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == stimulus_a & stimulus_b),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -655,9 +650,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i|j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == stimulus_a | stimulus_b),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -673,9 +668,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i^j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == stimulus_a ^ stimulus_b),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -691,9 +686,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i<<j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == (stimulus_a << stimulus_b)),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -709,9 +704,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(i>>j)
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == (stimulus_a >> stimulus_b)),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -727,9 +722,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i==j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == (stimulus_a == stimulus_b)),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -745,9 +740,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i!=j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == (stimulus_a != stimulus_b)),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -763,9 +758,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i>=j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == (stimulus_a >= stimulus_b)),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -781,9 +776,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i<=j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == (stimulus_a <= stimulus_b)),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -799,9 +794,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i>j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == (stimulus_a > stimulus_b)),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -817,9 +812,9 @@ for i in range(-8, 8):
         b.append(j)
         z.append(-int(i<j))
 
-stimulus_a =        sequence(*a)
-stimulus_b =        sequence(*b)
-expected_response = sequence(*z)
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
 s=System((Asserter(expected_response == (stimulus_a < stimulus_b)),))
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -828,21 +823,21 @@ good = good and simulation_plugin.ghdl_test("streams < test ", stop_cycles=1000,
 if not good and stop_on_fail: exit()
 
 #Test Formatter
-s=System((Asserter(DecimalFormatter(Repeater(10))==sequence(49, 48)),))
+s=System((Asserter(DecimalFormatter(Repeater(10))==Sequence(ord('1'), ord('0'))),))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("decimal formatter test 1", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
-s=System((Asserter(DecimalFormatter(Repeater(100))==sequence(49, 48, 48)),))
+s=System((Asserter(DecimalFormatter(Repeater(100))==Sequence(49, 48, 48)),))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("decimal formatter test 2", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
-s=System((Asserter(DecimalFormatter(Repeater(-128))==sequence(45, 49, 50, 56)),))
+s=System((Asserter(DecimalFormatter(Repeater(-128))==Sequence(45, 49, 50, 56)),))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -850,7 +845,7 @@ good = good and simulation_plugin.ghdl_test("decimal formatter test 3", stop_cyc
 if not good and stop_on_fail: exit()
 
 #Test Formatter
-s=System((Asserter(HexFormatter(Repeater(10))==sequence(48, 120, 97)),))
+s=System((Asserter(HexFormatter(Repeater(10))==Sequence(48, 120, 97)),))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -858,7 +853,7 @@ good = good and simulation_plugin.ghdl_test("hex formatter test 1", stop_cycles=
 if not good and stop_on_fail: exit()
 
 #Test Formatter
-s=System((Asserter(HexFormatter(Repeater(-128))==sequence(45, 48, 120, 56, 48)),))
+s=System((Asserter(HexFormatter(Repeater(-128))==Sequence(45, 48, 120, 56, 48)),))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)

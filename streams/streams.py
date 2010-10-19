@@ -51,7 +51,9 @@ class System:
            i.set_system(self)
 
     def write_code(self, plugin):
-        for i in self.sinks:
+        for i in self.streams:
+            i.write_code(plugin)
+        for i in self.processes:
             i.write_code(plugin)
         plugin.write_system(self)
 
@@ -275,7 +277,8 @@ class Output(Stream, Unique):
         return self.process.get_bits()
 
     def write_code(self, plugin): 
-        self.process.write_code(plugin)
+        pass
+        #self.process.write_code(plugin)
 
     def reset(self):
         self.fifo=deque()
@@ -318,7 +321,6 @@ class OutPort(Unique):
         return self.a.get_bits()
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_out_port(self)
 
     def reset(self):
@@ -356,7 +358,6 @@ class Asserter(Unique):
         return self.a.get_bits()
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_asserter(self)
 
     def reset(self):
@@ -394,7 +395,6 @@ class DecimalPrinter(Unique):
         return self.a.get_bits()
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_decimal_printer(self)
 
     def reset(self):
@@ -431,7 +431,6 @@ class HexPrinter(Unique):
         return self.a.get_bits()
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_hex_printer(self)
 
     def reset(self):
@@ -468,7 +467,6 @@ class AsciiPrinter(Unique):
         return self.a.get_bits()
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_ascii_printer(self)
 
     def reset(self):
@@ -513,7 +511,6 @@ class SerialOut(Unique):
         return a
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_serial_out(self)
 
     def reset(self):
@@ -543,7 +540,6 @@ def repeaterize(potential_repeater):
         return Repeater(int(potential_repeater))
 
 
-
 functions = {
     'add' : lambda a, b: a+b,
     'sub' : lambda a, b: a-b,
@@ -568,7 +564,8 @@ class  Binary(Stream, Unique):
         self.a, self.b, self.function = a, b, function
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
-        self.function = functions[function]
+        self.function = function
+        self.binary_function = functions[function]
         self.stored_a = None
         self.stored_b = None
         Unique.__init__(self)
@@ -605,8 +602,6 @@ class  Binary(Stream, Unique):
         return bit_function[self.function](self.a.get_bits(), self.b.get_bits())
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
-        self.b.write_code(plugin)
         plugin.write_binary(self)
 
     def reset(self):
@@ -621,7 +616,7 @@ class  Binary(Stream, Unique):
             return None
         if self.stored_b is None:
             return None
-        val = self.function(self.stored_a, self.stored_b)
+        val = self.binary_function(self.stored_a, self.stored_b)
         self.stored_a = None
         self.stored_b = None
         return val
@@ -644,7 +639,6 @@ class Lookup(Stream, Unique):
         return self.bits
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_lookup(self)
 
     def reset(self):
@@ -672,7 +666,6 @@ class Resizer(Stream, Unique):
         return self.bits
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_resizer(self)
 
     def reset(self):
@@ -702,7 +695,6 @@ class DecimalFormatter(Stream, Unique):
         return len(str(2**(self.a.get_bits()-1)))
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_decimal_formatter(self)
 
     def reset(self):
@@ -736,7 +728,6 @@ class HexFormatter(Stream, Unique):
         return int((self.a.get_bits()-1)/4.0)
 
     def write_code(self, plugin): 
-        self.a.write_code(plugin)
         plugin.write_hex_formatter(self)
 
     def reset(self):

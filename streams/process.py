@@ -68,8 +68,7 @@ class Process(Unique):
         return self.bits
 
     def write_code(self, plugin): 
-        for i in self.inputs:
-            i.write_code(plugin)
+        plugin.write_process(self)
 
     def reset(self):
 

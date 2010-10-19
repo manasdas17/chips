@@ -190,7 +190,7 @@ class Plugin:
             print error_message
             return False
 
-        pipe = subprocess.Popen.(''.join([
+        pipe = subprocess.Popen(''.join([
         "ghdl -e ",
         "streams_vhdl_model"]), shell=True)
         pipe.wait()
