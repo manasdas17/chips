@@ -12,6 +12,39 @@ def c_style_modulo(x, y):
 def c_style_division(x, y):
     return sign(x)*sign(y)*(abs(x)//abs(y))
 
+#test stimulus
+a = Stimulus(8)
+a = Stimulus(8)
+
+s=System(
+        sinks=(
+            Asserter(a==Sequence(*range(100))),
+        )
+)
+
+a.set_simulation_data(range(100))
+
+good = s.test("stimulus test ", stop_cycles=100)
+if not good and stop_on_fail: exit()
+
+#test response
+a = Response(Sequence(*range(100)))
+
+s=System(
+        sinks=(
+           a,
+        )
+)
+
+s.test("response test ", stop_cycles=100)
+for response, expected in zip(a.get_simulation_data(), range(100)):
+    good = response==expected
+    if not good:
+        print "Failed to retireve simulation data"
+
+if not good and stop_on_fail: exit()
+
+
 #test_feedback
 lookup = Output()
 lookedup = Lookup(lookup, 0, 1, 2, 3)
@@ -40,7 +73,7 @@ Process(10, #gives integer range -512 to 512
 #Join the elements together into a system
 s=System(
         sinks=(
-            DecimalPrinter(outstream),
+            Asserter(outstream==Sequence(0, 1, 2, 3)),
         )
 )
 

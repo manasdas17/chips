@@ -17,6 +17,7 @@ import in_port
 import repeater
 import counter
 import serial_in
+import stimulus
 
 #sinks
 import out_port
@@ -25,6 +26,7 @@ import hex_printer
 import ascii_printer
 import asserter
 import serial_out
+import response
 
 #combinators
 import binary
@@ -56,6 +58,11 @@ class Plugin:
         self.processes = []
 
     #sources
+    def write_stimulus(self, stream): 
+        ports, declarations, definitions = stimulus.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
 
     def write_repeater(self, stream): 
         ports, declarations, definitions = repeater.write(stream)
@@ -82,6 +89,11 @@ class Plugin:
         self.definitions.extend(definitions)
 
     #sinks
+    def write_response(self, stream): 
+        ports, declarations, definitions = response.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
 
     def write_out_port(self, stream): 
         ports, declarations, definitions = out_port.write(stream)
@@ -157,6 +169,62 @@ class Plugin:
                 self.internal_clock, 
                 self.internal_reset
         )
+
+    def set_simulation_data(self, stimulus, iterator):
+
+        #enter project directory
+        if not os.path.isdir(self.project_name): 
+            if not os.path.exists(self.project_name):
+                os.mkdir(self.project_name)
+        os.chdir(self.project_name)
+
+        #enter ghdl directory
+        if not os.path.isdir("ghdl"): 
+            if not os.path.exists("ghdl"):
+                os.mkdir("ghdl")
+        os.chdir("ghdl")
+
+        stimulus_file = open(
+            "stim_{0}.txt".format(stimulus.get_identifier()),
+            'w'
+        )
+
+        for i in iterator:
+            stimulus_file.write(str(i)+"\n")
+
+        stimulus_file.close()
+        
+        #leave ghdl directory
+        os.chdir(os.path.join("..", ".."))
+
+    def get_simulation_data(self, response):
+
+        #enter project directory
+        if not os.path.isdir(self.project_name): 
+            if not os.path.exists(self.project_name):
+                os.mkdir(self.project_name)
+        os.chdir(self.project_name)
+
+        #enter ghdl directory
+        if not os.path.isdir("ghdl"): 
+            if not os.path.exists("ghdl"):
+                os.mkdir("ghdl")
+        os.chdir("ghdl")
+
+        stimulus_file = open(
+            "resp_{0}.txt".format(response.a.get_identifier()),
+            'r'
+        )
+
+        data = [int(i) for i in stimulus_file]
+
+        stimulus_file.close()
+        
+        #leave ghdl directory
+        os.chdir(os.path.join("..", ".."))
+
+        return data
+
 
     def ghdl_test(self, name, generate_wave=False, stop_cycles=False):
 

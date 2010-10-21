@@ -24,8 +24,10 @@ InPort = streams.InPort
 SerialIn = streams.SerialIn
 Counter = streams.Counter
 Repeater = streams.Repeater
+Stimulus = streams.Stimulus
 
 #SINKS
+Response = streams.Response
 OutPort = streams.OutPort
 SerialOut = streams.SerialOut
 DecimalPrinter = streams.DecimalPrinter

@@ -19,6 +19,10 @@ from common import how_many_bits, Unique
 from instruction import Write, Read
 from exceptions import StreamsConstructionError
 
+def resize(val, bits):
+    mask_bits = (2**bits)-1
+    return val | ~mask_bits if val < 0 else val & mask_bits
+
 def sign(x):
     return -1 if x < 0 else 1
 
@@ -193,6 +197,34 @@ class Counter(Stream, Unique):
     def __repr__(self):
         return "Counter(start={0}, stop={1}, step={2})".format(self.start, self.stop, self.bits)
 
+class Stimulus(Stream, Unique):
+
+    def __init__(self, bits):
+        self.bits = bits
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        Unique.__init__(self)
+
+    def get_bits(self): return self.bits
+
+    def write_code(self, plugin): 
+        plugin.write_stimulus(self)
+
+    def reset(self):
+        pass
+
+    def get(self):
+        return resize(self.queue.popleft(), self.bits)
+
+    def set_simulation_data(self, iterator, plugin=None):
+        if plugin is None:
+            self.queue = deque(iterator)
+        else:
+            plugin.set_simulation_data(self, iterator)
+
+    def __repr__(self):
+        return "Stimulus({0})".format(self.name, self.bits)
+
 class InPort(Stream, Unique):
 
     def __init__(self, name, bits):
@@ -297,6 +329,53 @@ class Output(Stream, Unique):
 
 #streams sinks
 ################################################################################
+
+class Response(Unique):
+    """A Response block allows data to be read from a stream in the python 
+    design environment. A similar interface can be used in native python
+    simulations and also co-simulations using external tools."""
+
+    def __init__(self, a):
+        self.a = a
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def set_system(self, system):
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
+        self.system = system
+        system.streams.append(self)
+        self.a.set_system(system)
+
+    def get_bits(self): 
+        return self.a.get_bits()
+
+    def write_code(self, plugin): 
+        plugin.write_response(self)
+
+    def reset(self):
+        self.queue = deque()
+
+    def execute(self):
+        data = self.a.get()
+        if data is not None:
+            self.queue.append(data)
+
+    def get_simulation_data(self, plugin=None):
+        """Returns an iterator object representing the data output from this stream"""
+        if plugin is None:
+            return self.queue.__iter__()
+        else:
+            return plugin.get_simulation_data(self)
+
+    def __repr__(self):
+        return "Response({0}, self.sequence)".format(self.a)
+
 
 class OutPort(Unique):
 
@@ -625,7 +704,7 @@ class Lookup(Stream, Unique):
 
     def __init__(self, source, *args):
         self.a = source
-        self.args = args
+        self.args = [int(i) for i in args]
         self.bits = max((how_many_bits(i) for i in args))
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
@@ -647,7 +726,7 @@ class Lookup(Stream, Unique):
     def get(self):
         val = self.a.get()
         if val is None: return None
-        return self.args[val]
+        return self.args[resize(val, self.a.get_bits())]
 
 class Resizer(Stream, Unique):
 

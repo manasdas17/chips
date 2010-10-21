@@ -13,6 +13,42 @@ def c_style_modulo(x, y):
 def c_style_division(x, y):
     return sign(x)*sign(y)*(abs(x)//abs(y))
 
+#test stimulus
+a = Stimulus(8)
+a = Stimulus(8)
+
+s=System(
+        sinks=(
+            Asserter(a==Sequence(*range(100))),
+        )
+)
+
+
+simulation_plugin = streams_VHDL.Plugin()
+s.write_code(simulation_plugin)
+a.set_simulation_data(range(100), simulation_plugin)
+good = simulation_plugin.ghdl_test("stimulus test ", stop_cycles=200, generate_wave=True)
+if not good and stop_on_fail: exit()
+
+#test response
+a = Response(Sequence(*range(100)))
+
+s=System(
+        sinks=(
+           a,
+        )
+)
+
+simulation_plugin = streams_VHDL.Plugin()
+s.write_code(simulation_plugin)
+good = simulation_plugin.ghdl_test("response test ", stop_cycles=10000, generate_wave=True)
+for response, expected in zip(a.get_simulation_data(simulation_plugin), range(100)):
+    good = good and response==expected
+    if not good:
+        print "Failed to retireve simulation data"
+
+if not good and stop_on_fail: exit()
+
 #test_feedback
 lookup = Output()
 lookedup = Lookup(lookup, 0, 1, 2, 3)
@@ -43,11 +79,10 @@ s=System(
         )
 )
 
-#simulate in VHDL
-import streams_VHDL
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
-simulation_plugin.ghdl_test("feedback test ", stop_cycles=10000, generate_wave=True)
+good = good and simulation_plugin.ghdl_test("feedback test ", stop_cycles=10000, generate_wave=True)
+if not good and stop_on_fail: exit()
 
 #Test Evaluate
 a = range(-8, 8)
@@ -75,7 +110,7 @@ Process(8,
 s=System(( Asserter(expected_response == z),))
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
-good = simulation_plugin.ghdl_test("evaluate test", stop_cycles=1000, generate_wave=True)
+good = good and simulation_plugin.ghdl_test("evaluate test", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
 #Test Integer +

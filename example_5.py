@@ -1,21 +1,36 @@
 #!/usr/bin/env python
 
-
-from math import asin, sin, cos, pi
+from math import asin, sin, cos, pi, radians
+from datetime import datetime
 
 #enter location details
-lst=0
 latitude = 51 #London
-lonitude = 0 #London
+longitude = -3.3 #London
+
+local_time = datetime.now()
+local_time_degrees = (local_time.hour + (local_time.minute/60.0) + (local_time.second/3600.0))*15
+J2000 = datetime(2000, 01, 01, 12, 00)
+delta_J2000 = (local_time - J2000)
+delta_J2000_days = delta_J2000.days + (delta_J2000.seconds/86400.0)
+
+lst = 100.46 + (0.985647 * delta_J2000_days) + local_time_degrees + longitude
+lst = lst%360.0
+lst = lst*512.0/360.0
+
+def to_radians(x): return (x/256.0)*pi
+def from_radians(x): return (x/pi)*256.0
+def scale(x): return x*255
+def unscale(x): return (x/255.0)
 
 #scale degrees so that 0=0 and 512=360 256=180 128=90
+#scale sin tables so that 1 = 255 and -1 = -255
 sin_values = []
 for i in range(512):
-    sin_values.append(round(sin((i/512.0)*2*pi)*255))
+    sin_values.append(scale(sin(to_radians(i))))
 
 asin_values = []
 for i in range(256):
-    asin_values.append(round(asin(i/255.0)*(256.0/pi)))
+    asin_values.append(from_radians(asin(unscale(i))))
 
 #plot the sin values
 #import matplotlib.pyplot as plt
@@ -45,8 +60,8 @@ dec = Variable(0)
 alt = Variable(0)
 az = Variable(0)
 
-sin_lat = int(round(sin((512*51)/360)))
-cos_lat = int(round(cos((512*51)/360)))
+sin_lat = int(round(sin(radians(latitude))*255))
+cos_lat = int(round(cos(radians(latitude))*255))
 
 
 ha = Variable(0)
@@ -59,7 +74,8 @@ sin_alt  = Variable(0)
 cos_alt  = Variable(0)
 cos_az  = Variable(0)
 
-display = Output()
+alt_stream = Output()
+az_stream = Output()
 
 Process(20, #gives integer range -512 to 511
     Loop(
@@ -69,8 +85,8 @@ Process(20, #gives integer range -512 to 511
        declinations.read(dec),
 
        #calculate ha based on LST
-       ha.set(ra-lst),
-       If(ha < 0, ha.set(512-ha)),
+       ha.set(lst-ra),
+       While(ha < 0, ha.set(512+ha)),
 
        #find sin dec
        If(dec < 0,
@@ -110,12 +126,8 @@ Process(20, #gives integer range -512 to 511
            sin_angle.read(cos_ha),
        ),
 
-       #display.write(sin_ha),
-       #display.write(cos_ha),
-       #display.write(sin_dec),
-       #display.write(cos_dec),
-
-       sin_alt.set((sin_dec*sin_lat)>>9 + (((cos_dec*cos_lat)>>9)*cos_ha)>>9),
+       sin_alt.set(((sin_dec*sin_lat)>>8) + ((((cos_dec*cos_lat)>>8)*cos_ha)>>8)),
+       #sin_alt.set((sin_dec*sin_lat)>>8),
 
        #find asin sin_alt
        If(sin_alt < 0,
@@ -136,39 +148,39 @@ Process(20, #gives integer range -512 to 511
            sin_angle.read(cos_alt),
        ),
 
-       cos_az.set(((sin_dec-((sin_alt*sin_lat)>>9)) // ((cos_alt*cos_lat)>>9))<<9),
-
+       cos_az.set(((sin_dec-((sin_alt*sin_lat)>>8))<<8) // ((cos_alt*cos_lat)>>8)),
 
        #find acos cos_az
        If(cos_az < 0,
            asin_angle.write(0-cos_az),
            aangle.read(az),
            az.set(az-128),
-           If(az <= 0, az.set(512-az)),
+           If(az <= 0, az.set(512+az)),
        ).ElsIf(1,
            asin_angle.write(cos_az),
            aangle.read(az),
            az.set(az-128),
-           If(az < 0, az.set(512-az)),
+           If(az < 0, az.set(512+az)),
        ),
 
-       display.write(alt),
-       display.write(az),
+       alt_stream.write(alt),
+       az_stream.write(cos_az),
     )
 )
 
+alt_response = Response(alt_stream)
+az_response = Response(az_stream)
+
 #Join the elements together into a system
 s=System(
-        sinks=(
-            DecimalPrinter(display),
-        )
+        sinks=(alt_response, az_response)
 )
 
-#simulate in python
-#import streams_python
-#simulation_plugin = streams_python.Plugin()
-#s.write_code(simulation_plugin)
-#simulation_plugin.python_test("fixed test ", stop_cycles=1000)
+s.test("fixed test ", stop_cycles=1000)
+for i, j in zip(alt_response.get_simulation_data(), az_response.get_simulation_data()):
+    print i/512.0*360.0,
+    print j/255.0
+
 
 #simulate in VHDL
 import streams_VHDL
