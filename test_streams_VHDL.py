@@ -13,6 +13,20 @@ def c_style_modulo(x, y):
 def c_style_division(x, y):
     return sign(x)*sign(y)*(abs(x)//abs(y))
 
+#test sizing
+out = Output()
+a = Variable(127)
+b = Variable(1)
+Process(8,
+    out.write(a+b),
+)
+system = System((Asserter(out==0),))
+
+p = streams_VHDL.Plugin()
+system.write_code(p)
+good = p.ghdl_test("test sizing", stop_cycles=1000, generate_wave=True)
+if not good and stop_on_fail: exit()
+
 #test stimulus
 a = Stimulus(8)
 a = Stimulus(8)
@@ -27,7 +41,7 @@ s=System(
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
 a.set_simulation_data(range(100), simulation_plugin)
-good = simulation_plugin.ghdl_test("stimulus test ", stop_cycles=200, generate_wave=True)
+good = good and simulation_plugin.ghdl_test("stimulus test ", stop_cycles=200, generate_wave=True)
 if not good and stop_on_fail: exit()
 
 #test response

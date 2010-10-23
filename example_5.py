@@ -32,18 +32,39 @@ asin_values = []
 for i in range(256):
     asin_values.append(from_radians(asin(unscale(i))))
 
-#plot the sin values
-#import matplotlib.pyplot as plt
-#plt.plot(sin_values, 'bo')
-#plt.ylabel('some numbers')
-#plt.show()
-
-#start of hardware design
-from streams import *
 
 #create a lookup table to lookup the sine of an angle
-angle = Output()
-sin_angle = Lookup(angle, *sin_values)
+
+sin_in = Output()
+sin_out = Lookup(angle, *sin_values)
+
+def fsin(x)
+    return Evaluate(
+       #find sin dec
+       If(x < 0,
+           sin_in.write(0-x),
+           sin_out.read(temp),
+           temp.set(0-temp)
+       ).ElsIf(1,
+           sin.write(x),
+           temp.read(temp),
+       ),
+       Value(temp),
+    )
+
+def fcos(x)
+    return Evaluate(
+       #find sin dec
+       If(x < 0,
+           sin_in.write((0-x)+128),
+           sin_out.read(temp),
+           temp.set(0-temp)
+       ).ElsIf(1,
+           sin.write(x+128),
+           temp.read(temp),
+       ),
+       Value(temp),
+    )
 
 #create a lookup table to lookup the angle of arcsine
 asin_angle = Output()
@@ -89,42 +110,11 @@ Process(20, #gives integer range -512 to 511
        While(ha < 0, ha.set(512+ha)),
 
        #find sin dec
-       If(dec < 0,
-           angle.write(0-dec),
-           sin_angle.read(sin_dec),
-           sin_dec.set(0-sin_dec)
-       ).ElsIf(1,
-           angle.write(dec),
-           sin_angle.read(sin_dec),
-       ),
+       sin_dec.set(fsin(dec)),
+       cos_dec.set(fcos(dec)),
+       sin_ha.set(fsin(ha)),
+       cos_ha.set(fcos(ha)),
 
-       #find cos dec 
-       If(dec < 0,
-           angle.write((0-dec)+128),
-           sin_angle.read(cos_dec),
-       ).ElsIf(1,
-           angle.write(dec+128),
-           sin_angle.read(cos_dec),
-       ),
-
-       #find sin ha
-       If(ha < 0,
-           angle.write(0-ha),
-           sin_angle.read(sin_ha),
-           sin_ha.set(0-sin_ha)
-       ).ElsIf(1,
-           angle.write(ha),
-           sin_angle.read(sin_ha),
-       ),
-
-       #find cos ha 
-       If(ha < 0,
-           angle.write((0-ha)+128),
-           sin_angle.read(cos_ha),
-       ).ElsIf(1,
-           angle.write(ha+128),
-           sin_angle.read(cos_ha),
-       ),
 
        sin_alt.set(((sin_dec*sin_lat)>>8) + ((((cos_dec*cos_lat)>>8)*cos_ha)>>8)),
        #sin_alt.set((sin_dec*sin_lat)>>8),

@@ -20,7 +20,7 @@ from instruction import Write, Read
 from exceptions import StreamsConstructionError
 
 def resize(val, bits):
-    mask_bits = (2**bits)-1
+    mask_bits = (2**(bits-1))-1
     return val | ~mask_bits if val < 0 else val & mask_bits
 
 def sign(x):

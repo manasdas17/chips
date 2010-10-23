@@ -12,6 +12,18 @@ def c_style_modulo(x, y):
 def c_style_division(x, y):
     return sign(x)*sign(y)*(abs(x)//abs(y))
 
+#test sizing
+out = Output()
+a = Variable(127)
+b = Variable(1)
+Process(8,
+    out.write(a+b),
+)
+
+system = System((Asserter(out==0),))
+good = system.test("test sizing", 100)
+if not good and stop_on_fail: exit()
+
 #test stimulus
 a = Stimulus(8)
 a = Stimulus(8)
@@ -24,7 +36,7 @@ s=System(
 
 a.set_simulation_data(range(100))
 
-good = s.test("stimulus test ", stop_cycles=100)
+good = good and s.test("stimulus test ", stop_cycles=100)
 if not good and stop_on_fail: exit()
 
 #test response
