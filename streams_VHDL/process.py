@@ -12,6 +12,10 @@ __status__ = "Prototype"
 import common
 from math import ceil, log
 
+def resize(val, bits):
+    mask_bits = (2**(bits-1))-1
+    return val | ~mask_bits if val < 0 else val & mask_bits
+
 def address_bits(length):
     if length <= 1:
         return 1
@@ -158,7 +162,7 @@ def write_process(process, plugin):
                     operation, 
                     process_id,
                     common.binary(srca, register_address_bits),
-                    common.binary(immediate | srcb, process_bits),
+                    common.binary(resize(immediate, process_bits) | srcb, process_bits),
                     instruction.filename,
                     instruction.lineno
                 )
@@ -170,7 +174,7 @@ def write_process(process, plugin):
                     operation, 
                     process_id,
                     common.binary(srca, register_address_bits),
-                    common.binary(immediate | srcb, process_bits),
+                    common.binary(resize(immediate, process_bits) | srcb, process_bits),
                     instruction.filename,
                     instruction.lineno
                 )
