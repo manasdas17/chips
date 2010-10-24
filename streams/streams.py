@@ -38,13 +38,13 @@ class System:
     A streams system is a container for data sources, data.receivers, and processes.
     Typically a System is used to describe a single device"""
 
-    def __init__(self, sinks=(), processes=()):
+    def __init__(self, *args):
        """Create a streams System
 
             Arguments:
               sinks              A sequence object listing all data.receivers"""
 
-       self.sinks = sinks
+       self.sinks = args
        self.filename = getsourcefile(currentframe().f_back)
        self.lineno = currentframe().f_back.f_lineno
 

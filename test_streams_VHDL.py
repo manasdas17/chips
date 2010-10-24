@@ -20,7 +20,7 @@ b = Variable(1)
 Process(8,
     out.write(a+b),
 )
-system = System((Asserter(out==0),))
+system = System(Asserter(out==0))
 
 p = streams_VHDL.Plugin()
 system.write_code(p)
@@ -31,11 +31,7 @@ if not good and stop_on_fail: exit()
 a = Stimulus(8)
 a = Stimulus(8)
 
-s=System(
-        sinks=(
-            Asserter(a==Sequence(*range(100))),
-        )
-)
+s=System(Asserter(a==Sequence(*range(100))))
 
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -47,11 +43,7 @@ if not good and stop_on_fail: exit()
 #test response
 a = Response(Sequence(*range(100)))
 
-s=System(
-        sinks=(
-           a,
-        )
-)
+s=System(a)
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -87,11 +79,7 @@ Process(10, #gives integer range -512 to 512
 )
 
 #Join the elements together into a system
-s=System(
-        sinks=(
-            Asserter(outstream==Sequence(0, 1, 2, 3)),
-        )
-)
+s=System(Asserter(outstream==Sequence(0, 1, 2, 3)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -121,7 +109,7 @@ Process(8,
     )
 )
 
-s=System(( Asserter(expected_response == z),))
+s=System( Asserter(expected_response == z))
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("evaluate test", stop_cycles=1000, generate_wave=True)
@@ -147,7 +135,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a+b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -174,7 +162,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a-b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -201,7 +189,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a*b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -228,7 +216,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a//b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -255,7 +243,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a%b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -282,7 +270,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a&b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -309,7 +297,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a|b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -336,7 +324,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a^b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -363,7 +351,7 @@ Process(16, Loop(
     stimulus_b.read(b),
     z.write(a<<b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -390,7 +378,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a>>b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -417,7 +405,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a==b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -444,7 +432,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a!=b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -471,7 +459,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a>=b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -498,7 +486,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a<=b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -524,7 +512,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a>b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -550,7 +538,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a<b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -572,10 +560,8 @@ Process(8,
     )
 )
 s=System(
-    (
         Asserter( expected_response == z),
         #Printer(z),
-    )
 )
 
 simulation_plugin = streams_VHDL.Plugin()
@@ -594,7 +580,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a + stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a + stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -612,7 +598,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a - stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a - stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -630,7 +616,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a * stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a * stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -648,7 +634,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a // stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a // stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -666,7 +652,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a % stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a % stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -684,7 +670,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a & stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a & stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -702,7 +688,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a | stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a | stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -720,7 +706,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a ^ stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a ^ stimulus_b))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -738,7 +724,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a << stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a << stimulus_b)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -756,7 +742,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a >> stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a >> stimulus_b)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -774,7 +760,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a == stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a == stimulus_b)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -792,7 +778,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a != stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a != stimulus_b)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -810,7 +796,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a >= stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a >= stimulus_b)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -828,7 +814,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a <= stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a <= stimulus_b)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -846,7 +832,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a > stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a > stimulus_b)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -864,7 +850,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a < stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a < stimulus_b)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -872,21 +858,21 @@ good = good and simulation_plugin.ghdl_test("streams < test ", stop_cycles=1000,
 if not good and stop_on_fail: exit()
 
 #Test Formatter
-s=System((Asserter(DecimalFormatter(Repeater(10))==Sequence(ord('1'), ord('0'))),))
+s=System(Asserter(DecimalFormatter(Repeater(10))==Sequence(ord('1'), ord('0'))))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("decimal formatter test 1", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
-s=System((Asserter(DecimalFormatter(Repeater(100))==Sequence(49, 48, 48)),))
+s=System(Asserter(DecimalFormatter(Repeater(100))==Sequence(49, 48, 48)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("decimal formatter test 2", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
-s=System((Asserter(DecimalFormatter(Repeater(-128))==Sequence(45, 49, 50, 56)),))
+s=System(Asserter(DecimalFormatter(Repeater(-128))==Sequence(45, 49, 50, 56)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -894,7 +880,7 @@ good = good and simulation_plugin.ghdl_test("decimal formatter test 3", stop_cyc
 if not good and stop_on_fail: exit()
 
 #Test Formatter
-s=System((Asserter(HexFormatter(Repeater(10))==Sequence(48, 120, 97)),))
+s=System(Asserter(HexFormatter(Repeater(10))==Sequence(48, 120, 97)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
@@ -902,7 +888,7 @@ good = good and simulation_plugin.ghdl_test("hex formatter test 1", stop_cycles=
 if not good and stop_on_fail: exit()
 
 #Test Formatter
-s=System((Asserter(HexFormatter(Repeater(-128))==Sequence(45, 48, 120, 56, 48)),))
+s=System(Asserter(HexFormatter(Repeater(-128))==Sequence(45, 48, 120, 56, 48)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)

@@ -27,13 +27,24 @@ def write_process(process, plugin):
 ################################################################################
 #CALCULATE PROCESS PARAMETERS
 ################################################################################
-    states = ["STALL", "EXECUTE", "DIVIDE_0", "DIVIDE_1", "DIVIDE_2"]
+    process_instructions = tuple(process.instructions)
+    #save logic by switching off divider if not used
+    divider_used = False
+    for instruction in process_instructions:
+        if instruction.operation == "OP_DIV" or instruction.operation == "OP_MOD" :
+            divider_used = True
+            break
+
+    if divider_used:
+        states = ["STALL", "EXECUTE", "DIVIDE_0", "DIVIDE_1", "DIVIDE_2", "WAIT_US"]
+    else:
+        states = ["STALL", "EXECUTE", "WAIT_US"]
+
     operations = [
       "OP_ADD", "OP_SUB", "OP_MUL", "OP_DIV", "OP_BAND", "OP_BOR", "OP_BXOR", 
       "OP_SL", "OP_SR", "OP_EQ", "OP_NE", "OP_GT", "OP_GE", "OP_JMP", "OP_JMPF", 
-      "OP_IMM", "OP_MOVE", "WAIT", "OP_MOD"
+      "OP_IMM", "OP_MOVE", "OP_WAIT_US", "OP_MOD"
     ]
-    process_instructions = tuple(process.instructions)
     number_of_operations = len(operations) + len(process.inputs) + len(process.outputs)
     process_id = process.get_identifier()
     process_bits = process.get_bits()
@@ -118,34 +129,6 @@ def write_process(process, plugin):
         )
 
 ################################################################################
-#GENERATE ADDITIONAL INSTRUCTIONS FOR WRITING TIMERS
-################################################################################
-
-
-    timer_instructions = []
-    timer_count = []
-    for timeout, timer in process.timeouts.iteritems():
-        plugin.declarations.extend([
-"  signal TIMER_{0}_{1} : integer range 0 to {2};".format(timer, process_id, timeout-1),
-        ])
-        timer_instructions.extend([
-"          when OP_WAIT_{0}_{1} =>".format(timer, process_id),
-"            STATE_{0} <= COUNT_{1};".format(process_id, timer),
-"            TIMER_{0}_{1} <= {2};".format(timer, process_id, timeout-1),
-"            PC_{0} <= PC_{0};".format(process_id),
-        ])
-        timer_count.extend([
-"      when COUNT_{0} =>".format(timer),
-"        if TIMER_{0}_{1} = 0 then".format(timer, process_id),
-"          STATE_{0} <= EXECUTE;".format(process_id),
-"        else",
-"          TIMER_{0}_{1} <= TIMER_{0}_{1} - 1;".format(timer, process_id),
-"        end if;",
-        ])
-        operations.append("OP_WAIT_{0}".format(timer))
-        states.append("COUNT_{0}".format(timer))
-
-################################################################################
 #GENERATE INSTRUCTION CONSTANTS
 ################################################################################
 
@@ -189,6 +172,91 @@ def write_process(process, plugin):
         )
 
 ################################################################################
+#DIVIDER
+################################################################################
+    divider_fetch = []
+    divider_decode = []
+    divider_logic = []
+    divider_arithmetic = []
+    if divider_used:
+        divider_fetch = [
+"          when OP_DIV_{0} =>".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+"          when OP_MOD_{0} =>".format(process_id),
+"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
+"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+        ]
+        divider_decode = [
+"          when OP_DIV_{0} =>".format(process_id),
+"            MOD_DIV_{0} <= '1';".format(process_id),
+"            A_{0} <= std_logic_vector(abs(signed(REGA)));".format(process_id),
+"            B_{0} <= std_logic_vector(abs(signed(REGB)));".format(process_id),
+"            SIGN_{0} <= REGA({1}) xor REGB({1});".format(process_id, process_bits-1),
+"            DEST := to_integer(unsigned(SRCA_{0}));".format(process_id),
+"            STATE_{0} <= DIVIDE_0;".format(process_id),
+"            PC_{0} <= PC_{0};".format(process_id),
+"          when OP_MOD_{0} =>".format(process_id),
+"            MOD_DIV_{0} <= '0';".format(process_id),
+"            A_{0} <= std_logic_vector(abs(signed(REGA)));".format(process_id),
+"            B_{0} <= std_logic_vector(abs(signed(REGB)));".format(process_id),
+"            SIGN_{0} <= REGA({1});".format(process_id, process_bits-1),
+"            DEST := to_integer(unsigned(SRCA_{0}));".format(process_id),
+"            STATE_{0} <= DIVIDE_0;".format(process_id),
+"            PC_{0} <= PC_{0};".format(process_id),
+        ]
+        divider_logic = [
+"",
+"      when DIVIDE_0 =>",
+"        QUOTIENT_{0} <= (others => '0');".format(process_id),
+"        SHIFTER_{0} <= (others => '0');".format(process_id),
+"        SHIFTER_{0}(0) <= A_{0}({1});".format(process_id, process_bits-1),
+"        A_{0} <= A_{0}({1} downto 0) & '0';".format(process_id, process_bits-2),
+"        COUNT_{0} <= {1};".format(process_id, process_bits-1),
+"        STATE_{0} <= DIVIDE_1;".format(process_id),
+"",
+"      when DIVIDE_1 => --subtract",
+"       --if SHIFTER - B is positive or zero",
+"       if REMAINDER_{0}({1}) = '0' then".format(process_id, process_bits-1),
+"         SHIFTER_{0}({1} downto 1) <= REMAINDER_{0}({2} downto 0);".format(process_id, process_bits-1, process_bits-2),
+"       else",
+"         SHIFTER_{0}({1} downto 1) <= SHIFTER_{0}({2} downto 0);".format(process_id, process_bits-1, process_bits-2),
+"       end if;",
+"       SHIFTER_{0}(0) <= A_{0}({1});".format(process_id, process_bits-1),
+"       A_{0} <= A_{0}({1} downto 0) & '0';".format(process_id, process_bits-2),
+"       QUOTIENT_{0} <= QUOTIENT_{0}({2} downto 0) & not(REMAINDER_{0}({1}));".format(process_id, process_bits-1, process_bits-2),
+"       if COUNT_{0} = 0 then".format(process_id),
+"         STATE_{0} <= DIVIDE_2;".format(process_id),
+"       else",
+"         COUNT_{0} <= COUNT_{0} - 1;".format(process_id),
+"       end if;",
+"",
+"     when DIVIDE_2 =>",
+"      if MOD_DIV_{0} = '1' then --if division".format(process_id),
+"        if SIGN_{0} = '1' then --if negative".format(process_id),
+"          REGISTERS_{0}(DEST) <= std_logic_vector(-signed(QUOTIENT_{0}));".format(process_id),
+"        else",
+"          REGISTERS_{0}(DEST) <= QUOTIENT_{0};".format(process_id),
+"        end if;",
+"      else",
+"        MODULO := unsigned(SHIFTER_{0})/2;".format(process_id),
+"        if SIGN_{0} = '1' then --if negative".format(process_id),
+"          REGISTERS_{0}(DEST) <= std_logic_vector(0-MODULO);".format(process_id),
+"        else",
+"          REGISTERS_{0}(DEST) <= std_logic_vector(  MODULO);".format(process_id),
+"        end if;",
+"      end if;",
+"      STATE_{0} <= EXECUTE;".format(process_id),
+"      PC_{0} <= PC_{0} + 1;".format(process_id),
+        ]
+        divider_arithmetic = [
+"",
+"  --subtractor",
+"  REMAINDER_{0} <= std_logic_vector(unsigned(SHIFTER_{0}) - resize(unsigned(B_{0}), {1}));".format(process_id, process_bits),
+        ]
+
+
+################################################################################
 #GENERATE PROCESS DECLARATIONS
 ################################################################################
 
@@ -214,8 +282,6 @@ def write_process(process, plugin):
 "  signal INSTRUCTIONS_{0} : INSTRUCTIONS_TYPE_{0} := (\n{1}".format(process_id, '\n'.join(instructions)),
 "  signal MOD_DIV_{0}      : std_logic;".format(process_id),
     ])
-    
-
 
 ################################################################################
 #GENERATE PROCESS DEFINITIONS
@@ -304,12 +370,7 @@ def write_process(process, plugin):
 "            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
 "          when OP_IMM_{0}  => ".format(process_id),
 "            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
-"          when OP_DIV_{0} =>".format(process_id),
-"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
-"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
-"          when OP_MOD_{0} =>".format(process_id),
-"            REGA := REGISTERS_{0}(to_integer(unsigned(SRCA_{0})));".format(process_id),
-"            REGB := REGISTERS_{0}(to_integer(unsigned(SRCB_{0})));".format(process_id),
+'\n'.join(divider_fetch),
 '\n'.join(output_instructions_fetch),
 "          when others => null;",
 "        end case;",
@@ -374,22 +435,6 @@ def write_process(process, plugin):
 "          when OP_IMM_{0}  => ".format(process_id),
 "            RESULT := IMMEDIATE_{0};".format(process_id),
 "            REGISTERS_{0}(to_integer(unsigned(SRCA_{0}))) <= RESULT;".format(process_id),
-"          when OP_DIV_{0} =>".format(process_id),
-"            MOD_DIV_{0} <= '1';".format(process_id),
-"            A_{0} <= std_logic_vector(abs(signed(REGA)));".format(process_id),
-"            B_{0} <= std_logic_vector(abs(signed(REGB)));".format(process_id),
-"            SIGN_{0} <= REGA({1}) xor REGB({1});".format(process_id, process_bits-1),
-"            DEST := to_integer(unsigned(SRCA_{0}));".format(process_id),
-"            STATE_{0} <= DIVIDE_0;".format(process_id),
-"            PC_{0} <= PC_{0};".format(process_id),
-"          when OP_MOD_{0} =>".format(process_id),
-"            MOD_DIV_{0} <= '0';".format(process_id),
-"            A_{0} <= std_logic_vector(abs(signed(REGA)));".format(process_id),
-"            B_{0} <= std_logic_vector(abs(signed(REGB)));".format(process_id),
-"            SIGN_{0} <= REGA({1});".format(process_id, process_bits-1),
-"            DEST := to_integer(unsigned(SRCA_{0}));".format(process_id),
-"            STATE_{0} <= DIVIDE_0;".format(process_id),
-"            PC_{0} <= PC_{0};".format(process_id),
 "          when OP_JMP_{0} =>".format(process_id),
 "            STATE_{0} <= STALL;".format(process_id),
 "            PC_{0} <= resize(unsigned(IMMEDIATE_{0}), {1});".format(process_id, instruction_address_bits),
@@ -398,9 +443,12 @@ def write_process(process, plugin):
 "              STATE_{0} <= STALL;".format(process_id),
 "              PC_{0} <= resize(unsigned(IMMEDIATE_{0}), {1});".format(process_id, instruction_address_bits),
 "            end if;".format(process_id),
+"          when OP_WAIT_US_{0} =>".format(process_id),
+"            STATE_{0} <= WAIT_US;".format(process_id),
+"            PC_{0} <= PC_{0};".format(process_id),
+'\n'.join(divider_decode),
 '\n'.join(output_instructions),
 '\n'.join(input_instructions),
-'\n'.join(timer_instructions),
 "          when others => null;",
 "        end case;",
 "",
@@ -410,50 +458,14 @@ def write_process(process, plugin):
 "        else",
 "          ZERO_{0} <= '0';".format(process_id),
 "        end if;",
+'\n'.join(divider_logic),
 '\n'.join(read_inputs),
 '\n'.join(write_outputs),
-'\n'.join(timer_count),
-"      when DIVIDE_0 =>",
-"        QUOTIENT_{0} <= (others => '0');".format(process_id),
-"        SHIFTER_{0} <= (others => '0');".format(process_id),
-"        SHIFTER_{0}(0) <= A_{0}({1});".format(process_id, process_bits-1),
-"        A_{0} <= A_{0}({1} downto 0) & '0';".format(process_id, process_bits-2),
-"        COUNT_{0} <= {1};".format(process_id, process_bits-1),
-"        STATE_{0} <= DIVIDE_1;".format(process_id),
-"",
-"      when DIVIDE_1 => --subtract",
-"       --if SHIFTER - B is positive or zero",
-"       if REMAINDER_{0}({1}) = '0' then".format(process_id, process_bits-1),
-"         SHIFTER_{0}({1} downto 1) <= REMAINDER_{0}({2} downto 0);".format(process_id, process_bits-1, process_bits-2),
-"       else",
-"         SHIFTER_{0}({1} downto 1) <= SHIFTER_{0}({2} downto 0);".format(process_id, process_bits-1, process_bits-2),
-"       end if;",
-"       SHIFTER_{0}(0) <= A_{0}({1});".format(process_id, process_bits-1),
-"       A_{0} <= A_{0}({1} downto 0) & '0';".format(process_id, process_bits-2),
-"       QUOTIENT_{0} <= QUOTIENT_{0}({2} downto 0) & not(REMAINDER_{0}({1}));".format(process_id, process_bits-1, process_bits-2),
-"       if COUNT_{0} = 0 then".format(process_id),
-"         STATE_{0} <= DIVIDE_2;".format(process_id),
-"       else",
-"         COUNT_{0} <= COUNT_{0} - 1;".format(process_id),
-"       end if;",
-"",
-"     when DIVIDE_2 =>",
-"      if MOD_DIV_{0} = '1' then --if division".format(process_id),
-"        if SIGN_{0} = '1' then --if negative".format(process_id),
-"          REGISTERS_{0}(DEST) <= std_logic_vector(-signed(QUOTIENT_{0}));".format(process_id),
-"        else",
-"          REGISTERS_{0}(DEST) <= QUOTIENT_{0};".format(process_id),
-"        end if;",
-"      else",
-"        MODULO := unsigned(SHIFTER_{0})/2;".format(process_id),
-"        if SIGN_{0} = '1' then --if negative".format(process_id),
-"          REGISTERS_{0}(DEST) <= std_logic_vector(0-MODULO);".format(process_id),
-"        else",
-"          REGISTERS_{0}(DEST) <= std_logic_vector(  MODULO);".format(process_id),
-"        end if;",
-"      end if;",
-"      STATE_{0} <= EXECUTE;".format(process_id),
-"      PC_{0} <= PC_{0} + 1;".format(process_id),
+"      when WAIT_US =>",
+"        if TIMER_1uS = '1'then".format(process_id),
+"          PC_{0} <= PC_{0} + 1;".format(process_id),
+"          STATE_{0} <= EXECUTE;".format(process_id),
+"        end if;".format(process_id),
 "    end case;",
 "",
 "    if RST = '1' then",
@@ -463,8 +475,6 @@ def write_process(process, plugin):
 "    end if;",
 "  end process;",
 "",
-"  --subtractor",
-"  REMAINDER_{0} <= std_logic_vector(unsigned(SHIFTER_{0}) - resize(unsigned(B_{0}), {1}));".format(process_id, process_bits),
-"",
+"\n".join(divider_arithmetic),
     ])
 

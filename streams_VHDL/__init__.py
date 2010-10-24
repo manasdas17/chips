@@ -46,12 +46,14 @@ class Plugin:
     def __init__(
             self, 
             project_name = "project",
+            clock_frequency = 50000000,
             internal_clock = True,
             internal_reset = True,
             ):
         self.project_name = project_name
         self.internal_clock = internal_clock
         self.internal_reset = internal_reset
+        self.clock_frequency = 50000000
         self.declarations = []
         self.definitions = []
         self.ports = []
@@ -298,7 +300,6 @@ class Plugin:
         print "...Pass"
         return True
 
-
     def xilinx_build(self, part="xc5vlx30-3-ff676", synth=True, implement=True, bitgen=True):
 
         #enter project directory
@@ -314,7 +315,7 @@ class Plugin:
         os.chdir("xilinx")
 
         #regenerate vhdl file
-        self.write_system()
+        self.write_system(None)
 
         #generate xst project file
         project = open(self.project_name+".prj", 'w')

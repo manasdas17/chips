@@ -35,8 +35,6 @@ class Process(Unique):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         self.bits = int(bits)
-        self.instructions = tuple(Block(instructions))
-        self.instruction_memory = dict(enumerate(self.instructions))
         self.variables = []
         self.inputs = []
         self.outputs = []
@@ -54,6 +52,8 @@ class Process(Unique):
             self.transmitters[i.get_identifier()] = i
         for i in self.outputs:
             self.receivers[i.get_identifier()] = i
+        self.instructions = tuple(Block(instructions))
+        self.instruction_memory = dict(enumerate(self.instructions))
 
     def set_system(self, system):
         if self not in system.processes:

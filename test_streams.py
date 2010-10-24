@@ -20,7 +20,7 @@ Process(8,
     out.write(a+b),
 )
 
-system = System((Asserter(out==0),))
+system = System(Asserter(out==0))
 good = system.test("test sizing", 100)
 if not good and stop_on_fail: exit()
 
@@ -28,11 +28,7 @@ if not good and stop_on_fail: exit()
 a = Stimulus(8)
 a = Stimulus(8)
 
-s=System(
-        sinks=(
-            Asserter(a==Sequence(*range(100))),
-        )
-)
+s=System(Asserter(a==Sequence(*range(100))))
 
 a.set_simulation_data(range(100))
 
@@ -42,11 +38,7 @@ if not good and stop_on_fail: exit()
 #test response
 a = Response(Sequence(*range(100)))
 
-s=System(
-        sinks=(
-           a,
-        )
-)
+s=System(a)
 
 s.test("response test ", stop_cycles=100)
 for response, expected in zip(a.get_simulation_data(), range(100)):
@@ -83,11 +75,7 @@ Process(10, #gives integer range -512 to 512
 )
 
 #Join the elements together into a system
-s=System(
-        sinks=(
-            Asserter(outstream==Sequence(0, 1, 2, 3)),
-        )
-)
+s=System(Asserter(outstream==Sequence(0, 1, 2, 3)))
 
 #simulate in python
 good = s.test("feedback test ", stop_cycles=1000)
@@ -115,7 +103,7 @@ Process(8,
         )
     )
 )
-s=System(( Asserter(expected_response == z),))
+s=System( Asserter(expected_response == z))
 
 #simulate in python
 good = good and s.test("evaluate test ", stop_cycles=1000)
@@ -141,7 +129,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a+b)
 ))
-s=System(( Asserter(expected_response == z),))
+s=System( Asserter(expected_response == z))
 
 #simulate in python
 good = good and s.test("integer + test ", stop_cycles=1000)
@@ -167,7 +155,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a-b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 #simulate in python
 good = good and s.test("integer - test ", stop_cycles=1000)
@@ -193,7 +181,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a*b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer * test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -218,7 +206,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a//b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer // test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -243,7 +231,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a%b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer % test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -268,7 +256,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a&b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer & test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -293,7 +281,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a|b)
 ))
-s=System( ( Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer | test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -318,7 +306,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a^b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer ^ test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -343,7 +331,7 @@ Process(16, Loop(
     stimulus_b.read(b),
     z.write(a<<b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer << test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -368,7 +356,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a>>b)
 ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer >> test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -393,7 +381,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a==b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer == test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -418,7 +406,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a!=b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer != test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -443,7 +431,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a>=b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer >= test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -468,7 +456,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a<=b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer <= test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -492,7 +480,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a>b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer > test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -516,7 +504,7 @@ Process(8, Loop(
     stimulus_b.read(b),
     z.write(a<b)
     ))
-s=System((Asserter(expected_response == z),))
+s=System(Asserter(expected_response == z))
 
 good = good and s.test("integer < test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -536,10 +524,8 @@ Process(8,
     )
 )
 s=System(
-    (
         Asserter( expected_response == z),
         #Printer(z),
-    )
 )
 
 good = good and s.test("chain test ", stop_cycles=1000)
@@ -555,7 +541,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System(( Asserter(expected_response==stimulus_a+stimulus_b),))
+s=System( Asserter(expected_response==stimulus_a+stimulus_b))
 
 good = good and s.test("streams + test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -571,7 +557,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a - stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a - stimulus_b))
 
 good = good and s.test("streams - test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -587,7 +573,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a * stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a * stimulus_b))
 
 good = good and s.test("streams * test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -603,7 +589,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a // stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a // stimulus_b))
 
 good = good and s.test("streams // test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -619,7 +605,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a % stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a % stimulus_b))
 
 good = good and s.test("streams % test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -635,7 +621,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a & stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a & stimulus_b))
 
 good = good and s.test("streams & test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -651,7 +637,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a | stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a | stimulus_b))
 
 good = good and s.test("streams | test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -667,7 +653,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == stimulus_a ^ stimulus_b),))
+s=System(Asserter(expected_response == stimulus_a ^ stimulus_b))
 
 good = good and s.test("streams ^ test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -683,7 +669,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a << stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a << stimulus_b)))
 
 good = good and s.test("streams << test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -699,7 +685,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a >> stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a >> stimulus_b)))
 
 good = good and s.test("streams >> test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -715,7 +701,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a == stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a == stimulus_b)))
 
 good = good and s.test("streams == test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -731,7 +717,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a != stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a != stimulus_b)))
 
 good = good and s.test("streams != test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -747,7 +733,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a >= stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a >= stimulus_b)))
 
 good = good and s.test("streams >= test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -763,7 +749,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a <= stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a <= stimulus_b)))
 
 good = good and s.test("streams <= test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -779,7 +765,7 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a > stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a > stimulus_b)))
 
 good = good and s.test("streams > test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
@@ -795,19 +781,19 @@ for i in range(-8, 8):
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
-s=System((Asserter(expected_response == (stimulus_a < stimulus_b)),))
+s=System(Asserter(expected_response == (stimulus_a < stimulus_b)))
 
 good = good and s.test("streams < test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
 #Test DecimalFormater
-s=System((Asserter(DecimalFormatter(Repeater(10))==Sequence(ord('1'), ord('0'))),))
+s=System(Asserter(DecimalFormatter(Repeater(10))==Sequence(ord('1'), ord('0'))))
 
 good = good and s.test("decimal formatter test ", stop_cycles=2000)
 if not good and stop_on_fail: exit()
 
 #Test HexFormater
-s=System((Asserter(HexFormatter(Repeater(10))==Sequence(ord('a'))),))
+s=System(Asserter(HexFormatter(Repeater(10))==Sequence(ord('a'))))
 
 good = good and s.test("hex formatter test ", stop_cycles=2000)
 if not good and stop_on_fail: exit()

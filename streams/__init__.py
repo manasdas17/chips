@@ -44,7 +44,7 @@ Break = instruction.Break
 Continue = instruction.Continue
 If = instruction.If
 Block = instruction.Block
-Wait = instruction.Wait
+WaitUs = instruction.WaitUs
 Evaluate = instruction.Evaluate
 Value = instruction.Value
 
@@ -68,3 +68,52 @@ def Until(condition, *instructions):
 def DoUntil(condition, *instructions):
     loop_instructions = instructions+(If(condition!=0, Break()),)
     return Loop(*loop_instructions)
+        
+class PrintDecimal(instruction.UserDefinedStatement):
+
+    def __init__(self, stream, exp, minimum_number_of_digits=None):
+        self.stream = stream
+        self.exp = exp
+        self.variables = {}
+
+        self.minimum_number_of_digits = minimum_number_of_digits
+
+    def on_execute(self):
+
+        #Need to reference different variables in different processes
+        if id(self.process) in self.variables:
+            leading, decade, digit, count = self.variables[id(self.process)]
+        else:
+            decade = Variable(0)
+            digit = Variable(0)
+            count = Variable(0)
+            leading = Variable(0)
+            self.variables[id(self.process)] = leading, decade, digit, count
+
+        #calculate number of digits
+        bits = self.process.bits
+        num_digits = len(str(2**(bits-1)))
+        initial_decade = 10**(num_digits-1)
+
+        #decade of minumum number of digits
+        if self.minimum_number_of_digits is not None:
+            minimum_decade = 10**(self.minimum_number_of_digits-1)
+        else:
+            minimum_decade = 0
+            
+        return (
+            count.set(self.exp),
+            decade.set(initial_decade),
+            leading.set(0),
+            While(0 < decade,
+                digit.set(0),
+                While(count >= decade,
+                    count.set(count-decade),
+                    digit.set(digit+1),
+                ),
+                If(digit!=0 | decade==minimum_decade, leading.set(-1)),
+                If(leading, self.stream.write(0x30|digit)),
+                decade.set(decade//10),
+            ),
+            self.stream.write(0x0),
+        )

@@ -145,6 +145,32 @@ class Expression:
     def __rle__(other, self): return Binary(constantize(other), self, 'OP_GE')
 
 ################################################################################
+class UserDefinedExpression(Expression):
+
+    def set_process(self, process):
+        self.process = process
+        self.instructions = self.on_evaluate()
+        for i in self.instructions:
+            i.set_process(process)
+        
+    def on_evaluate(self):
+        """Users should override this function
+        it should return an Expression object"""
+        return Constant(0)
+
+    def initialise(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        instructions =  []
+        for instruction in self.instructions:
+            instructions.extend(instruction.initialise(rmap))
+        return instructions
+
+    def comp(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        instructions = []
+        for instruction in self.instructions:
+            instructions.extend(instruction.comp(rmap))
+        return instructions
 
 class Evaluate(Expression):
 
@@ -507,14 +533,13 @@ class Break(Statement):
 
 ################################################################################
 
-class Wait(Statement):
-    def __init__(self, clock_cycles):
-        self.clock_cycles = int(clock_cycles)
+class WaitUs(Statement):
+    def __init__(self):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
 
     def __repr__(self):
-        return "Wait({0})".format(self.clock_cycles)
+        return "WaitUs({0})".format(self.clock_cycles)
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""
@@ -522,16 +547,10 @@ class Wait(Statement):
 
     def set_process(self, process):
         self.process=process
-        if self.clock_cycles in process.timeouts:
-            self.timer_number = process.timeouts[self.clock_cycles]
-        else:
-            self.timer_number = process.timer_number
-            process.timer_number += 1
-            process.timeouts[self.clock_cycles]=self.timer_number
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return [Instruction("OP_WAIT_{0}".format(self.timer_number), lineno=self.lineno, filename=self.filename)]
+        return [Instruction("OP_WAIT_US", lineno=self.lineno, filename=self.filename)]
 
 ################################################################################
 
@@ -557,6 +576,32 @@ class Continue(Statement):
         return [Instruction("OP_JMP", immediate = start_of_loop, lineno=self.lineno, filename=self.filename)]
 
 ################################################################################
+class UserDefinedStatement(Statement):
+
+    def set_process(self, process):
+        self.process = process
+        self.instructions = self.on_execute()
+        for i in self.instructions:
+            i.set_process(process)
+        
+    def on_execute(self):
+        """Users should override this function
+        it should return a statement object"""
+        return Block(tuple())
+
+    def initialise(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        instructions =  []
+        for instruction in self.instructions:
+            instructions.extend(instruction.initialise(rmap))
+        return instructions
+
+    def comp(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        instructions = []
+        for instruction in self.instructions:
+            instructions.extend(instruction.comp(rmap))
+        return instructions
 
 class Block(Statement):
 
