@@ -27,10 +27,12 @@ import ascii_printer
 import asserter
 import serial_out
 import response
+import svga
 
 #combinators
 import binary
 import lookup
+import decoupler
 import resizer
 import decimal_formatter
 import hex_formatter
@@ -57,6 +59,7 @@ class Plugin:
         self.declarations = []
         self.definitions = []
         self.ports = []
+        self.dependencies = []
         self.processes = []
 
     #sources
@@ -109,6 +112,13 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
+    def write_svga(self, stream): 
+        dependencies, ports, declarations, definitions = svga.write(stream)
+        self.dependencies.extend(dependencies)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
     def write_decimal_printer(self, stream): 
         ports, declarations, definitions = decimal_printer.write(stream)
         self.ports.extend(ports)
@@ -131,6 +141,12 @@ class Plugin:
 
     def write_lookup(self, stream): 
         ports, declarations, definitions = lookup.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_decoupler(self, stream): 
+        ports, declarations, definitions = decoupler.write(stream)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
@@ -164,6 +180,7 @@ class Plugin:
                 'w'
         )
         system.write(
+                self.dependencies, 
                 self.ports, 
                 self.declarations, 
                 self.definitions, 

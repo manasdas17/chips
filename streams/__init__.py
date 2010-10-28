@@ -15,6 +15,7 @@ Process = process.Process
 
 #COMBINATORS
 Lookup = streams.Lookup
+Decoupler = streams.Decoupler
 Resizer = streams.Resizer
 DecimalFormatter = streams.DecimalFormatter
 HexFormatter = streams.HexFormatter
@@ -30,6 +31,7 @@ Stimulus = streams.Stimulus
 Response = streams.Response
 OutPort = streams.OutPort
 SerialOut = streams.SerialOut
+SVGA = streams.SVGA
 DecimalPrinter = streams.DecimalPrinter
 HexPrinter = streams.HexPrinter
 AsciiPrinter = streams.AsciiPrinter
@@ -71,24 +73,25 @@ def DoUntil(condition, *instructions):
         
 class PrintDecimal(instruction.UserDefinedStatement):
 
+    variables={}
+
     def __init__(self, stream, exp, minimum_number_of_digits=None):
         self.stream = stream
         self.exp = exp
-        self.variables = {}
 
         self.minimum_number_of_digits = minimum_number_of_digits
 
     def on_execute(self):
 
         #Need to reference different variables in different processes
-        if id(self.process) in self.variables:
-            leading, decade, digit, count = self.variables[id(self.process)]
+        if id(self.process) in PrintDecimal.variables:
+            leading, decade, digit, count = PrintDecimal.variables[id(self.process)]
         else:
             decade = Variable(0)
             digit = Variable(0)
             count = Variable(0)
             leading = Variable(0)
-            self.variables[id(self.process)] = leading, decade, digit, count
+            PrintDecimal.variables[id(self.process)] = leading, decade, digit, count
 
         #calculate number of digits
         bits = self.process.bits
@@ -116,4 +119,42 @@ class PrintDecimal(instruction.UserDefinedStatement):
                 decade.set(decade//10),
             ),
             self.stream.write(0x0),
+        )
+
+class DecimalScan(instruction.UserDefinedStatement):
+
+    variables={}
+
+    def __init__(self, stream, variable):
+        self.stream = stream
+        self.variable = variable
+
+    def on_execute(self):
+
+        #Need to reference different variables in different processes
+        if id(self.process) in DecimalScan.variables:
+            digit, count = DecimalScan.variables[id(self.process)]
+        else:
+            digit = Variable(0)
+            count = Variable(0)
+            DecimalScan.variables[id(self.process)] = digit, count
+
+        return (
+            #read first digit
+            self.stream.read(digit),
+            While((digit < 0x30) | (digit > 0x39),
+                self.stream.read(digit),
+            ),
+            count.set(digit & 0xf),
+            #read other digits
+            Loop(
+                self.stream.read(digit),
+                If((digit >= 0x30) & (digit <= 0x39),
+                    count.set(count*10),
+                    count.set(count+(digit & 0xf)),
+                ).ElsIf(1, 
+                    Break(),
+                ),
+            ),
+            self.variable.set(count),
         )

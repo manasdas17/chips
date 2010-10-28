@@ -17,11 +17,12 @@ from collections import deque
 from process import Process
 from common import how_many_bits, Unique
 from instruction import Write, Read
-from exceptions import StreamsConstructionError
+from exceptions import StreamsConstructionError, SimulationError
 
 def resize(val, bits):
+    sign_bit = (2**(bits-1))
     mask_bits = (2**(bits-1))-1
-    return val | ~mask_bits if val < 0 else val & mask_bits
+    return val | ~mask_bits if val & sign_bit else val & mask_bits
 
 def sign(x):
     return -1 if x < 0 else 1
@@ -563,6 +564,41 @@ class AsciiPrinter(Unique):
     def __repr__(self):
         return "AsciiPrinter()"
 
+class SVGA(Unique):
+
+    def __init__(self, a):
+        self.a=a
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        assert a.get_bits()==8
+        Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def set_system(self, system):
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
+        self.system = system
+        system.streams.append(self)
+        self.a.set_system(system)
+
+    def get_bits(self): 
+        return 8
+
+    def write_code(self, plugin): 
+        plugin.write_svga(self)
+
+    def reset(self):
+        pass
+
+    def execute(self):
+        self.a.get()
+
+    def __repr__(self):
+        return "SVGA({0})".format(self.s)
+
 class SerialOut(Unique):
 
     def __init__(self, a, name="TX", clock_rate=50000000, baud_rate=115200):
@@ -669,7 +705,7 @@ class  Binary(Stream, Unique):
         'and' : lambda x, y : max((x, y)),
         'or'  : lambda x, y : max((x, y)),
         'xor' : lambda x, y : max((x, y)),
-        'sl'  : lambda x, y : x+((2**(y-1))-1),
+        'sl'  : lambda x, y : x,
         'sr'  : lambda x, y : x,
         'eq'  : lambda x, y : 1,
         'ne'  : lambda x, y : 1,
@@ -698,7 +734,7 @@ class  Binary(Stream, Unique):
         val = self.binary_function(self.stored_a, self.stored_b)
         self.stored_a = None
         self.stored_b = None
-        return val
+        return resize(val, self.get_bits())
 
 class Lookup(Stream, Unique):
 
@@ -726,7 +762,40 @@ class Lookup(Stream, Unique):
     def get(self):
         val = self.a.get()
         if val is None: return None
+        if resize(val, self.a.get_bits()) > len(self.args)-1:
+            print self.filename, 
+            print self.lineno
+            print val
+            raise SimulationError("lookup index too large", self.filename, self.lineno)
+        if resize(val, self.a.get_bits()) < 0:
+            print self.filename, 
+            print self.lineno
+            raise SimulationError("negative lookup index", self.filename, self.lineno)
         return self.args[resize(val, self.a.get_bits())]
+
+class Decoupler(Stream, Unique):
+
+    def __init__(self, source):
+        self.a = source
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def get_bits(self): 
+        return self.a.get_bits()
+
+    def write_code(self, plugin): 
+        plugin.write_decoupler(self)
+
+    def reset(self):
+        self.a.reset()
+
+    def get(self):
+        return self.a.get()
 
 class Resizer(Stream, Unique):
 

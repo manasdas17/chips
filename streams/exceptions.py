@@ -9,3 +9,9 @@ class StreamsProcessError(Exception):
 
     def __init__(self, message, filename, lineno):
         self.message = message + "\nfile : {0}, line : {1}".format(filename, lineno)
+
+class SimulationError(Exception):
+    """Error in definition of process instructions"""
+
+    def __init__(self, message, filename, lineno):
+        self.message = message + "\nfile : {0}, line : {1}".format(filename, lineno)

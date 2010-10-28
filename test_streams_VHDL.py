@@ -4,6 +4,11 @@ from streams import *
 import streams_VHDL 
 stop_on_fail = True
 
+def resize(val, bits):
+    sign_bit = (2**(bits-1))
+    mask_bits = (2**(bits-1))-1
+    return val | ~mask_bits if val & sign_bit else val & mask_bits
+
 def sign(x):
     return -1 if x < 0 else 1
 
@@ -83,7 +88,7 @@ s=System(Asserter(outstream==Sequence(0, 1, 2, 3)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("feedback test ", stop_cycles=10000, generate_wave=True)
+good = good and simulation_plugin.ghdl_test("feedback test ", stop_cycles=100, generate_wave=True)
 if not good and stop_on_fail: exit()
 
 #Test Evaluate
@@ -719,7 +724,7 @@ for i in range(-8, 8):
     for j in range(0, 8):
         a.append(i)
         b.append(j)
-        z.append(i<<j)
+        z.append(resize(i<<j,4))
 
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)
