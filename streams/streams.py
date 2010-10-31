@@ -11,6 +11,7 @@ __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
 from math import log
+from numpy import zeros
 from inspect import currentframe, getsourcefile
 from collections import deque
 
@@ -45,13 +46,14 @@ class System:
             Arguments:
               sinks              A sequence object listing all data.receivers"""
 
-       self.sinks = args
+       self.sinks = list(args)
        self.filename = getsourcefile(currentframe().f_back)
        self.lineno = currentframe().f_back.f_lineno
 
        #begin system enumeration process
        self.streams = []
        self.processes = []
+       self.executables = []
        for i in self.sinks:
            i.set_system(self)
 
@@ -71,6 +73,8 @@ class System:
     def execute(self, steps=1):
         for i in range(steps):
             for i in self.processes:
+                i.execute()
+            for i in self.executables:
                 i.execute()
             for i in self.sinks:
                 i.execute()
@@ -139,6 +143,7 @@ class Stream:
         system.streams.append(self)
         if hasattr(self, "a"): self.a.set_system(system)
         if hasattr(self, "b"): self.b.set_system(system)
+        if hasattr(self, "c"): self.c.set_system(system)
 
 #streams sources
 ################################################################################
@@ -290,11 +295,11 @@ class Output(Stream, Unique):
         Unique.__init__(self)
 
     def set_system(self, system):
-        Stream.set_system(self, system)
         if hasattr(self.process, "system"):
             if self.process.system is not system:
                 raise StreamsConstructionError("process is allready part of another system", process.filename, process.lineno)
         self.process.set_system(system)
+        Stream.set_system(self, system)
 
     def set_process(self, process):
         if hasattr(self, "process"):
@@ -453,42 +458,7 @@ class Asserter(Unique):
         "  asserter()", 
         ])
 
-class DecimalPrinter(Unique):
-
-    def __init__(self, a):
-        self.filename = getsourcefile(currentframe().f_back)
-        self.lineno = currentframe().f_back.f_lineno
-        self.a = a
-        Unique.__init__(self)
-        if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
-        else:
-            self.a.receiver = self
-    def set_system(self, system):
-        if hasattr(self, "system"):
-            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
-        self.system = system
-        system.streams.append(self)
-        self.a.set_system(system)
-
-    def get_bits(self): 
-        return self.a.get_bits()
-
-    def write_code(self, plugin): 
-        plugin.write_decimal_printer(self)
-
-    def reset(self):
-        self.a.reset()
-
-    def execute(self):
-        val = self.a.get()
-        if val is not None:
-            print val
-
-    def __repr__(self):
-        return "DecimalPrinter"
-
-class HexPrinter(Unique):
+class Console(Unique):
 
     def __init__(self, a):
         self.filename = getsourcefile(currentframe().f_back)
@@ -511,43 +481,7 @@ class HexPrinter(Unique):
         return self.a.get_bits()
 
     def write_code(self, plugin): 
-        plugin.write_hex_printer(self)
-
-    def reset(self):
-        pass
-
-    def execute(self):
-        val = self.a.get()
-        if val is not None:
-            print hex(val)[2:]
-
-    def __repr__(self):
-        return "HexPrinter()"
-
-class AsciiPrinter(Unique):
-
-    def __init__(self, a):
-        self.filename = getsourcefile(currentframe().f_back)
-        self.lineno = currentframe().f_back.f_lineno
-        self.a = a
-        Unique.__init__(self)
-        if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
-        else:
-            self.a.receiver = self
-
-    def set_system(self, system):
-        if hasattr(self, "system"):
-            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
-        self.system = system
-        system.streams.append(self)
-        self.a.set_system(system)
-
-    def get_bits(self): 
-        return self.a.get_bits()
-
-    def write_code(self, plugin): 
-        plugin.write_ascii_printer(self)
+        plugin.write_console(self)
 
     def reset(self):
         self.string = []
@@ -556,13 +490,13 @@ class AsciiPrinter(Unique):
         val = self.a.get()
         if val is not None:
             if val == 0:
-                print ''.join(self.string)
+                print ''.join(self.string[:-1])
                 self.string = []
             else:
                 self.string.append(chr(val&0xff))
 
     def __repr__(self):
-        return "AsciiPrinter()"
+        return "Console()"
 
 class SVGA(Unique):
 
@@ -773,6 +707,66 @@ class Lookup(Stream, Unique):
             raise SimulationError("negative lookup index", self.filename, self.lineno)
         return self.args[resize(val, self.a.get_bits())]
 
+class Array(Stream, Unique):
+
+    def __init__(self, address_in, data_in, address_out, depth):
+        self.a = address_in
+        self.b = data_in
+        self.c = address_out
+        self.depth = depth
+        self.memory = zeros(depth, dtype="int32")
+        self.stored_a = None
+        self.stored_b = None
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("address_in allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+        if hasattr(self.b, "receiver"):
+            raise StreamsConstructionError("data_in allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+        if hasattr(self.c, "receiver"):
+            raise StreamsConstructionError("address_out allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def set_system(self, system): # a RAM behaves a a sink for data and address in
+        system.executables.append(self)
+        Stream.set_system(self, system)
+
+    def get_bits(self): 
+        return self.b.get_bits()
+
+    def write_code(self, plugin): 
+        plugin.write_array(self)
+
+    def reset(self):
+        self.a.reset()
+        self.b.reset()
+        self.c.reset()
+
+    def execute(self):
+        if self.stored_a is None:
+            self.stored_a = self.a.get()
+        if self.stored_b is None:
+            self.stored_b = self.b.get()
+        if self.stored_a is None:
+            return None
+        if self.stored_b is None:
+            return None
+        self.memory[self.stored_a] = self.stored_b
+        self.stored_a = None
+        self.stored_b = None
+
+    def get(self):
+        address_out = self.c.get()
+        if address_out is None:
+            return None
+        return self.memory[address_out]
+
 class Decoupler(Stream, Unique):
 
     def __init__(self, source):
@@ -824,7 +818,7 @@ class Resizer(Stream, Unique):
         if val is None: return None
         return resize(val, self.get_bits)
 
-class DecimalFormatter(Stream, Unique):
+class Printer(Stream, Unique):
 
     def __init__(self, source):
         self.a = source
@@ -843,7 +837,7 @@ class DecimalFormatter(Stream, Unique):
         return len(str(2**(self.a.get_bits()-1)))
 
     def write_code(self, plugin): 
-        plugin.write_decimal_formatter(self)
+        plugin.write_printer(self)
 
     def reset(self):
         self.string = []
@@ -854,10 +848,10 @@ class DecimalFormatter(Stream, Unique):
         else:
             val = self.a.get()
             if val is None: return None
-            self.string = deque(str(val))
+            self.string = deque(str(val)+'\n')
             return ord(self.string.popleft())
 
-class HexFormatter(Stream, Unique):
+class HexPrinter(Stream, Unique):
 
     def __init__(self, source):
         self.a = source
@@ -873,10 +867,12 @@ class HexFormatter(Stream, Unique):
         return 8
 
     def get_num_digits(self):
-        return int((self.a.get_bits()-1)/4.0)
+        maxval = 2**(self.a.get_bits()-1)
+        digits = len(hex(maxval)[2:])
+        return digits
 
     def write_code(self, plugin): 
-        plugin.write_hex_formatter(self)
+        plugin.write_hex_printer(self)
 
     def reset(self):
         self.string = []

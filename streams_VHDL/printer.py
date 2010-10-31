@@ -1,6 +1,6 @@
 from __future__ import division
 
-"""VHDL generation of the Formater primitive"""
+"""VHDL generation of the Printer primitive"""
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -27,11 +27,13 @@ def write(stream):
     ]
 
     declarations = [
+    "  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
+    "  --STREAM {0} Printer({1})".format(identifier, identifier_a),
     "  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(identifier, bits - 1),
     "  signal STREAM_{0}_STB : std_logic;".format(identifier),
     "  signal STREAM_{0}_ACK : std_logic;".format(identifier),
     "  signal SIGN_{0}       : std_logic;".format(identifier),
-    "  signal STATE_{0}      : FORMATER_STATE_TYPE;".format(identifier),
+    "  signal STATE_{0}      : PRINTER_STATE_TYPE;".format(identifier),
     "  type SHIFTER_{0}_TYPE is array (0 to {1}) of std_logic_vector(3 downto 0);".format(identifier, num_digits - 1),
     "  signal BINARY_{0}     : std_logic_vector({1} downto 0);".format(identifier, bits_a - 1),
     "  signal SHIFTER_{0}    : SHIFTER_{0}_TYPE;".format(identifier),
@@ -43,7 +45,7 @@ def write(stream):
 
     definitions = [
 "  --file: {0}, line: {1}".format(stream.filename, stream.lineno),
-"  --STREAM {0} Formater({1})".format(identifier, identifier_a),
+"  --STREAM {0} Printer({1})".format(identifier, identifier_a),
 "  process",
 "    variable CARRY_{0} : std_logic_vector({1} downto 0);".format(identifier, num_digits),
 "  begin",
@@ -113,10 +115,18 @@ def write(stream):
 "        if STREAM_{0}_ACK = '1' then".format(identifier),
 "          STREAM_{0}_STB <= '0';".format(identifier),
 "          if CURSOR_{0} = 0 then".format(identifier),
-"            STATE_{0} <= INPUT_A;".format(identifier),
+"            STATE_{0} <= OUTPUT_NL;".format(identifier),
 "          else",
 "            CURSOR_{0} <= CURSOR_{0} - 1;".format(identifier),
 "          end if;",
+"        end if;",
+"",
+"      when OUTPUT_NL =>",
+"        STREAM_{0}_STB <= '1';".format(identifier),
+'        STREAM_{0} <= X"0A";'.format(identifier),
+"        if STREAM_{0}_ACK = '1' then".format(identifier),
+"          STREAM_{0}_STB <= '0';".format(identifier),
+"          STATE_{0} <= INPUT_A;".format(identifier),
 "        end if;",
 "",
 "     end case;",

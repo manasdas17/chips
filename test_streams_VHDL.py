@@ -18,6 +18,35 @@ def c_style_modulo(x, y):
 def c_style_division(x, y):
     return sign(x)*sign(y)*(abs(x)//abs(y))
 
+#test arrays
+address_in = Output()
+data_in = Output()
+address_out = Output()
+data_out = Array(address_in, data_in, address_out, 4)
+Process(8,
+    address_in.write(0),
+    data_in.write(0),
+    address_in.write(1),
+    data_in.write(1),
+    address_in.write(2),
+    data_in.write(2),
+    address_in.write(3),
+    data_in.write(3),
+    Loop(
+        address_out.write(0),
+        address_out.write(1),
+        address_out.write(2),
+        address_out.write(3),
+    )
+)
+
+system = System(Asserter(data_out==Sequence(0, 1, 2, 3)))
+
+p = streams_VHDL.Plugin()
+system.write_code(p)
+good = p.ghdl_test("array test", stop_cycles=1000, generate_wave=True)
+if not good and stop_on_fail: exit()
+
 #test sizing
 out = Output()
 a = Variable(127)
@@ -29,7 +58,7 @@ system = System(Asserter(out==0))
 
 p = streams_VHDL.Plugin()
 system.write_code(p)
-good = p.ghdl_test("test sizing", stop_cycles=1000, generate_wave=True)
+good = good and p.ghdl_test("test sizing", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
 #test stimulus
@@ -862,42 +891,21 @@ s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("streams < test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
-#Test Formatter
-s=System(Asserter(DecimalFormatter(Repeater(10))==Sequence(ord('1'), ord('0'))))
+#Test Printer
+s=System(Asserter(Printer(Repeater(10))==Sequence(ord('1'), ord('0'), ord('\n'))))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("decimal formatter test 1", stop_cycles=2000, generate_wave=True)
+good = good and simulation_plugin.ghdl_test("Printer test", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
-s=System(Asserter(DecimalFormatter(Repeater(100))==Sequence(49, 48, 48)))
+#Test Scanner
+s=System(Asserter(Scanner(Sequence(ord('1'), ord('0'), ord('\n')), 8)==Repeater(10)))
 
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("decimal formatter test 2", stop_cycles=2000, generate_wave=True)
+good = good and simulation_plugin.ghdl_test("Scanner test", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
-s=System(Asserter(DecimalFormatter(Repeater(-128))==Sequence(45, 49, 50, 56)))
-
-simulation_plugin = streams_VHDL.Plugin()
-s.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("decimal formatter test 3", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
-
-#Test Formatter
-s=System(Asserter(HexFormatter(Repeater(10))==Sequence(48, 120, 97)))
-
-simulation_plugin = streams_VHDL.Plugin()
-s.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("hex formatter test 1", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
-
-#Test Formatter
-s=System(Asserter(HexFormatter(Repeater(-128))==Sequence(45, 48, 120, 56, 48)))
-
-simulation_plugin = streams_VHDL.Plugin()
-s.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("hex formatter test 2", stop_cycles=2000, generate_wave=True)
-if not good and stop_on_fail: exit()
 
 print "All Tests PASS"

@@ -15,10 +15,11 @@ Process = process.Process
 
 #COMBINATORS
 Lookup = streams.Lookup
+Array = streams.Array
 Decoupler = streams.Decoupler
 Resizer = streams.Resizer
-DecimalFormatter = streams.DecimalFormatter
-HexFormatter = streams.HexFormatter
+Printer = streams.Printer
+HexPrinter = streams.HexPrinter
 
 #SOURCES
 InPort = streams.InPort
@@ -32,9 +33,7 @@ Response = streams.Response
 OutPort = streams.OutPort
 SerialOut = streams.SerialOut
 SVGA = streams.SVGA
-DecimalPrinter = streams.DecimalPrinter
-HexPrinter = streams.HexPrinter
-AsciiPrinter = streams.AsciiPrinter
+Console = streams.Console
 Asserter = streams.Asserter
 
 #PROCESS INSTRUCTIONS
@@ -71,7 +70,7 @@ def DoUntil(condition, *instructions):
     loop_instructions = instructions+(If(condition!=0, Break()),)
     return Loop(*loop_instructions)
         
-class PrintDecimal(instruction.UserDefinedStatement):
+class Print(instruction.UserDefinedStatement):
 
     variables={}
 
@@ -84,14 +83,14 @@ class PrintDecimal(instruction.UserDefinedStatement):
     def on_execute(self):
 
         #Need to reference different variables in different processes
-        if id(self.process) in PrintDecimal.variables:
-            leading, decade, digit, count = PrintDecimal.variables[id(self.process)]
+        if id(self.process) in Print.variables:
+            leading, decade, digit, count = Print.variables[id(self.process)]
         else:
             decade = Variable(0)
             digit = Variable(0)
             count = Variable(0)
             leading = Variable(0)
-            PrintDecimal.variables[id(self.process)] = leading, decade, digit, count
+            Print.variables[id(self.process)] = leading, decade, digit, count
 
         #calculate number of digits
         bits = self.process.bits
@@ -121,7 +120,7 @@ class PrintDecimal(instruction.UserDefinedStatement):
             self.stream.write(0x0),
         )
 
-class DecimalScan(instruction.UserDefinedStatement):
+class Scan(instruction.UserDefinedStatement):
 
     variables={}
 
@@ -132,12 +131,12 @@ class DecimalScan(instruction.UserDefinedStatement):
     def on_execute(self):
 
         #Need to reference different variables in different processes
-        if id(self.process) in DecimalScan.variables:
-            digit, count = DecimalScan.variables[id(self.process)]
+        if id(self.process) in Scan.variables:
+            digit, count = Scan.variables[id(self.process)]
         else:
             digit = Variable(0)
             count = Variable(0)
-            DecimalScan.variables[id(self.process)] = digit, count
+            Scan.variables[id(self.process)] = digit, count
 
         return (
             #read first digit
@@ -158,3 +157,36 @@ class DecimalScan(instruction.UserDefinedStatement):
             ),
             self.variable.set(count),
         )
+
+def Scanner(stream, bits):
+    i=Variable(0)
+    out=Output()
+    Process(bits,
+        Loop(
+            Scan(stream, i),
+            out.write(i),
+        )
+    )
+    return out
+
+class VariableArray:
+    def __init__(self, size):
+        self.size = size
+        self.address_in = Output()
+        self.data_in = Output()
+        self.address_out = Output()
+        self.temp = Variable(0)
+        self.data_out = Array(self.address_in, self.data_in, self.address_out, size)
+    def write(self, address, data):
+        return Block((
+            self.address_in.write(address), 
+            self.data_in.write(data),
+        ))
+    def read(self, address):
+        return Evaluate(
+                self.address_out.write(address), 
+                self.data_out.read(self.temp),
+                Value(self.temp),
+        )
+    def __len__(self):
+        return self.size

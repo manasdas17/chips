@@ -21,9 +21,7 @@ import stimulus
 
 #sinks
 import out_port
-import decimal_printer
-import hex_printer
-import ascii_printer
+import console
 import asserter
 import serial_out
 import response
@@ -32,10 +30,10 @@ import svga
 #combinators
 import binary
 import lookup
+import array
 import decoupler
 import resizer
-import decimal_formatter
-import hex_formatter
+import printer
 
 #system
 import system
@@ -119,8 +117,8 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
-    def write_decimal_printer(self, stream): 
-        ports, declarations, definitions = decimal_printer.write(stream)
+    def write_console(self, stream): 
+        ports, declarations, definitions = console.write(stream)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
@@ -145,6 +143,13 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
+    def write_array(self, stream): 
+        dependencies, ports, declarations, definitions = array.write(stream)
+        self.dependencies.extend(dependencies)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
     def write_decoupler(self, stream): 
         ports, declarations, definitions = decoupler.write(stream)
         self.ports.extend(ports)
@@ -157,14 +162,8 @@ class Plugin:
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
-    def write_decimal_formatter(self, stream): 
-        ports, declarations, definitions = decimal_formatter.write(stream)
-        self.ports.extend(ports)
-        self.declarations.extend(declarations)
-        self.definitions.extend(definitions)
-
-    def write_hex_formatter(self, stream): 
-        ports, declarations, definitions = hex_formatter.write(stream)
+    def write_printer(self, stream): 
+        ports, declarations, definitions = printer.write(stream)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)

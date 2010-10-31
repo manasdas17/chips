@@ -11,25 +11,25 @@ us = Variable(0)
 serialin = SerialIn()
 serialout = Output()
 
-def Print(stream, string):
+def StringPrint(stream, string):
     return Block(tuple((stream.write(ord(i)) for i in string)))
 
 Process(16,
-    Print(serialout, "Enter time hours:\r\n"),
-    DecimalScan(serialin, hours),
-    Print(serialout, "Enter time minutes:\r\n"),
-    DecimalScan(serialin, minutes),
+    StringPrint(serialout, "Enter time hours:\r\n"),
+    Scan(serialin, hours),
+    StringPrint(serialout, "Enter time minutes:\r\n"),
+    Scan(serialin, minutes),
     #reads the time from the serial port at power on
     Loop(
         While(hours < 24,
             While(minutes < 60,
                 While(seconds < 60,
                     #every minute the time is updated
-                    PrintDecimal(serialout, hours, 2),
+                    Print(serialout, hours, 2),
                     serialout.write(ord(":")),
-                    PrintDecimal(serialout, minutes, 2),
+                    Print(serialout, minutes, 2),
                     serialout.write(ord(":")),
-                    PrintDecimal(serialout, seconds, 2),
+                    Print(serialout, seconds, 2),
                     serialout.write(ord("\r")),
                     While(ms < 1000,
                         While(us < 1000,

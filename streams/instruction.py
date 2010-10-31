@@ -405,6 +405,7 @@ class Value(Statement):
 
     def set_process(self, process):
         self.process=process
+        self.expression.set_process(process)
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""

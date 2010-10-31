@@ -12,6 +12,54 @@ def c_style_modulo(x, y):
 def c_style_division(x, y):
     return sign(x)*sign(y)*(abs(x)//abs(y))
 
+#test arrays
+myarray = VariableArray(4)
+data_out = Output()
+Process(8,
+    myarray.write(0, 0),
+    myarray.write(1, 1),
+    myarray.write(2, 2),
+    myarray.write(3, 3),
+    Loop(
+        data_out.write(myarray.read(0)),
+        data_out.write(myarray.read(1)),
+        data_out.write(myarray.read(2)),
+        data_out.write(myarray.read(3)),
+    ),
+)
+
+system = System(Asserter(data_out==Sequence(0, 1, 2, 3)))
+
+good = system.test("array test 1", 100)
+if not good and stop_on_fail: exit()
+
+#test arrays
+address_in = Output()
+data_in = Output()
+address_out = Output()
+data_out = Array(address_in, data_in, address_out, 4)
+Process(8,
+    address_in.write(0),
+    data_in.write(0),
+    address_in.write(1),
+    data_in.write(1),
+    address_in.write(2),
+    data_in.write(2),
+    address_in.write(3),
+    data_in.write(3),
+    Loop(
+        address_out.write(0),
+        address_out.write(1),
+        address_out.write(2),
+        address_out.write(3),
+    )
+)
+
+system = System(Asserter(data_out==Sequence(0, 1, 2, 3)))
+
+good = system.test("array test 2", 100)
+if not good and stop_on_fail: exit()
+
 #test sizing
 out = Output()
 a = Variable(127)
@@ -21,7 +69,7 @@ Process(8,
 )
 
 system = System(Asserter(out==0))
-good = system.test("test sizing", 100)
+good = good and system.test("test sizing", 100)
 if not good and stop_on_fail: exit()
 
 #test stimulus
@@ -786,15 +834,16 @@ s=System(Asserter(expected_response == (stimulus_a < stimulus_b)))
 good = good and s.test("streams < test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
-#Test DecimalFormater
-s=System(Asserter(DecimalFormatter(Repeater(10))==Sequence(ord('1'), ord('0'))))
+#Test Printer
+s=System(Asserter(Printer(Repeater(10))==Sequence(ord('1'), ord('0'), ord('\n'))))
 
-good = good and s.test("decimal formatter test ", stop_cycles=2000)
+good = good and s.test("Printer test ", stop_cycles=2000)
 if not good and stop_on_fail: exit()
 
-#Test HexFormater
-s=System(Asserter(HexFormatter(Repeater(10))==Sequence(ord('a'))))
+#Test Scanner
+s=System(Asserter(Scanner(Sequence(ord('1'), ord('0'), ord('\n')), 8)==Repeater(10)))
 
-good = good and s.test("hex formatter test ", stop_cycles=2000)
+good = good and s.test("Scanner test ", stop_cycles=2000)
 if not good and stop_on_fail: exit()
+
 print "All Tests PASS"
