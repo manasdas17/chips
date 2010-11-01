@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from math import pi, sin, log, cos
+import sys
 
 from streams import *
 from streams_VHDL import Plugin
@@ -8,7 +9,7 @@ from streams_VHDL import Plugin
 #define a few fixed point routines
 ################################################################################
 
-q=10 #define radix point
+q=12 #define radix point
 
 def to_fixed(x):
     return int(round(x * (2**q)))
@@ -58,7 +59,7 @@ def fft(input_stream, n):
     real = Output()
     imaginary = Output()
 
-    Process(26,
+    Process(30,
 
         #read data into array
         i.set(0),
@@ -155,45 +156,43 @@ def fft(input_stream, n):
 
     return real, imaginary
 
+if "simulate" in sys.argv:
+    import numpy as n
+    import scipy as s
+    from matplotlib import pyplot as p
+    from math import pi, sqrt
 
-#test fft component
-################################################################################
-import numpy as n
-import scipy as s
-from matplotlib import pyplot as p
-from math import pi, sqrt
+    #create a cosine to stimulate the fft
+    x = n.arange(64)
+    cos_x = n.zeros(1024)
+    cos_x[0:64] = s.cos(2*pi*x/64)
 
-#create a cosine to stimulate the fft
-x = n.arange(64)
-cos_x = n.zeros(128)
-cos_x[0:64] = s.cos(2*pi*x/64)
+    #pack the stimulus into the correct format
+    complex_time = []
+    for i in cos_x:
+        complex_time.append(to_fixed(i))
+        complex_time.append(0.0)
 
-#pack the stimulus into the correct format
-complex_time = []
-for i in cos_x:
-    complex_time.append(to_fixed(i))
-    complex_time.append(0.0)
+    #build a simulation model
+    real, imaginary = fft(Sequence(*complex_time), 1024)
+    rer = Response(real)
+    imr = Response(imaginary)
+    system = System(rer, imr)
 
-#build a simulation model
-real, imaginary = fft(Sequence(*complex_time), 128)
-rer = Response(real)
-imr = Response(imaginary)
-system = System(rer, imr)
+    #run the simulation
+    system.reset()
+    system.execute(1000000)
 
-#run the simulation
-system.reset()
-system.execute(100000)
+    #unpack the frequency domain representation
+    real_frequency = list(rer.get_simulation_data())
+    imaginary_frequency = list(imr.get_simulation_data())
 
-#unpack the frequency domain representation
-real_frequency = list(rer.get_simulation_data())
-imaginary_frequency = list(imr.get_simulation_data())
+    frequency_magnitude = []
+    for i in xrange(0, 1024):
+        mag = sqrt(real_frequency[i]**2+imaginary_frequency[i]**2)
+        frequency_magnitude.append(from_fixed(mag))
 
-frequency_magnitude = []
-for i in xrange(0, 128):
-    mag = sqrt(real_frequency[i]**2+imaginary_frequency[i]**2)
-    frequency_magnitude.append(from_fixed(mag))
-
-p.plot(abs(s.fft(cos_x)))
-p.plot(frequency_magnitude)
-p.show()
+    p.plot(abs(s.fft(cos_x)), 'b')
+    p.plot(frequency_magnitude, 'r')
+    p.show()
 

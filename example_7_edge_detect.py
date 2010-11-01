@@ -187,9 +187,14 @@ if "test" in sys.argv:
             new_image.append(int(port.readline())),
         for i in range(width):
             port.write("{0}\n".format(image_data.popleft()))
+        sys.stdout.write("{0}%\r".format(100*j//height))
+        sys.stdout.flush()
+
     for j in range(1):
         for i in range(width):
             new_image.append(int(port.readline())),
+        sys.stdout.write("100%\r")
+        sys.stdout.flush()
 
     new_im = Image.new(im.mode, (width, height))
     new_im.putdata(new_image)
