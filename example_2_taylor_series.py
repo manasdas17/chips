@@ -4,7 +4,7 @@ from math import pi
 from streams import *
 
 #fixed point routines
-q = 8
+q = 6
 
 def to_fixed(x):
     return int(round(x*(2**q)))
@@ -24,7 +24,7 @@ def taylor(angle):
     angle_var = Variable(0)
     sign = Variable(0)
 
-    Process(32,
+    Process(26,
         Loop(
             angle.read(angle_var),
             approximation.set(angle_var),
@@ -77,7 +77,7 @@ elif "simulate_vhdl" in sys.argv:
     system = System(response)
     plugin = streams_VHDL.Plugin()
     system.write_code(plugin)
-    plugin.ghdl_test("test taylor series", stop_cycles=10000, generate_wave=True)
+    plugin.ghdl_test("test taylor series", stop_cycles=2000, generate_wave=True)
     sin_x=[from_fixed(i) for i in response.get_simulation_data(plugin)]
     p.plot(sin_x[:100])
     p.plot(n.sin(n.linspace(0,pi,100)))
