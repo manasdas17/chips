@@ -10,6 +10,7 @@ build - compile onto a xilinx fpga
 
 from streams import *
 from streams_VHDL import Plugin
+import sys
 
 hours = Variable(0)
 minutes = Variable(0)

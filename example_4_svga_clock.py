@@ -8,6 +8,7 @@ build - compile onto a xilinx FPGA"""
 
 from streams import *
 from streams_VHDL import Plugin
+import sys
 
 
 #Descirbe a clock that writes the time to the svga display
