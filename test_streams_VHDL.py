@@ -5,9 +5,14 @@ import streams_VHDL
 stop_on_fail = True
 
 def resize(val, bits):
-    sign_bit = (2**(bits-1))
-    mask_bits = (2**(bits-1))-1
-    return val | ~mask_bits if val & sign_bit else val & mask_bits
+    maxint = (2**(bits-1))-1
+    minint = -(2**(bits-1))
+    if val > maxint:
+        return val & maxint
+    if val < maxint:
+        return val | ~maxint
+    return val
+print resize(-8<<1, 4)
 
 def sign(x):
     return -1 if x < 0 else 1
@@ -143,7 +148,7 @@ Process(8,
     )
 )
 
-s=System( Asserter(expected_response == z))
+s=System(Asserter(expected_response == z))
 simulation_plugin = streams_VHDL.Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("evaluate test", stop_cycles=1000, generate_wave=True)
@@ -753,7 +758,7 @@ for i in range(-8, 8):
     for j in range(0, 8):
         a.append(i)
         b.append(j)
-        z.append(resize(i<<j,4))
+        z.append(resize(i<<j,5))
 
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)

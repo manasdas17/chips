@@ -86,7 +86,7 @@ class System:
         except AssertionError:
             print name,
             print "...Fail"
-            return True
+            return False
 
         print name,
         print "...Pass"
@@ -489,8 +489,8 @@ class Console(Unique):
     def execute(self):
         val = self.a.get()
         if val is not None:
-            if val == 0:
-                print ''.join(self.string[:-1])
+            if chr(val&0xff)=='\n':
+                print ''.join(self.string)
                 self.string = []
             else:
                 self.string.append(chr(val&0xff))

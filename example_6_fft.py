@@ -1,5 +1,18 @@
 #!/usr/bin/env python
 
+"""Example 6 FFT using one process
+
+Options are:
+
+simulate      - native python simulation
+simulate_vhdl - simulate using ghdl cosimulation
+
+Thing to try:
+
+vary p        - the total number of bits in the fft process
+vary q        - the number of fraction bits in the fixed point representation
+vary r        - the number of points in the FFT"""
+
 from math import pi, sin, log, cos
 import sys
 
@@ -8,7 +21,7 @@ from streams_VHDL import Plugin
 
 #define a few fixed point routines
 ################################################################################
-
+p=30
 q=12 #define radix point
 
 def to_fixed(x):
@@ -157,6 +170,7 @@ def fft(input_stream, n):
     return real, imaginary
 
 if "simulate" in sys.argv:
+    r = 1024
     import numpy as n
     import scipy as s
     from matplotlib import pyplot as p
@@ -164,7 +178,7 @@ if "simulate" in sys.argv:
 
     #create a cosine to stimulate the fft
     x = n.arange(64)
-    cos_x = n.zeros(1024)
+    cos_x = n.zeros(r)
     cos_x[0:64] = s.cos(2*pi*x/64)
 
     #pack the stimulus into the correct format
@@ -174,7 +188,7 @@ if "simulate" in sys.argv:
         complex_time.append(0.0)
 
     #build a simulation model
-    real, imaginary = fft(Sequence(*complex_time), 1024)
+    real, imaginary = fft(Sequence(*complex_time), r)
     rer = Response(real)
     imr = Response(imaginary)
     system = System(rer, imr)
@@ -188,11 +202,57 @@ if "simulate" in sys.argv:
     imaginary_frequency = list(imr.get_simulation_data())
 
     frequency_magnitude = []
-    for i in xrange(0, 1024):
+    for i in xrange(0, r):
         mag = sqrt(real_frequency[i]**2+imaginary_frequency[i]**2)
         frequency_magnitude.append(from_fixed(mag))
 
-    p.plot(abs(s.fft(cos_x)), 'b')
-    p.plot(frequency_magnitude, 'r')
+    p.plot(abs(s.fft(cos_x)), 'b', label="floating point fft calculated by NumPy Module")
+    p.plot(frequency_magnitude, 'r', label="fixed point fft simulation")
+    p.title("1024 point FFT of 64 sample cosine wave")
+    p.legend()
     p.show()
 
+if "simulate_vhdl" in sys.argv:
+    r = 128
+    import streams_VHDL
+    import numpy as n
+    import scipy as s
+    from matplotlib import pyplot as p
+    from math import pi, sqrt
+
+    #create a cosine to stimulate the fft
+    x = n.arange(64)
+    cos_x = n.zeros(r)
+    cos_x[0:64] = s.cos(2*pi*x/64)
+
+    #pack the stimulus into the correct format
+    complex_time = []
+    for i in cos_x:
+        complex_time.append(to_fixed(i))
+        complex_time.append(0.0)
+
+    #build a simulation model
+    real, imaginary = fft(Sequence(*complex_time), r)
+    rer = Response(real)
+    imr = Response(imaginary)
+    system = System(rer, imr)
+
+    #run the simulation
+    plugin = streams_VHDL.Plugin()
+    system.write_code(plugin)
+    plugin.ghdl_test("test fft", stop_cycles = 100000)
+
+    #unpack the frequency domain representation
+    real_frequency = list(rer.get_simulation_data(plugin))
+    imaginary_frequency = list(imr.get_simulation_data(plugin))
+
+    frequency_magnitude = []
+    for i in xrange(0, r):
+        mag = sqrt(real_frequency[i]**2+imaginary_frequency[i]**2)
+        frequency_magnitude.append(from_fixed(mag))
+
+    p.plot(abs(s.fft(cos_x)), 'b', label="floating point fft calculated by NumPy Module")
+    p.plot(frequency_magnitude, 'r', label="fixed point fft simulation")
+    p.title("128 point FFT of 64 sample cosine wave")
+    p.legend()
+    p.show()

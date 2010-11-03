@@ -144,7 +144,7 @@ class Plugin:
         self.definitions.extend(definitions)
 
     def write_array(self, stream): 
-        dependencies, ports, declarations, definitions = array.write(stream)
+        dependencies, ports, declarations, definitions = array.write(self, stream)
         self.dependencies.extend(dependencies)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
@@ -293,15 +293,15 @@ class Plugin:
         if generate_wave: 
             parameters.append(" --wave=wave.ghw")
         if stop_cycles: 
-            parameters.append(" --stop-time={0}ns".format(stop_cycles * 10 + 20))
+            parameters.append(" --stop-time={0}ns".format((stop_cycles * 10) + 20))
 
         pipe = subprocess.Popen(
                 ''.join(parameters), 
                 shell=True, 
                 stderr=subprocess.PIPE, 
         )
-        pipe.wait()
         error_message = pipe.communicate()[1]
+        pipe.wait()
         return_code = pipe.returncode
 
         if return_code != 0:

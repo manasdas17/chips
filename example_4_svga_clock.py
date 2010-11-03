@@ -1,8 +1,16 @@
 #!/usr/bin/env python
+
+"""Example 4 a clock that write the time to an svga monitor
+
+Options are:
+
+build - compile onto a xilinx FPGA"""
+
 from streams import *
 from streams_VHDL import Plugin
 
 
+#Descirbe a clock that writes the time to the svga display
 svga_stream = Output()
 push_buttons=InPort(name="PB", bits=2)
 pressed = Variable(0)
@@ -49,6 +57,7 @@ Process(16,
     ),
 )
 
+#make the svga output behave like a character stream
 svga_out = Output()
 char = Variable(0)
 col = Variable(0)
@@ -77,15 +86,21 @@ Process(8,
     ),
 )
 
-
-
-#s = System(AsciiPrinter(serialout))
-#s.reset()
-#s.execute(1000)
+#compile code into a xilinx fpga
 s = System(SVGA(svga_out))
 p = Plugin(internal_clock=False, internal_reset=False)
 s.write_code(p)
 p.xilinx_build(part="xc3s200-4-ft256")
-#p = Plugin()
-#s.write_code(p)
-#p.ghdl_test("test svga", stop_cycles = 10000, generate_wave=True)
+
+if "build" in sys.argv:
+    import streams_VHDL
+    import os
+    import shutil
+    response = SerialOut(Printer(edge_detector(Scanner(SerialIn(), 9))))
+    s = System(SVGA(svga_out))
+    p = Plugin(internal_clock=False, internal_reset=False)
+    system.write_code(plugin)
+    from_file=os.path.join(".", "ucfs", "example_4.ucf")
+    to_file=os.path.join(".", "project", "xilinx", "project.ucf")
+    shutil.copy(from_file, to_file)
+    plugin.xilinx_build("xc3s200-4-ft256")

@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 
+"""Example 7 apply an edge detection filter to a greyscale image
+
+Options are:
+
+simulate      - native python simulation
+simulate_vhdl - simulate using ghdl cosimulation
+build         - compile onto a Xilinx FPGA
+test          - hardware-in-loop test using serial port """
+
+
 from math import pi, sin
 import sys
 
@@ -134,7 +144,7 @@ if "simulate" in sys.argv:
     response = Response(edge_detector(Sequence(*image_data)))
     system = System(response)
     system.reset()
-    system.execute(2000000)
+    system.execute(10000000)
     new_image = list(response.get_simulation_data())
     new_im = Image.new(im.mode, (width, height))
     new_im.putdata(new_image)
@@ -147,7 +157,7 @@ if "simulate_vhdl" in sys.argv:
     system = System(response)
     plugin = streams_VHDL.Plugin()
     system.write_code(plugin)
-    plugin.ghdl_test("edge_detect", stop_cycles=2000)
+    plugin.ghdl_test("edge_detect", stop_cycles=10000000)
     new_image = list(response.get_simulation_data(plugin))
     new_im = Image.new(im.mode, (width, height))
     new_im.putdata(new_image)

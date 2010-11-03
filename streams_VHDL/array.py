@@ -10,7 +10,7 @@ __status__ = "Prototype"
 
 import common
 
-def write(stream):
+def write(plugin, stream):
 
     identifier = stream.get_identifier()
     bits = stream.get_bits()
@@ -18,6 +18,11 @@ def write(stream):
     identifier_a = stream.a.get_identifier()
     identifier_b = stream.b.get_identifier()
     identifier_c = stream.c.get_identifier()
+    if hasattr(plugin, "has_array"):
+        one_offs = False
+    else:
+        plugin.has_array=True
+        one_offs = True
 
     dependencies = [
 "",
@@ -159,11 +164,12 @@ def write(stream):
 "--  End of RAM",
 "--  ****************************************************************************",
     ]
-
+    if not one_offs: dependencies = []
 
     ports = []
 
-    declarations = [
+    if one_offs:
+        declarations = [
 "  component RAMARRAY is",
 "    generic(",
 "        DEPTH : integer;",
@@ -191,7 +197,15 @@ def write(stream):
 "  signal STREAM_{0}_STB : std_logic;".format(identifier),
 "  signal STREAM_{0}_ACK : std_logic;".format(identifier),
 "",
-    ]
+        ]
+    else:
+        declarations = [
+"  signal STREAM_{0}     : std_logic_vector({1} downto 0);".format(identifier, bits - 1),
+"  signal STREAM_{0}_STB : std_logic;".format(identifier),
+"  signal STREAM_{0}_ACK : std_logic;".format(identifier),
+"",
+        ]
+
 
     definitions = [
 "  --file: {0}, line: {1}".format(stream.filename, stream.lineno),

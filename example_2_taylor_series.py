@@ -1,10 +1,26 @@
 #!/usr/bin/env python
+
+"""Example 2 Sin Approximation using the taylor series
+
+Options are:
+
+simulate      - native python simulation
+simulate_vhdl - simulate using ghdl cosimulation
+
+Thing to try:
+
+vary p        - the total number of bits in the approximation process
+vary q        - the number of fraction bits in the fixed point representation
+vary r        - the order of the power series, use odd values starting with 3"""
+
 import sys
 from math import pi
 from streams import *
 
 #fixed point routines
+p = 26
 q = 6
+r = 9
 
 def to_fixed(x):
     return int(round(x*(2**q)))
@@ -24,13 +40,13 @@ def taylor(angle):
     angle_var = Variable(0)
     sign = Variable(0)
 
-    Process(26,
+    Process(p,
         Loop(
             angle.read(angle_var),
             approximation.set(angle_var),
             i.set(3),
             sign.set(-1),
-            While( i <= 9,
+            While( i <= r,
 
                 #calculate x**i
                 count.set(0),
@@ -56,7 +72,7 @@ def taylor(angle):
 
 if "simulate" in sys.argv:
     import numpy as n
-    from matplotlib import pyplot as p
+    from matplotlib import pyplot as pl
 
     x=n.linspace(to_fixed(0), to_fixed(pi), 100)
     response=Response(taylor(Sequence(*x)))
@@ -64,21 +80,25 @@ if "simulate" in sys.argv:
     system.reset()
     system.execute(100000)
     sin_x=[from_fixed(i) for i in response.get_simulation_data()]
-    p.plot(sin_x[:100])
-    p.plot(n.sin(n.linspace(0,pi,100)))
-    p.show()
+    pl.plot(sin_x[:100], 'b-', label="Taylor series approximation")
+    pl.plot(n.sin(n.linspace(0,pi,100)), 'r-', label="sin(x)")
+    pl.title("Sin Wave Approximation")
+    pl.legend()
+    pl.show()
 
 elif "simulate_vhdl" in sys.argv:
     import numpy as n
-    from matplotlib import pyplot as p
+    from matplotlib import pyplot as pl
     import streams_VHDL
     x=n.linspace(to_fixed(0), to_fixed(pi), 100)
     response=Response(taylor(Sequence(*x)))
     system = System(response)
     plugin = streams_VHDL.Plugin()
     system.write_code(plugin)
-    plugin.ghdl_test("test taylor series", stop_cycles=2000, generate_wave=True)
+    plugin.ghdl_test("test taylor series", stop_cycles=1000000)
     sin_x=[from_fixed(i) for i in response.get_simulation_data(plugin)]
-    p.plot(sin_x[:100])
-    p.plot(n.sin(n.linspace(0,pi,100)))
-    p.show()
+    pl.plot(sin_x[:100], label="Taylor series approximation")
+    pl.plot(n.sin(n.linspace(0,pi,100)), label="sin(x)")
+    pl.title("Sin Wave Approximation")
+    pl.legend()
+    pl.show()

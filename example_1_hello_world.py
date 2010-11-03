@@ -1,5 +1,12 @@
 #!/usr/bin/env python
-"""Example 1 Hello World .... in welsh!"""
+"""Example 1 Hello World .... in welsh!
+
+options are:
+
+simulate      - native python simulation
+simulate_vhdl - simulate using ghdl cosimulation
+build         - compile into a xilinx fpga
+test          - check the results using the serial port"""
 
 import sys
 

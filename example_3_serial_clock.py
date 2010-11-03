@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+
+"""Example 3 a clock using the serial port
+
+Options are:
+
+build - compile onto a xilinx fpga
+
+"""
+
 from streams import *
 from streams_VHDL import Plugin
 
@@ -52,10 +61,14 @@ Process(16,
     ),
 )
 
-#s = System(AsciiPrinter(serialout))
-#s.reset()
-#s.execute(1000)
-s = System(SerialOut(Resizer(serialout, 8)))
-p = Plugin(internal_clock=False, internal_reset=False)
-s.write_code(p)
-p.xilinx_build(part="xc3s200-4-ft256")
+if "build" in sys.argv:
+    import streams_VHDL
+    import os
+    import shutil
+    s = System(SerialOut(Resizer(serialout, 8)))
+    p = Plugin(internal_clock=False, internal_reset=False)
+    system.write_code(plugin)
+    from_file=os.path.join(".", "ucfs", "example_3.ucf")
+    to_file=os.path.join(".", "project", "xilinx", "project.ucf")
+    shutil.copy(from_file, to_file)
+    plugin.xilinx_build("xc3s200-4-ft256")
