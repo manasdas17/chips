@@ -5,14 +5,12 @@ import streams_VHDL
 stop_on_fail = True
 
 def resize(val, bits):
-    maxint = (2**(bits-1))-1
-    minint = -(2**(bits-1))
-    if val > maxint:
-        return val & maxint
-    if val < maxint:
-        return val | ~maxint
+    mask = (2**(bits))-1
+    sign_bit = (2**(bits-1))
+    val = val&mask
+    if val & sign_bit: 
+        val=val|~mask
     return val
-print resize(-8<<1, 4)
 
 def sign(x):
     return -1 if x < 0 else 1
@@ -758,7 +756,7 @@ for i in range(-8, 8):
     for j in range(0, 8):
         a.append(i)
         b.append(j)
-        z.append(resize(i<<j,5))
+        z.append(resize(i<<j,4))
 
 stimulus_a =        Sequence(*a)
 stimulus_b =        Sequence(*b)

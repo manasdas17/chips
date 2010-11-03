@@ -12,6 +12,14 @@ __status__ = "Prototype"
 
 from math import log
 
+def resize(val, bits):
+    mask = (2**(bits))-1
+    sign_bit = (2**(bits-1))
+    val = val&mask
+    if val & sign_bit: 
+        val=val|~mask
+    return val
+
 def how_many_bits(num):
     if num > 0 :
         return int(log(num, 2)) + 2

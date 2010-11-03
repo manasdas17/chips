@@ -16,14 +16,17 @@ from inspect import currentframe, getsourcefile
 from collections import deque
 
 from process import Process
-from common import how_many_bits, Unique
+from common import how_many_bits, Unique, resize
 from instruction import Write, Read
 from exceptions import StreamsConstructionError, SimulationError
 
 def resize(val, bits):
+    mask = (2**(bits))-1
     sign_bit = (2**(bits-1))
-    mask_bits = (2**(bits-1))-1
-    return val | ~mask_bits if val & sign_bit else val & mask_bits
+    val = val&mask
+    if val & sign_bit: 
+        val=val|~mask
+    return val
 
 def sign(x):
     return -1 if x < 0 else 1

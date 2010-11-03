@@ -10,15 +10,10 @@ __maintainer__ = "Jon Dawson"
 __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
-from common import Unique
+from common import Unique, resize
 from instruction import Write, Block
 from inspect import currentframe, getsourcefile
 from exceptions import StreamsConstructionError
-
-def resize(val, bits):
-    sign_bit = (2**(bits-1))
-    mask_bits = (2**(bits-1))-1
-    return val | ~mask_bits if val & sign_bit else val & mask_bits
 
 def sign(x):
     return -1 if x < 0 else 1
