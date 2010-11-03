@@ -36,3 +36,12 @@ class Unique:
 
     def get_identifier(self):
         return self.identifier
+
+def sign(x):
+    return -1 if x < 0 else 1
+
+def c_style_modulo(x, y):
+    return sign(x)*(abs(x)%abs(y))
+
+def c_style_division(x, y):
+    return sign(x)*sign(y)*(abs(x)//abs(y))

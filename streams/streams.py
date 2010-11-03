@@ -16,26 +16,9 @@ from inspect import currentframe, getsourcefile
 from collections import deque
 
 from process import Process
-from common import how_many_bits, Unique, resize
+from common import how_many_bits, Unique, resize, c_style_modulo, c_style_division
 from instruction import Write, Read
 from exceptions import StreamsConstructionError, SimulationError
-
-def resize(val, bits):
-    mask = (2**(bits))-1
-    sign_bit = (2**(bits-1))
-    val = val&mask
-    if val & sign_bit: 
-        val=val|~mask
-    return val
-
-def sign(x):
-    return -1 if x < 0 else 1
-
-def c_style_modulo(x, y):
-    return sign(x)*(abs(x)%abs(y))
-
-def c_style_division(x, y):
-    return sign(x)*sign(y)*(abs(x)//abs(y))
 
 class System:
     """A Streams System
@@ -46,8 +29,8 @@ class System:
     def __init__(self, *args):
        """Create a streams System
 
-            Arguments:
-              sinks              A sequence object listing all data.receivers"""
+       Arguments:
+         sinks - A sequence object listing all data.receivers"""
 
        self.sinks = list(args)
        self.filename = getsourcefile(currentframe().f_back)
@@ -61,6 +44,11 @@ class System:
            i.set_system(self)
 
     def write_code(self, plugin):
+        """Write source code for the streams systems using the specified plugin
+
+        Arguments:
+          plugin - A code generation plugin such as streams_vhdl.plugin()"""
+
         for i in self.streams:
             i.write_code(plugin)
         for i in self.processes:
@@ -68,12 +56,21 @@ class System:
         plugin.write_system(self)
 
     def reset(self):
+        """Reset the system to its intial state.
+
+        A system must be reset before it can be executed."""
+
         for i in self.processes:
             i.reset()
         for i in self.streams:
             i.reset()
 
     def execute(self, steps=1):
+        """Execute a native simulation
+
+        Arguments:
+          steps - specify the number of execution steps to run"""
+
         for i in range(steps):
             for i in self.processes:
                 i.execute()
@@ -83,6 +80,18 @@ class System:
                 i.execute()
 
     def test(self, name, stop_cycles=False):
+        """Perform a test
+       
+        Resets, and executes the system for specified number of cycles.
+
+        Arguments:
+          name        - a test name that will be reported
+          stop_cycles - the number of cycles to execute for
+
+        Returns:
+          True  - if no assertions occur during execution
+          False - if assertions occur"""
+
         self.reset()
         try:
             self.execute(stop_cycles)
@@ -152,8 +161,14 @@ class Stream:
 ################################################################################
 
 class Repeater(Stream, Unique):
+    """A Stream which repeatedly outputs a constant value."""
 
     def __init__(self, value):
+        """A Stream which repeatedly outputs a constant value.
+
+        Arguments:
+          value - a constant value to be output"""
+
         self.value = value
         self.bits = how_many_bits(value)
         self.filename = getsourcefile(currentframe().f_back)
@@ -176,8 +191,17 @@ class Repeater(Stream, Unique):
         return self.value
 
 class Counter(Stream, Unique):
+    """A Stream which counts through a specified sequence."""
 
     def __init__(self, start, stop, step):
+        """A Stream which repeatedly outputs a constant value.
+
+        Arguments:
+          start - initial count value that will be output
+          stop  - the last count value that will be output before wrapping
+                  round to zero
+          step  - the count step size"""
+
         self.start = start
         self.stop = stop 
         self.step = step 
@@ -207,8 +231,17 @@ class Counter(Stream, Unique):
         return "Counter(start={0}, stop={1}, step={2})".format(self.start, self.stop, self.bits)
 
 class Stimulus(Stream, Unique):
+    """A Stream that allows a sequence object to be used as simulation stimulus"""
 
     def __init__(self, bits):
+        """A Stream that allows a sequence object to be used as simulation stimulus
+        
+        A source sequence should be set prior to simulation using the 
+        Stimulus.set_simulation_data() method.
+
+            arguments:
+              bits - The resolution in bits of the stream"""
+
         self.bits = bits
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
@@ -235,8 +268,20 @@ class Stimulus(Stream, Unique):
         return "Stimulus({0})".format(self.name, self.bits)
 
 class InPort(Stream, Unique):
+    """A Stream of data obtained from input port pins"""
 
     def __init__(self, name, bits):
+        """A Stream of data obtained from input port pins
+        
+        A source sequence should be set prior to simulation using the 
+        Stimulus.set_simulation_data() method.
+
+            arguments:
+              name - A for the port.
+                     The name will be prepended with OUT_in the component
+                     entity.
+              bits - The resolution in bits of the stream"""
+
         self.name, self.bits = name, bits
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
@@ -257,8 +302,20 @@ class InPort(Stream, Unique):
         return "InPort(name={0}, bits={1})".format(self.name, self.bits)
 
 class SerialIn(Stream, Unique):
+    """A Stream of data obtained from a UART input pin"""
 
     def __init__(self, name="RX", clock_rate=50000000, baud_rate=115200):
+        """A Stream of data obtained from input port pins
+        
+        A source sequence should be set prior to simulation using the 
+        Stimulus.set_simulation_data() method.
+
+            arguments:
+              name - A for the port.
+                     The name will be prepended with OUT_in the component
+                     entity.
+              bits - The resolution in bits of the stream"""
+
         self.name = name
         self.clock_rate = clock_rate
         self.baud_rate = baud_rate
