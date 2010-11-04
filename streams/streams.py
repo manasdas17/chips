@@ -11,7 +11,6 @@ __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
 from math import log
-from numpy import zeros
 from inspect import currentframe, getsourcefile
 from collections import deque
 
@@ -774,7 +773,7 @@ class Array(Stream, Unique):
         self.b = data_in
         self.c = address_out
         self.depth = depth
-        self.memory = zeros(depth, dtype="int32")
+        self.memory = {}
         self.stored_a = None
         self.stored_b = None
         self.filename = getsourcefile(currentframe().f_back)
