@@ -1,0 +1,11 @@
+Storage Target: Xilinx Flash/PROM
+Storage Family: Platform Flash
+xcf02s          [2 M]
+FF
+Untitled
+/home/jon/udp/project/xilinx
+
+MCS
+No
+
+No

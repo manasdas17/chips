@@ -84,14 +84,13 @@ class Print(instruction.UserDefinedStatement):
 
         #Need to reference different variables in different processes
         if id(self.process) in Print.variables:
-            leading, decade, digit, count, sign = Print.variables[id(self.process)]
+            leading, decade, digit, count = Print.variables[id(self.process)]
         else:
             decade = Variable(0)
             digit = Variable(0)
-            sign = Variable(0)
             count = Variable(0)
             leading = Variable(0)
-            Print.variables[id(self.process)] = leading, decade, digit, count, sign
+            Print.variables[id(self.process)] = leading, decade, digit, count
 
         #calculate number of digits
         bits = self.process.bits
@@ -105,12 +104,7 @@ class Print(instruction.UserDefinedStatement):
             minimum_decade = 0
             
         return (
-            If(self.exp < 0,
-                self.stream.write(ord("-")),
-                count.set(0-self.exp),
-            ).ElsIf(1,
-                count.set(self.exp),
-            ),
+            count.set(self.exp),
             decade.set(initial_decade),
             leading.set(0),
             While(0 < decade,
