@@ -72,4 +72,4 @@ if "build" in sys.argv:
     from_file=os.path.join(".", "ucfs", "example_3.ucf")
     to_file=os.path.join(".", "project", "xilinx", "project.ucf")
     shutil.copy(from_file, to_file)
-    plugin.xilinx_build("xc3s200-4-ft256")
+    p.xilinx_build("xc3s200-4-ft256")
