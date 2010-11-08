@@ -68,7 +68,7 @@ if "build" in sys.argv:
     import shutil
     s = System(SerialOut(Resizer(serialout, 8)))
     p = Plugin(internal_clock=False, internal_reset=False)
-    system.write_code(plugin)
+    s.write_code(p)
     from_file=os.path.join(".", "ucfs", "example_3.ucf")
     to_file=os.path.join(".", "project", "xilinx", "project.ucf")
     shutil.copy(from_file, to_file)
