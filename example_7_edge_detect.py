@@ -168,7 +168,7 @@ if "build" in sys.argv:
     import streams_VHDL
     import os
     import shutil
-    response = SerialOut(Printer(edge_detector(Scanner(SerialIn(), 9))), baud_rate=115200)
+    response = SerialOut(Printer(edge_detector(Scanner(SerialIn(baud_rate=460800), 9))), baud_rate=460800)
     system = System(response)
     plugin = streams_VHDL.Plugin(internal_clock=False, internal_reset=False)
     system.write_code(plugin)
@@ -183,7 +183,7 @@ if "test" in sys.argv:
     image_data = deque(image_data)
     new_image = []
 
-    port = Serial("/dev/ttyUSB0", 115200)
+    port = Serial("/dev/ttyUSB0", 460800)
     port.open()
 
     for i in range(width):
