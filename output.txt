@@ -3,9 +3,7 @@ Storage Family: Platform Flash
 xcf02s          [2 M]
 FF
 Untitled
-/home/jon/udp/project/xilinx
+/home/jon/streams/project/xilinx
 
 MCS
-No
-
 No

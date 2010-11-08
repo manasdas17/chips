@@ -51,7 +51,7 @@ if "build" in sys.argv:
 if "test" in sys.argv:
     #capture output from serial port
     from serial import Serial
-    port = Serial('/dev/ttyS0', baudrate=115200, bytesize=8, parity="N", stopbits=1)
+    port = Serial("/dev/ttyUSB0", baudrate=115200, bytesize=8, parity="N", stopbits=1)
     response = port.readline()
     response = port.readline()
     print response
