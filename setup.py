@@ -7,6 +7,6 @@ setup(name="PythonStreams",
       description="A library for designing hardware based on streams",
       author="Jon Dawson",
       author_email="jon@jondawson.org.uk",
-      packages=["streams", "streams_VHDL"],
+      packages=["streams", "streams_VHDL", "streams_visual"],
 )
 

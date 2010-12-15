@@ -12,6 +12,7 @@ import sys
 
 from streams import * #use the streams library
 import streams_VHDL #import VHDL plugin 
+import streams_visual
 
 
 ################################################################################
@@ -35,6 +36,13 @@ if "simulate_vhdl" in sys.argv:
     vhdl_plugin = streams_VHDL.Plugin()
     system.write_code(vhdl_plugin)
     vhdl_plugin.ghdl_test("Example 1 : Hello world .... in welsh!", stop_cycles=2000)
+
+if "visualize" in sys.argv:
+    #simulate using an external vhdl simulator
+    system=make_system("helo byd!\n", Console)
+    visual_plugin = streams_visual.Plugin("Example 1 : Hello world .... in welsh!")
+    system.write_code(visual_plugin)
+    visual_plugin.draw("example_1.svg")
 
 if "build" in sys.argv:
     import os

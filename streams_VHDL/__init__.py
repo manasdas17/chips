@@ -171,6 +171,9 @@ class Plugin:
     def write_process(self, p):
         process.write_process(p, self)
 
+    def write_output(self, p):
+        pass
+
     #System VHDL Generation and external tools
 
     def write_system(self, s):

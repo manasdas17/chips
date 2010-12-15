@@ -256,3 +256,35 @@ if "simulate_vhdl" in sys.argv:
     p.title("128 point FFT of 64 sample cosine wave")
     p.legend()
     p.show()
+
+if "visualize" in sys.argv:
+    r = 128
+    import streams_visual
+    import numpy as n
+    import scipy as s
+    from matplotlib import pyplot as p
+    from math import pi, sqrt
+
+    #create a cosine to stimulate the fft
+    x = n.arange(64)
+    cos_x = n.zeros(r)
+    cos_x[0:64] = s.cos(2*pi*x/64)
+
+    #pack the stimulus into the correct format
+    complex_time = []
+    for i in cos_x:
+        complex_time.append(to_fixed(i))
+        complex_time.append(0.0)
+
+    #build a simulation model
+    real, imaginary = fft(Sequence(*complex_time), r)
+    rer = Response(real)
+    imr = Response(imaginary)
+    system = System(rer, imr)
+
+    #run the simulation
+    plugin = streams_visual.Plugin("example_6_fft")
+    system.write_code(plugin)
+    plugin.draw("example_6.svg")
+
+

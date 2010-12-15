@@ -374,8 +374,7 @@ class Output(Stream, Unique):
         return self.process.get_bits()
 
     def write_code(self, plugin): 
-        pass
-        #self.process.write_code(plugin)
+        plugin.write_output(self)
 
     def reset(self):
         self.fifo=deque()

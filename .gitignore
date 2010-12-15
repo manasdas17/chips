@@ -1,4 +1,6 @@
 *.pyc
+*.svg
+*.bmp
 project
 streams_project
 .coverage
