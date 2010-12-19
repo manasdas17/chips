@@ -11,8 +11,13 @@
 \maketitle
 \tableofcontents
 
+\chapter{Introduction}
 \include{instructions}
+
+\chapter{The Concepts}
 \include{concepts}
+
+\chapter{The Language}
 \include{language}
 
 \appendix

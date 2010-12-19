@@ -1,3 +1,53 @@
-\BOOKMARK [0][-]{chapter.1}{Introduction}{}
-\BOOKMARK [0][-]{chapter.2}{The Concepts}{}
-\BOOKMARK [0][-]{chapter.3}{The Language}{}
+\BOOKMARK [0][-]{chapter.1}{The Concepts}{}
+\BOOKMARK [0][-]{chapter.2}{The Language}{}
+\BOOKMARK [1][-]{section.2.1}{Systems}{chapter.2}
+\BOOKMARK [1][-]{section.2.2}{Streams}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.2.1}{Counter\(Start, Stop, Step\)}{section.2.2}
+\BOOKMARK [2][-]{subsection.2.2.2}{InPort\(name, bits\)}{section.2.2}
+\BOOKMARK [2][-]{subsection.2.2.3}{Output\(\)}{section.2.2}
+\BOOKMARK [2][-]{subsection.2.2.4}{Repeater\(value\)}{section.2.2}
+\BOOKMARK [2][-]{subsection.2.2.5}{Scanner\(\)}{section.2.2}
+\BOOKMARK [2][-]{subsection.2.2.6}{Sequence\(seqeunce\)}{section.2.2}
+\BOOKMARK [2][-]{subsection.2.2.7}{SerialIn}{section.2.2}
+\BOOKMARK [2][-]{subsection.2.2.8}{Stimulus}{section.2.2}
+\BOOKMARK [1][-]{section.2.3}{Stream Combinators}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.3.1}{Array}{section.2.3}
+\BOOKMARK [2][-]{subsection.2.3.2}{Decoupler}{section.2.3}
+\BOOKMARK [2][-]{subsection.2.3.3}{HexPrinter}{section.2.3}
+\BOOKMARK [2][-]{subsection.2.3.4}{Lookup}{section.2.3}
+\BOOKMARK [2][-]{subsection.2.3.5}{Printer}{section.2.3}
+\BOOKMARK [2][-]{subsection.2.3.6}{Process}{section.2.3}
+\BOOKMARK [2][-]{subsection.2.3.7}{Resizer}{section.2.3}
+\BOOKMARK [1][-]{section.2.4}{Stream Expressions}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.4.1}{operator precedence}{section.2.4}
+\BOOKMARK [1][-]{section.2.5}{Sinks}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.5.1}{Asserter}{section.2.5}
+\BOOKMARK [2][-]{subsection.2.5.2}{Console}{section.2.5}
+\BOOKMARK [2][-]{subsection.2.5.3}{OutPort}{section.2.5}
+\BOOKMARK [2][-]{subsection.2.5.4}{Response}{section.2.5}
+\BOOKMARK [2][-]{subsection.2.5.5}{SerialOut}{section.2.5}
+\BOOKMARK [2][-]{subsection.2.5.6}{SVGA}{section.2.5}
+\BOOKMARK [1][-]{section.2.6}{Processes}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.6.1}{Output}{section.2.6}
+\BOOKMARK [2][-]{subsection.2.6.2}{Variable}{section.2.6}
+\BOOKMARK [2][-]{subsection.2.6.3}{VariableArray}{section.2.6}
+\BOOKMARK [1][-]{section.2.7}{Process Statements}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.7.1}{Block}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.2}{Break}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.3}{Constant}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.4}{Continue}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.5}{DoUntil}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.6}{DoWhile}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.7}{Evaluate}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.8}{If}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.9}{Loop}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.10}{Print}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.11}{Scan}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.12}{Until}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.13}{Value}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.14}{Variable}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.15}{WaitUs}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.16}{While}{section.2.7}
+\BOOKMARK [2][-]{subsection.2.7.17}{Expressions}{section.2.7}
+\BOOKMARK [1][-]{section.2.8}{Process Expressions}{chapter.2}
+\BOOKMARK [1][-]{section.2.9}{Patterns of Use}{chapter.2}

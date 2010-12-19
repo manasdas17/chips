@@ -127,8 +127,8 @@ based on the number of bits in the left and right hand operands.
 \begin{center}
 \begin{tabular}[]{cll}
 \textbf{Operator} & \textbf{Function}            & \textbf{Bit Width}\\
-\verb$+$          & Signed Add                   & $max(left, right) + 1$\\
-\verb$-$          & Signed Subtract              & $max(left, right) + 1$\\
+\verb$+$          & Signed Add                   & $max(left,right)+1$\\
+\verb$-$          & Signed Subtract              & $max((x, y)) + 1$\\
 \verb$*$          & Signed Multiply              & $left + right$\\
 \verb$//$         & Signed Floor Division        & $max(left, right) + 1$\\
 \verb$%$          & Signed Modulo                & $max(left, right)$\\

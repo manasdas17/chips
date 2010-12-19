@@ -7,12 +7,11 @@
 This versatile Stream emits numbers in the sequence
 $[start, start + step, start + 2 * step, ..., stop, start, ...]$.
 
-
+\caption{Example}
 \begin{verbatim}
-Example
-Counter(1, 3, 1)
+>>> Counter(1, 3, 1)
 => [1, 2, 3, 1, 2, 3, 1, 2, 3, ...,]
-Counter(3, 1, -1)
+>>> Counter(3, 1, -1)
 => [3, 2, 1, 3, 2, 1 ...,]
 \end{verbatim}
 
@@ -33,17 +32,16 @@ generate logic to synchronise the io port to the local clock domain.
 
 Example:
 \begin{verbatim}
-Example
-1  dip_switch = InPort("sw0", 8)
-2  minimal_system = System(OutPort("led0", dip_switch))
+>>> dip_switch = InPort("sw0", 8)
+>>> minimal_system = System(OutPort("led0", dip_switch))
 \end{verbatim}
 
 \subsection{Output()}
 While inputs to a process are created implicitly by reading from a stream,
 process outputs must be explicitly created by creating an \verb|Output|.
 
+Example:
 \begin{verbatim}
-Example
 1  output1 = Output()
 2  output2 = Output()
 3  data = Variable(0)
@@ -60,25 +58,14 @@ Example
 \subsection{Repeater(value)}
 The \verb|Repeater| Stream emits \verb|value| repeatedly.
 
+Example:
 \begin{verbatim}
-Example
-a = Repeater(1) + Repeater(1)
+>>> a = Repeater(1) + Repeater(1)
 => [2, 2, 2, 2, 2, 2, 2 ...]
 \end{verbatim}
 
-\subsection{Scanner()}
-
-\subsection{Sequence(seqeunce)}
-The \verb|Sequence| Stream emits each item in \verb|sequence| in turn. When the
-end of the sequence is reached, the whole process repeates starting again from
-the first item.
-
-\begin{verbatim}
-Example
-Sequence(0, l, l, 3, 4)
-=> [0, 1, 1, 3, 4, 0, 1, 1 ...]
-\end{verbatim}
-
+\subsection{Scanner}
+\subsection{Sequence}
 \subsection{SerialIn}
 \subsection{Stimulus}
 
@@ -127,8 +114,8 @@ based on the number of bits in the left and right hand operands.
 \begin{center}
 \begin{tabular}[]{cll}
 \textbf{Operator} & \textbf{Function}            & \textbf{Bit Width}\\
-\verb$+$          & Signed Add                   & $max(left, right) + 1$\\
-\verb$-$          & Signed Subtract              & $max(left, right) + 1$\\
+\verb$+$          & Signed Add                   & $max(left,right)+1$\\
+\verb$-$          & Signed Subtract              & $max((x, y)) + 1$\\
 \verb$*$          & Signed Multiply              & $left + right$\\
 \verb$//$         & Signed Floor Division        & $max(left, right) + 1$\\
 \verb$%$          & Signed Modulo                & $max(left, right)$\\
