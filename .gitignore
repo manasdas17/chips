@@ -1,6 +1,10 @@
 *.pyc
 *.svg
 *.bmp
+*.aux
+*.log
+*.backup
+*~
 project
 streams_project
 .coverage
