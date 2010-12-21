@@ -6,5 +6,7 @@
 *.backup
 *~
 project
+build
+dist
 streams_project
 .coverage

@@ -40,6 +40,7 @@ import system
 
 #processes
 import process
+import external_ip
 
 class Plugin:
 
@@ -59,6 +60,7 @@ class Plugin:
         self.ports = []
         self.dependencies = []
         self.processes = []
+        self.external_definitions=[]
 
     #sources
     def write_stimulus(self, stream): 
@@ -164,6 +166,13 @@ class Plugin:
 
     def write_printer(self, stream): 
         ports, declarations, definitions = printer.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_external_ip(self, ip): 
+        dependencies, ports, declarations, definitions = external_ip.write(self, ip)
+        self.dependencies.extend(dependencies)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)

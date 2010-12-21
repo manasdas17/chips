@@ -7,7 +7,13 @@ setup(name="PythonStreams",
       description="A library for designing hardware based on streams",
       author="Jon Dawson",
       author_email="jon@jondawson.org.uk",
-      packages=["streams", "streams_VHDL", "streams_visual", "streams_cpp"],
+      packages=[
+          "streams", 
+          "streams_VHDL", 
+          "streams_visual", 
+          #"streams_cpp",
+          "streams_ip"
+      ],
       scripts=[
           "test_suite/test_streams.py",
           "test_suite/test_streams_VHDL.py",
@@ -17,7 +23,11 @@ setup(name="PythonStreams",
           "streams":"src/streams", 
           "streams_VHDL":"src/streams_VHDL", 
           "streams_visual":"src/streams_visual", 
-          "streams_cpp":"src/streams_cpp", 
+          #"streams_cpp":"src/streams_cpp", 
+          "streams_ip":"src/streams_ip", 
+      },
+      package_data={
+          "streams_ip":["*.vhd"], 
       },
 )
 

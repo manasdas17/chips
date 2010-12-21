@@ -356,14 +356,14 @@ class Output(Stream, Unique):
     def set_system(self, system):
         if hasattr(self.process, "system"):
             if self.process.system is not system:
-                raise StreamsConstructionError("process is allready part of another system", process.filename, process.lineno)
+                raise StreamsConstructionError("Process is allready part of another System", process.filename, process.lineno)
         self.process.set_system(system)
         Stream.set_system(self, system)
 
     def set_process(self, process):
         if hasattr(self, "process"):
             if self.process is not process:
-                raise StreamsConstructionError("Output is allready part of a process", self.filename, self.lineno)
+                raise StreamsConstructionError("Output is allready part of a Process", self.filename, self.lineno)
         self.process = process
 
     def write(self, variable): 
@@ -555,6 +555,94 @@ class Console(Unique):
 
     def __repr__(self):
         return "Console()"
+
+class ExternalIPDefinition:
+    def __init__(self, 
+            name,
+            dependencies,
+            input_streams, 
+            output_streams, 
+            input_ports,
+            output_ports):
+        self.name = name
+        self.dependencies = dependencies
+        self.input_streams = input_streams
+        self.output_streams = output_streams
+        self.input_ports = input_ports
+        self.output_ports = output_ports
+
+class ExternalIPInstance(Unique):
+    def __init__(self, input_streams, definition, inport_mapping, outport_mapping):
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        self.input_streams = input_streams
+        self.definition = definition
+        self.output_streams = [ExternalIPStream(self, bits) for name, bits in self.definition.output_streams.iteritems()]
+        self.inport_mapping = inport_mapping
+        self.outport_mapping = outport_mapping
+
+        for i in self.input_streams:
+            if hasattr(i, "receiver"):
+                raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            else:
+                i.receiver = self
+
+        no_streams_expected = len(self.definition.input_streams)
+        no_streams_actual = len(self.input_streams)
+        if no_streams_expected != no_streams_actual:
+            raise StreamsConstructionError("External IP expects: {0} input streams, actual: {1}".format(
+                no_streams_expected, no_streams_actual), self.filename, self.lineno)
+
+        expected_sizes = self.definition.input_streams.values()
+        for stream, expected_size in zip(self.input_streams, expected_sizes):
+            if expected_size != stream.get_bits:
+                raise StreamsConstructionError("incorrect bit width, expected: {0} actual: {1}".format(
+                    expected_size, stream.get_bits()), self.filename, self.lineno)
+
+        Unique.__init__(self)
+
+    def get_output_streams(self):
+        return self.output_streams
+
+    def write_code(self, output_stream, plugin):
+        if output_stream is self.output_streams[0]:
+            plugin.write_external_ip(self)
+
+
+class ExternalIPStream(Stream, Unique):
+
+    def __init__(self, instance, bits):
+        """Do not call this manually, ExternalIPStream is
+        automatically created by ExternalIPInstance"""
+        self.instance = instance
+        self.bits = bits
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        Unique.__init__(self)
+
+    def set_system(self, system):
+
+        if hasattr(self, "system"):
+            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
+        else:
+            self.system = system
+            system.streams.append(self)
+
+        if self is self.instance.output_streams[0]: 
+            for i in self.instance.input_streams:
+                i.set_system(system)
+
+    def get_bits(self): 
+        return self.bits
+
+    def write_code(self, plugin): 
+        self.instance.write_code(self, plugin)
+
+    def reset(self):
+        raise SimulationError("external ip cannot be natively simulated", self.filename, self.lineno)
+
+    def get(self):
+        raise SimulationError("external ip cannot be natively simulated", self.filename, self.lineno)
 
 class SVGA(Unique):
 

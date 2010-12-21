@@ -27,6 +27,7 @@ class Plugin:
         self.nodes = []
         self.edges = []
         self.outputs = {}
+        self.ip_outputs = {}
 
     #sources
     def write_stimulus(self, stream): 
@@ -111,6 +112,14 @@ class Plugin:
         for i in p.inputs:
             self.edges.append((id(i), id(p), i.get_bits(), "centre"))
 
+    def write_external_ip(self, ip): 
+        for i in ip.output_streams:
+            self.ip_outputs[id(i)]=id(ip)
+
+        self.nodes.append((id(ip), ip.definition.name, "ellipse"))
+        for i in ip.input_streams:
+            self.edges.append((id(i), id(ip), i.get_bits(), "centre"))
+
     def write_system(self, *args):
         pass
 
@@ -121,6 +130,8 @@ class Plugin:
         for from_node, to_node, bits, headport in self.edges:
             if from_node in self.outputs:
                 self.schematic.add_edge(str(self.outputs[from_node]), str(to_node), label=str(bits), headport=headport)
+            elif from_node in self.ip_outputs:
+                self.schematic.add_edge(str(self.ip_outputs[from_node]), str(to_node), label=str(bits), headport=headport)
             else:
                 self.schematic.add_edge(str(from_node), str(to_node), label=str(bits))
         self.schematic.layout(prog='dot')
