@@ -16,7 +16,7 @@ def write(stream):
     bits_a = stream.a.get_bits()
 
     if bits_a < bits :
-        expression = "  STREAM_{0} <= resize(signed(STREAM_{1}), {2});".format(identifier, identifier_a, bits)
+        expression = "  STREAM_{0} <= std_logic_vector(resize(signed(STREAM_{1}), {2}));".format(identifier, identifier_a, bits)
     elif bits_a == bits:
         expression = "  STREAM_{0} <= STREAM_{1};".format(identifier, identifier_a)
     else:

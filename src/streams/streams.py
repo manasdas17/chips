@@ -594,17 +594,31 @@ class ExternalIPInstance(Unique):
                 no_streams_expected, no_streams_actual), self.filename, self.lineno)
 
         expected_sizes = self.definition.input_streams.values()
+        print expected_sizes
         for stream, expected_size in zip(self.input_streams, expected_sizes):
-            if expected_size != stream.get_bits:
+            if expected_size != stream.get_bits():
                 raise StreamsConstructionError("incorrect bit width, expected: {0} actual: {1}".format(
                     expected_size, stream.get_bits()), self.filename, self.lineno)
 
         Unique.__init__(self)
 
+    def set_system(self, system):
+        #this should only get called if the IP is added to a system
+        #ie. it is acting as a sink.
+        if self.output_streams:
+            raise StreamsConstructionError("only data sinks can be added to systems", self.filename, self.lineno)
+
+        for i in self.input_streams:
+            i.set_system(system)
+        system.streams.append(self)
+
     def get_output_streams(self):
         return self.output_streams
 
-    def write_code(self, output_stream, plugin):
+    def write_code(self, plugin):
+        plugin.write_external_ip(self)
+
+    def write_input_code(self, output_stream, plugin):
         if output_stream is self.output_streams[0]:
             plugin.write_external_ip(self)
 
@@ -636,48 +650,13 @@ class ExternalIPStream(Stream, Unique):
         return self.bits
 
     def write_code(self, plugin): 
-        self.instance.write_code(self, plugin)
+        self.instance.write_input_code(self, plugin)
 
     def reset(self):
         raise SimulationError("external ip cannot be natively simulated", self.filename, self.lineno)
 
     def get(self):
         raise SimulationError("external ip cannot be natively simulated", self.filename, self.lineno)
-
-class SVGA(Unique):
-
-    def __init__(self, a):
-        self.a=a
-        self.filename = getsourcefile(currentframe().f_back)
-        self.lineno = currentframe().f_back.f_lineno
-        assert a.get_bits()==8
-        Unique.__init__(self)
-        if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
-        else:
-            self.a.receiver = self
-
-    def set_system(self, system):
-        if hasattr(self, "system"):
-            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
-        self.system = system
-        system.streams.append(self)
-        self.a.set_system(system)
-
-    def get_bits(self): 
-        return 8
-
-    def write_code(self, plugin): 
-        plugin.write_svga(self)
-
-    def reset(self):
-        pass
-
-    def execute(self):
-        self.a.get()
-
-    def __repr__(self):
-        return "SVGA({0})".format(self.s)
 
 class SerialOut(Unique):
 

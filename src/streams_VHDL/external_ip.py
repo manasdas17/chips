@@ -38,6 +38,7 @@ def write(plugin, stream):
                 ports.append("      {0} : in std_logic_vector({1} downto 0)".format(mapping, size-1))
 
         for output_port, size in definition.output_ports.iteritems():
+            print instance.outport_mapping
             mapping = instance.outport_mapping[output_port]
             if size == 1:
                 ports.append("      {0} : out std_logic".format(mapping))
@@ -86,14 +87,15 @@ def write(plugin, stream):
                 component_ports.append("      {0}_STB : out std_logic".format(output_stream))
                 component_ports.append("      {0}_ACK : in std_logic".format(output_stream))
 
-                declarations = [
-        "  component {0} is".format(definition.name),
-        "    port(",
-        ';\n'.join(component_ports),
-        "    );",
-        "  end component {0};".format(definition.name),
-        "",
-                ]
+        declarations = [
+"  component {0} is".format(definition.name),
+"    port(",
+';\n'.join(component_ports),
+"    );",
+"  end component {0};".format(definition.name),
+"",
+        ]
+
     else:
         declarations = []
 

@@ -594,17 +594,31 @@ class ExternalIPInstance(Unique):
                 no_streams_expected, no_streams_actual), self.filename, self.lineno)
 
         expected_sizes = self.definition.input_streams.values()
+        print expected_sizes
         for stream, expected_size in zip(self.input_streams, expected_sizes):
-            if expected_size != stream.get_bits:
+            if expected_size != stream.get_bits():
                 raise StreamsConstructionError("incorrect bit width, expected: {0} actual: {1}".format(
                     expected_size, stream.get_bits()), self.filename, self.lineno)
 
         Unique.__init__(self)
 
+    def set_system(self, system):
+        #this should only get called if the IP is added to a system
+        #ie. it is acting as a sink.
+        if self.output_streams:
+            raise StreamsConstructionError("only data sinks can be added to systems", self.filename, self.lineno)
+
+        for i in self.input_streams:
+            i.set_system(system)
+        system.streams.append(self)
+
     def get_output_streams(self):
         return self.output_streams
 
-    def write_code(self, output_stream, plugin):
+    def write_code(self, plugin):
+        plugin.write_external_ip(self)
+
+    def write_input_code(self, output_stream, plugin):
         if output_stream is self.output_streams[0]:
             plugin.write_external_ip(self)
 
@@ -636,7 +650,7 @@ class ExternalIPStream(Stream, Unique):
         return self.bits
 
     def write_code(self, plugin): 
-        self.instance.write_code(self, plugin)
+        self.instance.write_input_code(self, plugin)
 
     def reset(self):
         raise SimulationError("external ip cannot be natively simulated", self.filename, self.lineno)
