@@ -49,6 +49,10 @@ WaitUs = instruction.WaitUs
 Evaluate = instruction.Evaluate
 Value = instruction.Value
 
+#EXTERNAL IP INTERFACE
+ExternalIPDefinition = streams.ExternalIPDefinition
+ExternalIPInstance = streams.ExternalIPInstance
+
 #synthesised streams
 def Sequence(*args):
     return Lookup(Counter(0, len(args)-1, 1), *args)

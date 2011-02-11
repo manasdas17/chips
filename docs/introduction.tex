@@ -1,0 +1,86 @@
+\chapter{Introduction}
+\section{A new approach to device design}
+
+Traditionaly, the tool of choice for digital devices is a Hardware Description
+Language (HDL), the most common being Verilog and VHDL. These languages provide
+a reasonably rich environment for modeling and simulating hardware,
+but only a limitied subset of the langauge can be realised in a digital
+device (synthesised). 
+
+A software designer would typically implement a function in an imperative
+style using loops, branches and subprocedures, but hardware models written in
+an imperative style cannot be synthesised.
+
+Synthesisable designs require a different approach. Digital device designers
+must work at the Register Transfer Level (RTL). The primitive elements of an
+RTL design are clocked memory elements (registers) and combinational
+logic elements. A typlical synthesis tool would be able to infer boolean logic,
+addition, subtraction, multiplexing and bit manipulation from HDL code written
+in a very specific style.
+
+An RTL designer has to work at a low level of abstraction. In practical terms
+this means that a designer has to do more of the work themselves.
+
+\begin{enumerate}
+
+\item
+A designer is reponsible for designing their own interfaces to the outside
+world.
+
+\item
+The designer is responsible for clock to clock timing, manualy balancing
+propogation delays between clocked elements to achieve high performance.
+
+\item
+A designer has to provide their own mechanism to synchronise and pass
+data bwetween concurrent computational elements (by implementing a bus with
+control and handshaking signals).
+
+\item
+A designer has to provide their own mechanism to control the flow of execution
+within a computational element (usually by manually coding a finite state
+machine). 
+
+\item
+The primitive elements are primitive.
+
+\end{enumerate}
+
+This is where Python Streams comes in. In Python Streams, there is no
+synthesiseable subset, but a standalone synthesisable language built on top of
+Python. Python streams allows designers to work at a higher level of
+abstraction. It does a lot more of the work for you.
+
+\begin{enumerate}
+
+\item Python streams provides a suite of device interfaces including portio,
+uart, usb and ethernet.
+
+\item Synthesisable RTL code is generated automatically by the tool. Clocks,
+resets, and clock to clock timing are all taken care of behind the scenes.
+
+\item Python Streams provides a simple method to synchronise concurrent
+elements, and to pass data between them - streams. The tool automatically
+generates interconnect busses and handshaking signals behind the scenes.
+
+\item Python streams provides imperative style sequeneces branches and loop. The
+tool automatically generates state machines, or highly optimized soft-core
+processors behind the scenes.
+
+\item The primitive elements are not so primitive. Common constructs such as
+counters, lookup tables, ROMS and RAMS are invoked with a single keyword and a
+few parameters. Python Streams also provides a richer set of arithmetic
+operators including fully synthesiseable division and multiplication.
+
+\end{enumerate}
+
+\section{A language within a language}
+
+Python Streams is a python library, just an add-on to Python which is no more
+or less than a programming language. The Python Streams library provides an
+Application Programmers Interface (API) to a suite of hardware design functions.
+
+The Python Streams library can also be considered a language in its own right,
+The Python language itself provides statements which are executed on your
+own computer. The Python Streams provides an alternative language, statements
+which are executed on the target device.

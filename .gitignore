@@ -1,4 +1,12 @@
 *.pyc
+*.svg
+*.bmp
+*.aux
+*.log
+*.backup
+*~
 project
+build
+dist
 streams_project
 .coverage
