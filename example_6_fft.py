@@ -256,3 +256,16 @@ if "simulate_vhdl" in sys.argv:
     p.title("128 point FFT of 64 sample cosine wave")
     p.legend()
     p.show()
+
+if "build" in sys.argv:
+    import streams_VHDL
+    import os
+    import shutil
+    r = 1024
+    real, imaginary = fft(InPort("Input", p), r)
+    rer = OutPort(real, "real")
+    imr = OutPort(imaginary, "imaginary")
+    system = System(rer, imr)
+    plugin = streams_VHDL.Plugin(internal_clock=False, internal_reset=False)
+    system.write_code(plugin)
+    plugin.xilinx_build()
