@@ -1,53 +1,56 @@
-\contentsline {chapter}{\numberline {1}The Concepts}{3}{chapter.1}
-\contentsline {chapter}{\numberline {2}The Language}{4}{chapter.2}
-\contentsline {section}{\numberline {2.1}Systems}{4}{section.2.1}
-\contentsline {section}{\numberline {2.2}Streams}{4}{section.2.2}
-\contentsline {subsection}{\numberline {2.2.1}Counter(Start, Stop, Step)}{4}{subsection.2.2.1}
-\contentsline {subsection}{\numberline {2.2.2}InPort(name, bits)}{4}{subsection.2.2.2}
-\contentsline {subsection}{\numberline {2.2.3}Output()}{5}{subsection.2.2.3}
-\contentsline {subsection}{\numberline {2.2.4}Repeater(value)}{5}{subsection.2.2.4}
-\contentsline {subsection}{\numberline {2.2.5}Scanner()}{5}{subsection.2.2.5}
-\contentsline {subsection}{\numberline {2.2.6}Sequence(seqeunce)}{5}{subsection.2.2.6}
-\contentsline {subsection}{\numberline {2.2.7}SerialIn}{6}{subsection.2.2.7}
-\contentsline {subsection}{\numberline {2.2.8}Stimulus}{6}{subsection.2.2.8}
-\contentsline {section}{\numberline {2.3}Stream Combinators}{6}{section.2.3}
-\contentsline {subsection}{\numberline {2.3.1}Array}{6}{subsection.2.3.1}
-\contentsline {subsection}{\numberline {2.3.2}Decoupler}{6}{subsection.2.3.2}
-\contentsline {subsection}{\numberline {2.3.3}HexPrinter}{6}{subsection.2.3.3}
-\contentsline {subsection}{\numberline {2.3.4}Lookup}{6}{subsection.2.3.4}
-\contentsline {subsection}{\numberline {2.3.5}Printer}{6}{subsection.2.3.5}
-\contentsline {subsection}{\numberline {2.3.6}Process}{6}{subsection.2.3.6}
-\contentsline {subsection}{\numberline {2.3.7}Resizer}{6}{subsection.2.3.7}
-\contentsline {section}{\numberline {2.4}Stream Expressions}{6}{section.2.4}
-\contentsline {subsection}{\numberline {2.4.1}operator precedence}{6}{subsection.2.4.1}
-\contentsline {section}{\numberline {2.5}Sinks}{8}{section.2.5}
-\contentsline {subsection}{\numberline {2.5.1}Asserter}{8}{subsection.2.5.1}
-\contentsline {subsection}{\numberline {2.5.2}Console}{8}{subsection.2.5.2}
-\contentsline {subsection}{\numberline {2.5.3}OutPort}{8}{subsection.2.5.3}
-\contentsline {subsection}{\numberline {2.5.4}Response}{8}{subsection.2.5.4}
-\contentsline {subsection}{\numberline {2.5.5}SerialOut}{8}{subsection.2.5.5}
-\contentsline {subsection}{\numberline {2.5.6}SVGA}{8}{subsection.2.5.6}
-\contentsline {section}{\numberline {2.6}Processes}{8}{section.2.6}
-\contentsline {subsection}{\numberline {2.6.1}Output}{8}{subsection.2.6.1}
-\contentsline {subsection}{\numberline {2.6.2}Variable}{8}{subsection.2.6.2}
-\contentsline {subsection}{\numberline {2.6.3}VariableArray}{8}{subsection.2.6.3}
-\contentsline {section}{\numberline {2.7}Process Statements}{8}{section.2.7}
-\contentsline {subsection}{\numberline {2.7.1}Block}{8}{subsection.2.7.1}
-\contentsline {subsection}{\numberline {2.7.2}Break}{8}{subsection.2.7.2}
-\contentsline {subsection}{\numberline {2.7.3}Constant}{8}{subsection.2.7.3}
-\contentsline {subsection}{\numberline {2.7.4}Continue}{8}{subsection.2.7.4}
-\contentsline {subsection}{\numberline {2.7.5}DoUntil}{8}{subsection.2.7.5}
-\contentsline {subsection}{\numberline {2.7.6}DoWhile}{8}{subsection.2.7.6}
-\contentsline {subsection}{\numberline {2.7.7}Evaluate}{8}{subsection.2.7.7}
-\contentsline {subsection}{\numberline {2.7.8}If}{8}{subsection.2.7.8}
-\contentsline {subsection}{\numberline {2.7.9}Loop}{8}{subsection.2.7.9}
-\contentsline {subsection}{\numberline {2.7.10}Print}{8}{subsection.2.7.10}
-\contentsline {subsection}{\numberline {2.7.11}Scan}{8}{subsection.2.7.11}
-\contentsline {subsection}{\numberline {2.7.12}Until}{8}{subsection.2.7.12}
-\contentsline {subsection}{\numberline {2.7.13}Value}{8}{subsection.2.7.13}
-\contentsline {subsection}{\numberline {2.7.14}Variable}{8}{subsection.2.7.14}
-\contentsline {subsection}{\numberline {2.7.15}WaitUs}{8}{subsection.2.7.15}
-\contentsline {subsection}{\numberline {2.7.16}While}{8}{subsection.2.7.16}
-\contentsline {subsection}{\numberline {2.7.17}Expressions}{8}{subsection.2.7.17}
-\contentsline {section}{\numberline {2.8}Process Expressions}{8}{section.2.8}
-\contentsline {section}{\numberline {2.9}Patterns of Use}{8}{section.2.9}
+\contentsline {chapter}{\numberline {1}Introduction}{3}{chapter.1}
+\contentsline {section}{\numberline {1.1}A new approach to device design}{3}{section.1.1}
+\contentsline {section}{\numberline {1.2}A language within a language}{4}{section.1.2}
+\contentsline {chapter}{\numberline {2}The Concepts}{5}{chapter.2}
+\contentsline {chapter}{\numberline {3}The Language}{6}{chapter.3}
+\contentsline {section}{\numberline {3.1}Systems}{6}{section.3.1}
+\contentsline {section}{\numberline {3.2}Streams}{6}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Counter(Start, Stop, Step)}{6}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}InPort(name, bits)}{6}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}Output()}{7}{subsection.3.2.3}
+\contentsline {subsection}{\numberline {3.2.4}Repeater(value)}{7}{subsection.3.2.4}
+\contentsline {subsection}{\numberline {3.2.5}Scanner()}{7}{subsection.3.2.5}
+\contentsline {subsection}{\numberline {3.2.6}Sequence(seqeunce)}{7}{subsection.3.2.6}
+\contentsline {subsection}{\numberline {3.2.7}SerialIn}{8}{subsection.3.2.7}
+\contentsline {subsection}{\numberline {3.2.8}Stimulus}{8}{subsection.3.2.8}
+\contentsline {section}{\numberline {3.3}Stream Combinators}{8}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Array}{8}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Decoupler}{8}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}HexPrinter}{8}{subsection.3.3.3}
+\contentsline {subsection}{\numberline {3.3.4}Lookup}{8}{subsection.3.3.4}
+\contentsline {subsection}{\numberline {3.3.5}Printer}{8}{subsection.3.3.5}
+\contentsline {subsection}{\numberline {3.3.6}Process}{8}{subsection.3.3.6}
+\contentsline {subsection}{\numberline {3.3.7}Resizer}{8}{subsection.3.3.7}
+\contentsline {section}{\numberline {3.4}Stream Expressions}{8}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}operator precedence}{8}{subsection.3.4.1}
+\contentsline {section}{\numberline {3.5}Sinks}{10}{section.3.5}
+\contentsline {subsection}{\numberline {3.5.1}Asserter}{10}{subsection.3.5.1}
+\contentsline {subsection}{\numberline {3.5.2}Console}{10}{subsection.3.5.2}
+\contentsline {subsection}{\numberline {3.5.3}OutPort}{10}{subsection.3.5.3}
+\contentsline {subsection}{\numberline {3.5.4}Response}{10}{subsection.3.5.4}
+\contentsline {subsection}{\numberline {3.5.5}SerialOut}{10}{subsection.3.5.5}
+\contentsline {subsection}{\numberline {3.5.6}SVGA}{10}{subsection.3.5.6}
+\contentsline {section}{\numberline {3.6}Processes}{10}{section.3.6}
+\contentsline {subsection}{\numberline {3.6.1}Output}{10}{subsection.3.6.1}
+\contentsline {subsection}{\numberline {3.6.2}Variable}{10}{subsection.3.6.2}
+\contentsline {subsection}{\numberline {3.6.3}VariableArray}{10}{subsection.3.6.3}
+\contentsline {section}{\numberline {3.7}Process Statements}{10}{section.3.7}
+\contentsline {subsection}{\numberline {3.7.1}Block}{10}{subsection.3.7.1}
+\contentsline {subsection}{\numberline {3.7.2}Break}{10}{subsection.3.7.2}
+\contentsline {subsection}{\numberline {3.7.3}Constant}{10}{subsection.3.7.3}
+\contentsline {subsection}{\numberline {3.7.4}Continue}{10}{subsection.3.7.4}
+\contentsline {subsection}{\numberline {3.7.5}DoUntil}{10}{subsection.3.7.5}
+\contentsline {subsection}{\numberline {3.7.6}DoWhile}{10}{subsection.3.7.6}
+\contentsline {subsection}{\numberline {3.7.7}Evaluate}{10}{subsection.3.7.7}
+\contentsline {subsection}{\numberline {3.7.8}If}{10}{subsection.3.7.8}
+\contentsline {subsection}{\numberline {3.7.9}Loop}{10}{subsection.3.7.9}
+\contentsline {subsection}{\numberline {3.7.10}Print}{10}{subsection.3.7.10}
+\contentsline {subsection}{\numberline {3.7.11}Scan}{10}{subsection.3.7.11}
+\contentsline {subsection}{\numberline {3.7.12}Until}{10}{subsection.3.7.12}
+\contentsline {subsection}{\numberline {3.7.13}Value}{10}{subsection.3.7.13}
+\contentsline {subsection}{\numberline {3.7.14}Variable}{10}{subsection.3.7.14}
+\contentsline {subsection}{\numberline {3.7.15}WaitUs}{10}{subsection.3.7.15}
+\contentsline {subsection}{\numberline {3.7.16}While}{10}{subsection.3.7.16}
+\contentsline {subsection}{\numberline {3.7.17}Expressions}{10}{subsection.3.7.17}
+\contentsline {section}{\numberline {3.8}Process Expressions}{10}{section.3.8}
+\contentsline {section}{\numberline {3.9}Patterns of Use}{10}{section.3.9}
