@@ -29,9 +29,9 @@ src/streams_VHDL/response.py
 src/streams_VHDL/serial_in.py
 src/streams_VHDL/serial_out.py
 src/streams_VHDL/stimulus.py
-src/streams_VHDL/svga.py
 src/streams_VHDL/system.py
 src/streams_ip/__init__.py
+src/streams_ip/character_svga.py
 src/streams_ip/ps2_keyboard.py
 src/streams_visual/__init__.py
 test_suite/test_streams.py

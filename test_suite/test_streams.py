@@ -20,6 +20,31 @@ def c_style_modulo(x, y):
 def c_style_division(x, y):
     return sign(x)*sign(y)*(abs(x)//abs(y))
 
+#test fifo
+fifo_in = Output()
+fifo_out = Fifo(fifo_in, 4)
+data_out = Output()
+a = Variable(0)
+Process(8,
+    fifo_in.write(0),
+    fifo_in.write(1),
+    fifo_in.write(2),
+    fifo_in.write(3),
+    fifo_out.read(a),
+    data_out.write(a),
+    fifo_out.read(a),
+    data_out.write(a),
+    fifo_out.read(a),
+    data_out.write(a),
+    fifo_out.read(a),
+    data_out.write(a),
+)
+
+system = System(Asserter(data_out==Sequence(0, 1, 2, 3)))
+
+good = system.test("fifo test 1", 100)
+if not good and stop_on_fail: exit()
+
 #test arrays
 myarray = VariableArray(4)
 data_out = Output()

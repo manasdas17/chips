@@ -25,12 +25,12 @@ import console
 import asserter
 import serial_out
 import response
-import svga
 
 #combinators
 import binary
 import lookup
 import array
+import fifo
 import decoupler
 import resizer
 import printer
@@ -147,6 +147,13 @@ class Plugin:
 
     def write_array(self, stream): 
         dependencies, ports, declarations, definitions = array.write(self, stream)
+        self.dependencies.extend(dependencies)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
+
+    def write_fifo(self, stream): 
+        dependencies, ports, declarations, definitions = fifo.write(self, stream)
         self.dependencies.extend(dependencies)
         self.ports.extend(ports)
         self.declarations.extend(declarations)

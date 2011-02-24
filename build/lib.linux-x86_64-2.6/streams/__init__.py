@@ -16,6 +16,7 @@ Process = process.Process
 #COMBINATORS
 Lookup = streams.Lookup
 Array = streams.Array
+Fifo = streams.Fifo
 Decoupler = streams.Decoupler
 Resizer = streams.Resizer
 Printer = streams.Printer
@@ -32,7 +33,6 @@ Stimulus = streams.Stimulus
 Response = streams.Response
 OutPort = streams.OutPort
 SerialOut = streams.SerialOut
-SVGA = streams.SVGA
 Console = streams.Console
 Asserter = streams.Asserter
 

@@ -16,6 +16,7 @@ Process = process.Process
 #COMBINATORS
 Lookup = streams.Lookup
 Array = streams.Array
+Fifo = streams.Fifo
 Decoupler = streams.Decoupler
 Resizer = streams.Resizer
 Printer = streams.Printer
