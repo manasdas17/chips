@@ -11,6 +11,8 @@ __status__ = "Prototype"
 #python modules
 import subprocess
 import os
+#streams modules
+import process
 
 class Plugin:
 
@@ -100,7 +102,11 @@ class Plugin:
             "//asserter",
             "void execute_{0}()".format(stream.get_identifier()),
             "{",
-            "  assert(get_stream_{0}().value);".format(stream.a.get_identifier()),
+            "  data_type data = get_stream_{0}();".format(stream.a.get_identifier()),
+            "  if (!data.stalled)",
+            "  {",
+            "    assert(data.value);".format(stream.a.get_identifier()),
+            "  }",
             "}",
             "",
         ])
@@ -116,16 +122,35 @@ class Plugin:
             'eq'  : '==', 'ne'  : '!=', 'lt'  : '<', 'le'  : '<=', 'gt'  : '>',
             'ge'  : '>='
         }
+        negate = { 'add' : '', 'sub' : '', 'mul' : '', 'div' : '', 'mod' : '',
+            'and' : '', 'or'  : '', 'xor' : '', 'sl'  : '', 'sr'  : '', 
+            'eq'  : '-', 'ne'  : '-', 'lt'  : '-', 'le'  : '-', 'gt'  : '-',
+            'ge'  : '-'
+        }
         self.declarations.append("data_type get_stream_{0}();".format(stream.get_identifier()))
         self.source.extend([
             "//binary",
+            "data_type data_1_{0} = {1}0, true{2};".format(stream.get_identifier(), "{", "}"),
+            "data_type data_2_{0} = {1}0, true{2};".format(stream.get_identifier(), "{", "}"),
             "data_type get_stream_{0}()".format(stream.get_identifier()),
             "{",
-            "  data_type data;",
-            "  data_type a = get_stream_{0}();".format(stream.a.get_identifier()),
-            "  data_type b = get_stream_{0}();".format(stream.b.get_identifier()),
-            "  data.value = resize((a.value {0} b.value), {1});".format(functions[stream.function], stream.get_bits()),
-            "  data.stalled = a.stalled || b.stalled;",
+            "  data_type data;".format(stream.get_identifier()),
+            "  if (data_1_{0}.stalled)".format(stream.get_identifier()),
+            "    data_1_{0} = get_stream_{1}();".format(stream.get_identifier(), stream.a.get_identifier()),
+            "  if (data_2_{0}.stalled)".format(stream.get_identifier()),
+            "    data_2_{0} = get_stream_{1}();".format(stream.get_identifier(), stream.b.get_identifier()),
+            "  if(!data_1_{0}.stalled && !data_2_{0}.stalled)".format(stream.get_identifier()),
+            "  {",
+            "    data_1_{0}.stalled = true;".format(stream.get_identifier()),
+            "    data_2_{0}.stalled = true;".format(stream.get_identifier()),
+            "  }",
+            "  data.value = {0}resize((data_1_{1}.value {2} data_2_{1}.value), {3});".format(
+                negate[stream.function],
+                stream.get_identifier(), 
+                functions[stream.function], 
+                stream.get_bits()
+            ),
+            "  data.stalled = data_1_{0}.stalled || data_2_{0}.stalled;".format(stream.get_identifier()),
             "  if(debug){",
             "   cerr << {0} << \" binary \" << data.value << \" \" << data.stalled << endl;".format(stream.get_identifier()),
             "  }",
@@ -273,15 +298,24 @@ class Plugin:
         self.declarations.append("data_type get_stream_{0}();".format(stream.get_identifier()))
         self.source.extend([
             "//process output",
+            "data_type output_{0} = {1}0, true{2};".format(stream.get_identifier(), "{", "}"),
             "data_type get_stream_{0}()".format(stream.get_identifier()),
             "{",
-            "  return 0;",
+            "  data_type data = output_{0};".format(stream.get_identifier()),
+            "  output_{0}.stalled = true;".format(stream.get_identifier()),
+            "  if(debug){",
+            "   cerr << {0} << \" process output \" << data.value << \" \" << data.stalled << endl;".format(stream.get_identifier()),
+            "  }",
+            "  return data;",
             "}",
             "",
         ])
 
     def write_process(self, p):
-        pass
+        declarations, definitions, execute = process.write_process(p, self)
+        self.declarations.extend(declarations)
+        self.source.extend(definitions)
+        self.execute.extend(execute)
 
     def write_system(self, *args):
         header = [

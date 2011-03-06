@@ -178,459 +178,460 @@ def c_style_division(x, y):
 #good = good and simulation_plugin.test("evaluate test", stop_cycles=1000)
 #if not good and stop_on_fail: exit()
 #
-##Test Integer +
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(i+j)
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a+b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
+#Test Integer +
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i+j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a+b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
 #good = good and simulation_plugin.test("integer + test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer -
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(i-j)
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a-b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer - test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer *
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(i*j)
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a*b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer * test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer //
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-16, 0)+range(1, 16):
-#        a.append(i)
-#        b.append(j)
-#        z.append(c_style_division(i, j))
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a//b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer // test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer %
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-16, 0)+range(1, 16):
-#        a.append(i)
-#        b.append(j)
-#        z.append(c_style_modulo(i, j))
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a%b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer % test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer &
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(i&j)
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a&b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer & test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer |
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(i|j)
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a|b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer | test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer ^
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(i^j)
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a^b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer ^ test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer <<
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(0, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(i<<j)
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(16, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a<<b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer << test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer >>
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(0, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(i>>j)
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a>>b)
-#))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer >> test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer ==
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(-int(i==j))
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a==b)
-#    ))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer == test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer !=
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(-int(i!=j))
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a!=b)
-#    ))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer != test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer >=
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(-int(i>=j))
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a>=b)
-#    ))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer >= test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer <=
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(-int(i<=j))
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a<=b)
-#    ))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer <= test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer >
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(-int(i>j))
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a>b)
-#    ))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer > test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Integer <
-#a, b, z = [], [], []
-#for i in range(-8, 8):
-#    for j in range(-8, 8):
-#        a.append(i)
-#        b.append(j)
-#        z.append(-int(i<j))
-#
-#stimulus_a =        Sequence(*a)
-#stimulus_b =        Sequence(*b)
-#expected_response = Sequence(*z)
-#a = Variable(0)
-#b = Variable(0)
-#z = Output()
-#Process(8, Loop(
-#    stimulus_a.read(a),
-#    stimulus_b.read(b),
-#    z.write(a<b)
-#    ))
-#s=System(Asserter(expected_response == z))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("integer < test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##Test Chain
-#expected_response = Sequence(0, 1, 2, 3, 4, 5, 6)
-#z = Output()
-#Process(8, 
-#    Loop(
-#        z.write(0),
-#        z.write(1),
-#        z.write(2),
-#        z.write(3),
-#        z.write(4),
-#        z.write(5),
-#        z.write(6),
-#    )
-#)
-#s=System(
-#        Asserter( expected_response == z),
-#        #Printer(z),
-#)
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("chain test ", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
+good = simulation_plugin.test("integer + test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer -
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i-j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a-b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer - test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer *
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i*j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a*b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer * test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer //
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-16, 0)+range(1, 16):
+        a.append(i)
+        b.append(j)
+        z.append(c_style_division(i, j))
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a//b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer // test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer %
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-16, 0)+range(1, 16):
+        a.append(i)
+        b.append(j)
+        z.append(c_style_modulo(i, j))
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a%b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer % test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer &
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i&j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a&b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer & test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer |
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i|j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a|b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer | test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer ^
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i^j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a^b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer ^ test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer <<
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(0, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i<<j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(16, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a<<b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer << test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer >>
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(0, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i>>j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a>>b)
+))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer >> test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer ==
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(-int(i==j))
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a==b)
+    ))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer == test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer !=
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(-int(i!=j))
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a!=b)
+    ))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer != test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer >=
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(-int(i>=j))
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a>=b)
+    ))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer >= test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer <=
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(-int(i<=j))
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a<=b)
+    ))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer <= test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer >
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(-int(i>j))
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a>b)
+    ))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer > test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer <
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(-int(i<j))
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+a = Variable(0)
+b = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    stimulus_b.read(b),
+    z.write(a<b)
+    ))
+s=System(Asserter(expected_response == z))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer < test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Chain
+expected_response = Sequence(0, 1, 2, 3, 4, 5, 6)
+z = Output()
+Process(8, 
+    Loop(
+        z.write(0),
+        z.write(1),
+        z.write(2),
+        z.write(3),
+        z.write(4),
+        z.write(5),
+        z.write(6),
+    )
+)
+s=System(
+        Asserter( expected_response == z),
+        #Printer(z),
+)
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("chain test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
 
 #Test Binary +
 a, b, z = [], [], []
@@ -647,7 +648,7 @@ s=System(Asserter(expected_response == stimulus_a + stimulus_b))
 
 simulation_plugin = streams_cpp.Plugin()
 s.write_code(simulation_plugin)
-good = simulation_plugin.test("streams + test ", stop_cycles=1000)
+good = good and simulation_plugin.test("streams + test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
 #Test Binary -
