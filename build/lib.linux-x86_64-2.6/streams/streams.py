@@ -658,41 +658,6 @@ class ExternalIPStream(Stream, Unique):
     def get(self):
         raise SimulationError("external ip cannot be natively simulated", self.filename, self.lineno)
 
-class SVGA(Unique):
-
-    def __init__(self, a):
-        self.a=a
-        self.filename = getsourcefile(currentframe().f_back)
-        self.lineno = currentframe().f_back.f_lineno
-        assert a.get_bits()==8
-        Unique.__init__(self)
-        if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
-        else:
-            self.a.receiver = self
-
-    def set_system(self, system):
-        if hasattr(self, "system"):
-            raise StreamsConstructionError("stream is allready part of a system", self.filename, self.lineno)
-        self.system = system
-        system.streams.append(self)
-        self.a.set_system(system)
-
-    def get_bits(self): 
-        return 8
-
-    def write_code(self, plugin): 
-        plugin.write_svga(self)
-
-    def reset(self):
-        pass
-
-    def execute(self):
-        self.a.get()
-
-    def __repr__(self):
-        return "SVGA({0})".format(self.s)
-
 class SerialOut(Unique):
 
     def __init__(self, a, name="TX", clock_rate=50000000, baud_rate=115200):

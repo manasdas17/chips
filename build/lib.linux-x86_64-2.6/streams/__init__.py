@@ -32,7 +32,6 @@ Stimulus = streams.Stimulus
 Response = streams.Response
 OutPort = streams.OutPort
 SerialOut = streams.SerialOut
-SVGA = streams.SVGA
 Console = streams.Console
 Asserter = streams.Asserter
 
