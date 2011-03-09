@@ -24,7 +24,30 @@ class Plugin:
 
     #sources
     def write_stimulus(self, stream): 
-        pass
+        self.declarations.append("data_type get_stream_{0}();".format(stream.get_identifier()))
+        self.source.extend([
+            "//stimulus",
+            "ifstream infile_{0}(\"stim_{0}.txt\");".format(stream.get_identifier()),
+            "data_type get_stream_{0}()".format(stream.get_identifier()),
+            "{",
+            "  data_type data;",
+            "  if(infile_{0}.good())".format(stream.get_identifier()),
+            "  {",
+            "    infile_{0} >> data.value;".format(stream.get_identifier()),
+            "    data.stalled = false;",
+            "  }",
+            "  else",
+            "  {",
+            "    data.value = 0;".format(stream.get_identifier()),
+            "    data.stalled = true;",
+            "  }",
+            "  if(debug){",
+            "   cerr << {0} << \" stimulus \" << data.value << \" \" << data.stalled << endl;".format(stream.get_identifier()),
+            "  }",
+            "  return data;".format(stream.get_identifier()),
+            "}",
+            "",
+        ])
 
     def write_repeater(self, stream): 
         self.declarations.append("data_type get_stream_{0}();".format(stream.get_identifier()))
@@ -73,7 +96,23 @@ class Plugin:
 
     #sinks
     def write_response(self, stream): 
-        pass
+        self.declarations.append("void execute_{0}();".format(stream.get_identifier()))
+        self.source.extend([
+            "//response",
+            "ofstream outfile_{0}(\"resp_{0}.txt\");".format(stream.get_identifier()),
+            "void execute_{0}()".format(stream.get_identifier()),
+            "{",
+            "  data_type data = get_stream_{0}();".format(stream.a.get_identifier()),
+            "  if(!data.stalled)".format(stream.get_identifier()),
+            "  {",
+            "     outfile_{0} << data.value << endl;".format(stream.get_identifier()),
+            "  }",
+            "}",
+            "",
+        ])
+        self.execute.extend([
+            "  execute_{0}();".format(stream.get_identifier()),
+        ])
 
     def write_out_port(self, stream): 
         pass
@@ -182,28 +221,36 @@ class Plugin:
 
     def write_array(self, stream): 
         self.declarations.append("data_type get_stream_{0}();".format(stream.get_identifier()))
-        self.declarations.append("void execute_{0}();".format(stream.get_identifier()))
+        self.execute.append("execute_{0}();".format(stream.get_identifier()))
         self.source.extend([
             "//array",
-            "data_type array_{0}[{1}];".format(stream.get_identifier(), stream.depth),
+            "int array_{0}[{1}];".format(stream.get_identifier(), stream.depth),
             "data_type get_stream_{0}()".format(stream.get_identifier()),
             "{",
             "  data_type data;",
-            "  data = get_stream_{0}()".format(stream.c.get_identifier()),
+            "  data = get_stream_{0}();".format(stream.c.get_identifier()),
             "  if(debug){",
             "   cerr << {0} << \" array \" << data.value << \" \" << data.stalled << endl;".format(stream.get_identifier()),
             "  }",
-            "  return lookup_{0}[get_stream_{0}()];".format(stream.c.get_identifier()),
+            "  if (!data.stalled)",
+            "  {",
+            "    data.value = array_{0}[data.value];".format(stream.get_identifier()),
+            "  }",
+            "  return data;".format(stream.get_identifier()),
             "}",
             "",
-            #"data_type data_1_{0} = {0; true};".format(stream.get_identifier()),
-            #"data_type data_2_{0} = {0; true};".format(stream.get_identifier()),
+            "data_type data_1_{0} = {1}0, true{2};".format(stream.get_identifier(), "{", "}"),
+            "data_type data_2_{0} = {1}0, true{2};".format(stream.get_identifier(), "{", "}"),
             "void execute_{0}()".format(stream.get_identifier()),
             "{",
             "  if (data_1_{0}.stalled)".format(stream.get_identifier()),
+            "  {",
             "    data_1_{0} = get_stream_{1}();".format(stream.get_identifier(), stream.a.get_identifier()),
+            "  }",
             "  if (data_2_{0}.stalled)".format(stream.get_identifier()),
+            "  {",
             "    data_2_{0} = get_stream_{1}();".format(stream.get_identifier(), stream.b.get_identifier()),
+            "  }",
             "  if(!data_1_{0}.stalled && !data_2_{0}.stalled)".format(stream.get_identifier()),
             "  {",
             "    array_{0}[data_1_{0}.value] = data_2_{0}.value;".format(stream.get_identifier()),
@@ -321,6 +368,7 @@ class Plugin:
         header = [
         "#include <iostream>",
         "#include <sstream>",
+        "#include <fstream>",
         "#include <string>",
         "using namespace std;",
         "#include <assert.h>",
@@ -342,7 +390,7 @@ class Plugin:
         "    return val;",
         "}",
         "",
-        "  const bool debug = true;",
+        "  const bool debug = false;",
         "",
         ]
         body = [
@@ -374,6 +422,61 @@ class Plugin:
         output_file.write('\n'.join(self.declarations))
         output_file.write('\n'.join(self.source))
         output_file.write('\n'.join(body))
+
+    def set_simulation_data(self, stimulus, iterator):
+
+        #enter project directory
+        if not os.path.isdir(self.project_name): 
+            if not os.path.exists(self.project_name):
+                os.mkdir(self.project_name)
+        os.chdir(self.project_name)
+
+        #enter cpp directory
+        if not os.path.isdir("cpp"): 
+            if not os.path.exists("cpp"):
+                os.mkdir("cpp")
+        os.chdir("cpp")
+
+        stimulus_file = open(
+            "stim_{0}.txt".format(stimulus.get_identifier()),
+            'w'
+        )
+
+        for i in iterator:
+            stimulus_file.write(str(i)+"\n")
+
+        stimulus_file.close()
+        
+        #leave cpp directory
+        os.chdir(os.path.join("..", ".."))
+
+    def get_simulation_data(self, response):
+
+        #enter project directory
+        if not os.path.isdir(self.project_name): 
+            if not os.path.exists(self.project_name):
+                os.mkdir(self.project_name)
+        os.chdir(self.project_name)
+
+        #enter cpp directory
+        if not os.path.isdir("cpp"): 
+            if not os.path.exists("cpp"):
+                os.mkdir("cpp")
+        os.chdir("cpp")
+
+        stimulus_file = open(
+            "resp_{0}.txt".format(response.get_identifier()),
+            'r'
+        )
+
+        data = [int(i) for i in stimulus_file]
+
+        stimulus_file.close()
+        
+        #leave cpp directory
+        os.chdir(os.path.join("..", ".."))
+
+        return data
 
     def test(self, name, stop_cycles=False):
 

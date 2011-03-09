@@ -22,162 +22,162 @@ def c_style_division(x, y):
     return sign(x)*sign(y)*(abs(x)//abs(y))
 
 #test fifo
-#fifo_in = Output()
-#fifo_out = Fifo(fifo_in, 4)
-#data_out = Output()
-#a = Variable(0)
-#Process(8,
-#    fifo_in.write(0),
-#    fifo_in.write(1),
-#    fifo_in.write(2),
-#    fifo_in.write(3),
-#    fifo_out.read(a),
-#    data_out.write(a),
-#    fifo_out.read(a),
-#    data_out.write(a),
-#    fifo_out.read(a),
-#    data_out.write(a),
-#    fifo_out.read(a),
-#    data_out.write(a),
-#)
-#system = System(Asserter(data_out==Sequence(0, 1, 2, 3)))
-#
-#p = streams_cpp.Plugin()
-#system.write_code(p)
-#good = p.test("fifo test", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##test arrays
-#address_in = Output()
-#data_in = Output()
-#address_out = Output()
-#data_out = Array(address_in, data_in, address_out, 4)
-#Process(8,
-#    address_in.write(0),
-#    data_in.write(0),
-#    address_in.write(1),
-#    data_in.write(1),
-#    address_in.write(2),
-#    data_in.write(2),
-#    address_in.write(3),
-#    data_in.write(3),
-#    Loop(
-#        address_out.write(0),
-#        address_out.write(1),
-#        address_out.write(2),
-#        address_out.write(3),
-#    )
-#)
-#
-#system = System(Asserter(data_out==Sequence(0, 1, 2, 3)))
-#
-#p = streams_cpp.Plugin()
-#system.write_code(p)
-#good = p.test("array test", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##test sizing
-#out = Output()
-#a = Variable(127)
-#b = Variable(1)
-#Process(8,
-#    out.write(a+b),
-#)
-#system = System(Asserter(out==0))
-#
-#p = streams_cpp.Plugin()
-#system.write_code(p)
-#good = good and p.test("test sizing", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
-##test stimulus
-#a = Stimulus(8)
-#a = Stimulus(8)
-#
-#s=System(Asserter(a==Sequence(*range(100))))
-#
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#a.set_simulation_data(range(100), simulation_plugin)
-#good = good and simulation_plugin.test("stimulus test ", stop_cycles=200)
-#if not good and stop_on_fail: exit()
-#
-##test response
-#a = Response(Sequence(*range(100)))
-#
-#s=System(a)
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = simulation_plugin.test("response test ", stop_cycles=10000)
-#for response, expected in zip(a.get_simulation_data(simulation_plugin), range(100)):
-#    good = good and response==expected
-#    if not good:
-#        print "Failed to retireve simulation data"
-#
-#if not good and stop_on_fail: exit()
-#
-##test_feedback
-#lookup = Output()
-#lookedup = Lookup(lookup, 0, 1, 2, 3)
-#x = Variable(0)
-#outstream = Output()
-#
-#Process(10, #gives integer range -512 to 512
-#    Loop(
-#       lookup.write(0),
-#       lookedup.read(x),
-#       outstream.write(x),
-#       lookup.write(1),
-#       lookedup.read(x),
-#       outstream.write(x),
-#       lookup.write(2),
-#       lookedup.read(x),
-#       outstream.write(x),
-#       lookup.write(3),
-#       lookedup.read(x),
-#       outstream.write(x),
-#    )
-#)
-#
-##Join the elements together into a system
-#s=System(Asserter(outstream==Sequence(0, 1, 2, 3)))
-#
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("feedback test ", stop_cycles=100)
-#if not good and stop_on_fail: exit()
-#
-##Test Evaluate
-#a = range(-8, 8)
-#z = [i>0 for i in a]
-#stimulus_a =        Sequence(*a)
-#expected_response = Sequence(*z)
-#
-#a = Variable(0)
-#z = Output()
-#Process(8, 
-#    Loop(
-#        stimulus_a.read(a),
-#        z.write(
-#            Evaluate(
-#                If(a>0, 
-#                    Value(1),
-#                ).ElsIf(1,
-#                    Value(0),
-#                )
-#            )
-#        )
-#    )
-#)
-#
-#s=System(Asserter(expected_response == z))
-#simulation_plugin = streams_cpp.Plugin()
-#s.write_code(simulation_plugin)
-#good = good and simulation_plugin.test("evaluate test", stop_cycles=1000)
-#if not good and stop_on_fail: exit()
-#
+fifo_in = Output()
+fifo_out = Fifo(fifo_in, 4)
+data_out = Output()
+a = Variable(0)
+Process(8,
+    fifo_in.write(0),
+    fifo_in.write(1),
+    fifo_in.write(2),
+    fifo_in.write(3),
+    fifo_out.read(a),
+    data_out.write(a),
+    fifo_out.read(a),
+    data_out.write(a),
+    fifo_out.read(a),
+    data_out.write(a),
+    fifo_out.read(a),
+    data_out.write(a),
+)
+system = System(Asserter(data_out==Sequence(0, 1, 2, 3)))
+
+p = streams_cpp.Plugin()
+system.write_code(p)
+good = p.test("fifo test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#test arrays
+address_in = Output()
+data_in = Output()
+address_out = Output()
+data_out = Array(address_in, data_in, address_out, 4)
+Process(8,
+    address_in.write(0),
+    data_in.write(0),
+    address_in.write(1),
+    data_in.write(1),
+    address_in.write(2),
+    data_in.write(2),
+    address_in.write(3),
+    data_in.write(3),
+    Loop(
+        address_out.write(0),
+        address_out.write(1),
+        address_out.write(2),
+        address_out.write(3),
+    )
+)
+
+system = System(Asserter(data_out==Sequence(0, 1, 2, 3)))
+
+p = streams_cpp.Plugin()
+system.write_code(p)
+good = p.test("array test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#test sizing
+out = Output()
+a = Variable(127)
+b = Variable(1)
+Process(8,
+    out.write(a+b),
+)
+system = System(Asserter(out==0))
+
+p = streams_cpp.Plugin()
+system.write_code(p)
+good = good and p.test("test sizing", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#test stimulus
+a = Stimulus(8)
+a = Stimulus(8)
+
+s=System(Asserter(a==Sequence(*range(100))))
+
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+a.set_simulation_data(range(100), simulation_plugin)
+good = good and simulation_plugin.test("stimulus test ", stop_cycles=200)
+if not good and stop_on_fail: exit()
+
+#test response
+a = Response(Sequence(*range(100)))
+
+s=System(a)
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = simulation_plugin.test("response test ", stop_cycles=10000)
+for response, expected in zip(a.get_simulation_data(simulation_plugin), range(100)):
+    good = good and response==expected
+    if not good:
+        print "incorrect simulation data"
+
+if not good and stop_on_fail: exit()
+
+#test_feedback
+lookup = Output()
+lookedup = Lookup(lookup, 0, 1, 2, 3)
+x = Variable(0)
+outstream = Output()
+
+Process(10, #gives integer range -512 to 512
+    Loop(
+       lookup.write(0),
+       lookedup.read(x),
+       outstream.write(x),
+       lookup.write(1),
+       lookedup.read(x),
+       outstream.write(x),
+       lookup.write(2),
+       lookedup.read(x),
+       outstream.write(x),
+       lookup.write(3),
+       lookedup.read(x),
+       outstream.write(x),
+    )
+)
+
+#Join the elements together into a system
+s=System(Asserter(outstream==Sequence(0, 1, 2, 3)))
+
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("feedback test ", stop_cycles=100)
+if not good and stop_on_fail: exit()
+
+#Test Evaluate
+a = range(-8, 8)
+z = [i>0 for i in a]
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, 
+    Loop(
+        stimulus_a.read(a),
+        z.write(
+            Evaluate(
+                If(a>0, 
+                    Value(1),
+                ).ElsIf(1,
+                    Value(0),
+                )
+            )
+        )
+    )
+)
+
+s=System(Asserter(expected_response == z))
+simulation_plugin = streams_cpp.Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("evaluate test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
 #Test Integer +
 a, b, z = [], [], []
 for i in range(-8, 8):

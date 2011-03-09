@@ -102,3 +102,20 @@ elif "simulate_vhdl" in sys.argv:
     pl.title("Sin Wave Approximation")
     pl.legend()
     pl.show()
+
+elif "simulate_cpp" in sys.argv:
+    import numpy as n
+    from matplotlib import pyplot as pl
+    import streams_cpp
+    x=n.linspace(to_fixed(0), to_fixed(pi), 100)
+    response=Response(taylor(Sequence(*x)))
+    system = System(response)
+    plugin = streams_cpp.Plugin()
+    system.write_code(plugin)
+    plugin.test("test taylor series", stop_cycles=100000)
+    sin_x=[from_fixed(i) for i in response.get_simulation_data(plugin)]
+    pl.plot(sin_x[:100], label="Taylor series approximation")
+    pl.plot(n.sin(n.linspace(0,pi,100)), label="sin(x)")
+    pl.title("Sin Wave Approximation")
+    pl.legend()
+    pl.show()
