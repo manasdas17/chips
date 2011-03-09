@@ -164,6 +164,19 @@ if "simulate_vhdl" in sys.argv:
     im.show()
     new_im.show()
 
+if "simulate_cpp" in sys.argv:
+    import streams_cpp
+    response = Response(edge_detector(Sequence(*image_data)))
+    system = System(response)
+    plugin = streams_cpp.Plugin()
+    system.write_code(plugin)
+    plugin.test("edge_detect", stop_cycles=10000000)
+    new_image = list(response.get_simulation_data(plugin))
+    new_im = Image.new(im.mode, (width, height))
+    new_im.putdata(new_image)
+    im.show()
+    new_im.show()
+
 if "build" in sys.argv:
     import streams_VHDL
     import os

@@ -144,7 +144,7 @@ class Stream:
     def __rge__(other, self): return Binary(self, repeaterize(other), 'ge')
     def __rlt__(other, self): return Binary(self, repeaterize(other), 'lt')
     def __rle__(other, self): return Binary(self, repeaterize(other), 'le')
-    def read(self, variable):
+    def read(self, variable, timout=0):
         return Read(self, variable)
 
     def set_system(self, system):
@@ -831,6 +831,34 @@ class Lookup(Stream, Unique):
             print self.lineno
             raise SimulationError("negative lookup index", self.filename, self.lineno)
         return self.args[resize(val, self.a.get_bits())]
+
+class Fifo(Stream, Unique):
+
+    def __init__(self, data_in, depth):
+        self.a = data_in
+        self.depth = depth
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        Unique.__init__(self)
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError("address_in allready has receiver", self.filename, self.lineno)
+        else:
+            self.a.receiver = self
+
+    def set_system(self, system):
+        Stream.set_system(self, system)
+
+    def get_bits(self): 
+        return self.a.get_bits()
+
+    def write_code(self, plugin): 
+        plugin.write_fifo(self)
+
+    def reset(self):
+        self.a.reset()
+
+    def get(self):
+        return self.a.get()
 
 class Array(Stream, Unique):
 

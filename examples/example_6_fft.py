@@ -195,7 +195,7 @@ if "simulate" in sys.argv:
 
     #run the simulation
     system.reset()
-    system.execute(1000000)
+    system.execute(750000)
 
     #unpack the frequency domain representation
     real_frequency = list(rer.get_simulation_data())
@@ -245,6 +245,7 @@ if "simulate_vhdl" in sys.argv:
     #unpack the frequency domain representation
     real_frequency = list(rer.get_simulation_data(plugin))
     imaginary_frequency = list(imr.get_simulation_data(plugin))
+    print real_frequency
 
     frequency_magnitude = []
     for i in xrange(0, r):
@@ -254,6 +255,51 @@ if "simulate_vhdl" in sys.argv:
     p.plot(abs(s.fft(cos_x)), 'b', label="floating point fft calculated by NumPy Module")
     p.plot(frequency_magnitude, 'r', label="fixed point fft simulation")
     p.title("128 point FFT of 64 sample cosine wave")
+    p.legend()
+    p.show()
+
+if "simulate_cpp" in sys.argv:
+    r = 1024
+    import streams_cpp
+    import numpy as n
+    import scipy as s
+    from matplotlib import pyplot as p
+    from math import pi, sqrt
+
+    #create a cosine to stimulate the fft
+    x = n.arange(64)
+    cos_x = n.zeros(r)
+    cos_x[0:64] = s.cos(2*pi*x/64)
+
+    #pack the stimulus into the correct format
+    complex_time = []
+    for i in cos_x:
+        complex_time.append(to_fixed(i))
+        complex_time.append(0.0)
+
+    #build a simulation model
+    real, imaginary = fft(Sequence(*complex_time), r)
+    rer = Response(real)
+    imr = Response(imaginary)
+    system = System(rer, imr)
+
+    #run the simulation
+    plugin = streams_cpp.Plugin()
+    system.write_code(plugin)
+    plugin.test("test fft", stop_cycles = 750000)
+
+    #unpack the frequency domain representation
+    real_frequency = list(rer.get_simulation_data(plugin))
+    imaginary_frequency = list(imr.get_simulation_data(plugin))
+
+    frequency_magnitude = []
+    for i in xrange(0, r):
+        mag = sqrt(real_frequency[i]**2+imaginary_frequency[i]**2)
+        frequency_magnitude.append(from_fixed(mag))
+
+    p.plot(abs(s.fft(cos_x)), 'b', label="floating point fft calculated by NumPy Module")
+    p.plot(frequency_magnitude, 'r', label="fixed point fft simulation")
+    p.title("1024 point FFT of 64 sample cosine wave")
     p.legend()
     p.show()
 

@@ -42,7 +42,12 @@ class Read:
     def comp(self, rmap):
         """compile an expression into a list of machine instructions"""
         instructions = [
-          Instruction("OP_READ_{0}".format(self.stream.get_identifier()), self.variable.register, lineno=self.lineno, filename=self.filename) 
+          Instruction("OP_READ_{0}".format(
+              self.stream.get_identifier()), 
+              srca=self.variable.register, 
+              lineno=self.lineno, 
+              filename=self.filename
+          ) 
         ]
         return instructions
 
@@ -73,7 +78,12 @@ class Write:
         """compile an expression into a list of machine instructions"""
         instructions = self.expression.comp(rmap)
         instructions.append(
-          Instruction("OP_WRITE_{0}".format(self.stream.get_identifier()), rmap.tos, lineno=self.lineno, filename=self.filename) 
+          Instruction("OP_WRITE_{0}".format(
+              self.stream.get_identifier()), 
+              srca=rmap.tos, 
+              lineno=self.lineno, 
+              filename=self.filename
+          ) 
         )
         return instructions
 
