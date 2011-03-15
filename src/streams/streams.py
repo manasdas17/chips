@@ -145,6 +145,8 @@ class Stream:
     def __rge__(other, self): return Binary(self, repeaterize(other), 'ge')
     def __rlt__(other, self): return Binary(self, repeaterize(other), 'lt')
     def __rle__(other, self): return Binary(self, repeaterize(other), 'le')
+    def get_type(self):
+        return "integer"
     def read(self, variable, timout=0):
         return Read(self, variable)
 
@@ -971,7 +973,7 @@ class Resizer(Stream, Unique):
     def get(self):
         val = self.a.get()
         if val is None: return None
-        return resize(val, self.get_bits)
+        return resize(val, self.get_bits())
 
 class Printer(Stream, Unique):
 
