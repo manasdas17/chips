@@ -12,6 +12,7 @@ __status__ = "Prototype"
 
 from math import log
 from inspect import currentframe, getsourcefile
+from sys import stdout
 from collections import deque
 
 from process import Process
@@ -548,7 +549,8 @@ class Console(Unique):
         val = self.a.get()
         if val is not None:
             if chr(val&0xff)=='\n':
-                print ''.join(self.string)
+                stdout.write(''.join(self.string))
+                stdout.write("\n")
                 self.string = []
             else:
                 self.string.append(chr(val&0xff))

@@ -22,7 +22,7 @@ int resize(int val, int bits)
     return val;
 }
 
-  const bool debug = true;
+  const bool debug = false;
 
 void execute_369();
 data_type get_stream_368();
@@ -324,7 +324,7 @@ void execute_366()
             if (!data.stalled)
             {
               registers_366[instruction.srca] = data.value;
-              pc_366 = pc_366;
+              pc_366++;
             }
             break;
           case OP_WRITE_365_366:
@@ -332,7 +332,7 @@ void execute_366()
             {
               output_365.stalled = false;
               output_365.value = rega;
-              pc_366 = pc_366;
+              pc_366++;
             }
             break;
         default:
