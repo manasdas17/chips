@@ -428,6 +428,34 @@ class Value(Statement):
 ################################################################################
 
 class Loop(Statement):
+    """
+
+    The *Loop* statement executes instructions repeatedly.
+    
+    A *Loop* can be executed using the *Break* instruction. A *Continue*
+    instruction causes the remainder of intructions in the loop to be skipped.
+    execution then repeats from the begining of the *Loop*.
+
+    Example::
+
+        #filter filter values over 50 out of a stream
+        Loop(
+            in_stream.read(a),
+            if(a > 50, Continue())
+            out_stream.write(a),
+        ),
+
+    Example::
+
+        #initialise an array
+        Loop(
+            If(index == 100,
+                Break(),
+            ),
+            myarray.write(index, 0),
+        ),
+
+    """
 
     def __init__(self, *instructions):
         for child in instructions:
@@ -469,6 +497,28 @@ class Loop(Statement):
 ################################################################################
 
 class If(Statement):
+    """
+
+    The *If* statement conditionaly executes instructions.
+
+    The condition of the *If* branch is evaluated, followed by the condition of
+    each of the optional *ElsIf* branches. If one of the conditions evaluates
+    to non-zero then the corresponding instructions will be executed. If the
+    *If* condition, and all of the *ElsIf* conditions evaluate to zero, then
+    the instructions in the optional *Else* branch will be evaluated.
+
+    Example::
+
+        If(condition,
+            #do something
+        ).Elsif(condition,
+            #do something else
+        ).Else(
+            #if all else fails do this
+        )
+
+    """
+        
 
     def __init__(self, condition, *instructions):
         for child in instructions:
@@ -482,6 +532,9 @@ class If(Statement):
             child.parent = self
         self.conditionals.append((constantize(condition), instructions))
         return self
+
+    def Else(self, *instructions):
+        return self.Elsif(1, *instructions)
 
     def set_process(self, process):
         self.process=process
@@ -522,6 +575,30 @@ class If(Statement):
 ################################################################################
 
 class Break(Statement):
+    """
+
+    The *Break* statement causes the flow of control to immediately exit the loop.
+
+    Example::
+        #equivilent to a While loop
+        Loop(
+            If(condition == 0,
+                Break(),
+            ),
+            .. #do stuff here
+        ),
+        ..
+
+        #equivilent to a DoWhile loop
+        Loop(
+            .. #do stuff here
+            If(condition == 0,
+                Break(),
+            ),
+        ),
+        ..
+        
+    """
 
     def __init__(self):
         self.filename = getsourcefile(currentframe().f_back)
@@ -545,6 +622,34 @@ class Break(Statement):
 ################################################################################
 
 class WaitUs(Statement):
+    """
+
+    *WaitUs* causes execution to halt until the next tick of the microsecond
+    timer. 
+
+    In practice, this means that the the process is stalled for less than 1
+    microsecond. This behaviour is usefull when implementing a real-time
+    counter function because the execution time of statements does not affect
+    the time between *WaitUs" statements (Providing the statements do not take
+    more than 1 microsecond to execute of course!).
+
+    Example::
+        seconds = Variable(0)
+        count = Variable(0)
+        Process(12,
+            seconds.set(0),
+            Loop(
+                count.set(1000),
+                While(count,
+                    WaitUs(),
+                    count.set(count-1),
+                ),
+                seconds.set(seconds + 1),
+                out_stream.write(seconds),
+            ),
+        )
+        
+    """
     def __init__(self):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
@@ -566,6 +671,23 @@ class WaitUs(Statement):
 ################################################################################
 
 class Continue(Statement):
+    """
+
+    The *Continue* statement causes the flow of control to immediately jump to
+    the next iteration of the contatining loop.
+
+    Example::
+        Process(12,
+            Loop(
+                in_stream.read(a),
+                If(a&1,
+                    Continue(),
+                ),
+                out_stream.write(a),
+            ),
+        )
+        
+    """
 
     def __init__(self):
         self.filename = getsourcefile(currentframe().f_back)
@@ -615,6 +737,22 @@ class UserDefinedStatement(Statement):
         return instructions
 
 class Block(Statement):
+    """
+
+    The *Block* statement allows instructions to be nested into a single
+    statement. Using a *Block* allows a group of instructions to be stored as a
+    single object.
+
+    Example::
+        intialise = Block(a.set(0), b.set(0), c.set(0))
+        Process(8,
+            initialise,
+            a.set(a+1), b.set(b+1), c.set(c+1),
+            initialise,
+            ..
+        )
+        
+    """
 
     def __init__(self, instructions):
         """A block of statements

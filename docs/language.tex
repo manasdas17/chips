@@ -1,11 +1,8 @@
-\chapter{The Language}
+Chip ========
 
-\section{Systems}
-
-\section{Streams}
-\subsection{Counter(Start, Stop, Step)}
-This versatile Stream emits numbers in the sequence
-$[start, start + step, start + 2 * step, ..., stop, start, ...]$.
+Streams} \subsection{Counter(Start, Stop, Step)} This versatile Stream emits
+numbers in the sequence $[start, start + step, start + 2 * step, ..., stop,
+start, ...]$.
 
 
 \begin{verbatim}
@@ -42,19 +39,17 @@ Example
 While inputs to a process are created implicitly by reading from a stream,
 process outputs must be explicitly created by creating an \verb|Output|.
 
-\begin{verbatim}
-Example
-1  output1 = Output()
-2  output2 = Output()
-3  data = Variable(0)
-4  Process(bits,
-5    Loop(
-6      stream.read(data),
-7      stream.write(output1),
-8      stream.write(output2),
-9    )
-10 )
-\end{verbatim}
+::
+	output1 = Output()
+	output2 = Output()
+	data = Variable(0)
+	Process(bits,
+	  Loop(
+	    stream.read(data),
+	    stream.write(output1),
+	    stream.write(output2),
+	  )
+	)
 
 \label{Repeater}
 \subsection{Repeater(value)}
@@ -154,21 +149,11 @@ table summarizes the operator precedences, from lowest precedence (least
 binding) to highest precedence (most binding). Operators in the same row have
 the same precedence.
 
-\begin{table}[h]
-\begin{center}
-\begin{tabular}{ll}
-\textbf{Operator}           & \textbf{Description}\\
-\verb$==, !=, <, <=, >, >=$ & Comparisons\\
-\verb$|$                    & Bitwise OR\\
-\verb$^$                    & Bitwise XOR\\
-\verb$&$                    & Bitwise AND\\
-\verb$<<, >>$               & Shifts\\
-\verb$+, -$                 & Addition and subtraction\\
-\verb$*, //, %$             & multiplication, division and modulo
-\end{tabular}
-\end{center}
-\caption{Operator precedence}
-\end{table}
+  \begin{center} \begin{tabular}{ll} \textbf{Operator} & \textbf{Description}\\
+\verb$==, !=, <, <=, >, >=$ & Comparisons\\ \verb$|$ & Bitwise OR\\ \verb$^$ &
+Bitwise XOR\\ \verb$&$ & Bitwise AND\\ \verb$<<, >>$ & Shifts\\ \verb$+, -$ &
+Addition and subtraction\\ \verb$*, //, %$ & multiplication, division and modulo
+\end{tabular} \end{center} \caption{Operator precedence} \end{table}
 
 \section{Sinks}
 \subsection{Asserter}
