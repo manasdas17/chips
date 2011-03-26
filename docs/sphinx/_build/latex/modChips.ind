@@ -1,0 +1,8 @@
+\begin{theindex}
+\def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
+
+  \bigletter S
+  \item {\texttt  {streams}}, \hyperpage{3}
+  \item {\texttt  {streams\_cpp}}, \hyperpage{9}
+
+\end{theindex}

@@ -1,0 +1,13 @@
+\BOOKMARK [0][-]{chapter.1}{Chips Language Reference manual}{}
+\BOOKMARK [1][-]{section.1.1}{Chip}{chapter.1}
+\BOOKMARK [1][-]{section.1.2}{Processes}{chapter.1}
+\BOOKMARK [1][-]{section.1.3}{Streams}{chapter.1}
+\BOOKMARK [1][-]{section.1.4}{Sinks}{chapter.1}
+\BOOKMARK [1][-]{section.1.5}{Instructions}{chapter.1}
+\BOOKMARK [0][-]{chapter.2}{Automatic Code Generation}{}
+\BOOKMARK [1][-]{section.2.1}{VHDL Code Generation}{chapter.2}
+\BOOKMARK [1][-]{section.2.2}{C++ Code Generation}{chapter.2}
+\BOOKMARK [1][-]{section.2.3}{Visualisation Code Generation}{chapter.2}
+\BOOKMARK [0][-]{chapter.3}{Indices and tables}{}
+\BOOKMARK [0][-]{section*.2}{Module Index}{}
+\BOOKMARK [0][-]{section*.3}{Index}{}
