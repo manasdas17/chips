@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 
 """Primitive Operations for Streams library"""
-
+ 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
 __license__ = "None"
 __version__ = "0.1"
-__maintainer__ = "Jon Dawson"
+__maintatiner__ = "Jon Dawson"
 __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
 from math import log
 from inspect import currentframe, getsourcefile
+from sys import stdout
 from collections import deque
 
 from process import Process
@@ -20,10 +21,34 @@ from instruction import Write, Read
 from exceptions import StreamsConstructionError, SimulationError
 
 class System:
-    """A Streams System
+    """
+    A Chip device containing streams, sinks and processes.
 
-    A streams system is a container for data sources, data.receivers, and processes.
-    Typically a System is used to describe a single device"""
+    Typically a System is used to describe a single device. You need to provide
+    the System object with a list of all the sinks (devie outputs). You don't
+    need to include any process, variables or streams. By analysing the sinks,
+    the system can work out which processes and streams need to be included in
+    the device.
+    
+    Example::
+
+        switches = InPort("SWITCHES", 8)
+        serial_in = SerialIn("RX")
+        leds = OutPort(switches, "LEDS")
+        serial_out = SerialOut("TX", serial_in)
+
+        #We need to tell the *System* that *leds* and *serial_out* are part of
+        #the device. The *System* can work out for itself that *switches* and
+        #*serial_in* are part of the device.
+
+        s = System(
+            leds,
+            serial_out,
+        )
+
+        s.write_code(plugin)
+        
+    """
 
     def __init__(self, *args):
        """Create a streams System
@@ -162,7 +187,28 @@ class Stream:
 ################################################################################
 
 class Repeater(Stream, Unique):
-    """A Stream which repeatedly outputs a constant value."""
+    """
+
+    A stream which repeatedly yields the specified *value*.
+
+    The *Repeater* stream is one of the most fundamental streams available. 
+
+    The width of the stream in bits is calculated automatically. The smallest
+    number of bits that can represent *value* in twos-complement format will be
+    used.
+
+    Examples::
+        
+        Repeater(5) #--> 5 5 5 5 \..
+        #creates a 4 bit stream.
+
+        Repeater(10) #--> 10 10 10 10 \..
+        #creates a 5 bit stream.
+
+        Repeater(5)*2 #--> 10 10 10 10 \..
+        #This is shothand for: Repeater(5)*Repeater(2)
+
+    """
 
     def __init__(self, value):
         """A Stream which repeatedly outputs a constant value.
@@ -192,7 +238,21 @@ class Repeater(Stream, Unique):
         return self.value
 
 class Counter(Stream, Unique):
-    """A Stream which counts through a specified sequence."""
+    """
+    
+    A Stream which yields numbers from *start* to *stop* in *step* increments.
+
+    A *Counter* is a versatile, and commonly used construct in device design,
+    they can be used to number samples, index memories and so on.
+
+    Example::
+
+        Counter(0, 10, 2) # --> 0 2 4 6 8 10 0 \..
+
+        Counter(10, 0, -2) # --> 10 8 7 6 4 2 0 10 \..
+    
+    
+    """
 
     def __init__(self, start, stop, step):
         """A Stream which repeatedly outputs a constant value.
@@ -232,7 +292,30 @@ class Counter(Stream, Unique):
         return "Counter(start={0}, stop={1}, step={2})".format(self.start, self.stop, self.bits)
 
 class Stimulus(Stream, Unique):
-    """A Stream that allows a sequence object to be used as simulation stimulus"""
+    """
+    
+    A Stream that allows a Python iterable to be used as a stream.
+    
+    A Simulus stream allows a transparent method to pass data from the Python
+    envrinment into the simulation environment. The sequence object is set at
+    run time using the set_simulation_data() method. The sequence object can be
+    any iterable Python sequence such as a list, tuple, or even a generator.
+
+    Example:: 
+
+        import PIL
+
+        picture = Stimulus()
+        s = System(Console(Printer(picture)))
+
+        im = PIL.open("test.bmp")
+        image_data = list(im.getdata())
+        picture.set_simulation_data(image_data)
+
+        picture.reset()
+        picture.execute(1000)
+    
+    """
 
     def __init__(self, bits):
         """A Stream that allows a sequence object to be used as simulation stimulus
@@ -269,7 +352,29 @@ class Stimulus(Stream, Unique):
         return "Stimulus({0})".format(self.name, self.bits)
 
 class InPort(Stream, Unique):
-    """A Stream of data obtained from input port pins"""
+    """
+    
+    A device input port stream.
+
+    An *InPort* allows a port pins of the target device to be used as a data
+    stream.  There is no handshaking on the input port. The port pins are
+    sampled at the point when data is transfered by the stream.  When
+    implemented in VHDL, the *InPort* provides double registers on the port
+    pins to synchronise data to the local clock domain.
+
+    Since it is not possible to determine the width of the strean in bits
+    automatically, this must be specified using the *bits* argument.
+
+    The *name* parameter allows a string to be associated with the input port.
+    In a VHDL implementation, *name* will be used as the port name in the
+    top level entity.
+
+    Example::
+
+        dip_switches = Inport("dip_switches", 8) 
+        s = System(SerialOut(Printer(dip_switches)))
+    
+    """
 
     def __init__(self, name, bits):
         """A Stream of data obtained from input port pins
@@ -303,7 +408,13 @@ class InPort(Stream, Unique):
         return "InPort(name={0}, bits={1})".format(self.name, self.bits)
 
 class SerialIn(Stream, Unique):
-    """A Stream of data obtained from a UART input pin"""
+    """
+    
+    A *SerialIn* yields 8-bit data from a serial uart input.
+    
+
+    
+    """
 
     def __init__(self, name="RX", clock_rate=50000000, baud_rate=115200):
         """A Stream of data obtained from input port pins
@@ -550,7 +661,8 @@ class Console(Unique):
         val = self.a.get()
         if val is not None:
             if chr(val&0xff)=='\n':
-                print ''.join(self.string)
+                stdout.write(''.join(self.string))
+                stdout.write("\n")
                 self.string = []
             else:
                 self.string.append(chr(val&0xff))
