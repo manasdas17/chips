@@ -8,8 +8,8 @@ build - compile onto a xilinx fpga
 
 """
 
-from streams import *
-from streams_VHDL import Plugin
+from chips import *
+from chips_VHDL import Plugin
 import sys
 
 hours = Variable(0)
@@ -63,10 +63,10 @@ Process(16,
 )
 
 if "build" in sys.argv:
-    import streams_VHDL
+    import chips_VHDL
     import os
     import shutil
-    s = System(SerialOut(Resizer(serialout, 8)))
+    s = Chip(SerialOut(Resizer(serialout, 8)))
     p = Plugin(internal_clock=False, internal_reset=False)
     s.write_code(p)
     from_file=os.path.join(".", "ucfs", "example_3.ucf")

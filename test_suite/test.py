@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from streams import *
-import streams_cpp 
+from chips import *
+import chips_cpp 
 
-system = System(Console(Printer(Repeater(1))))
+chip = Chip(Console(Printer(Repeater(1))))
 
-p = streams_cpp.Plugin()
+p = chips_cpp.Plugin()
 system.write_code(p)
 good = p.test("test", stop_cycles=10)

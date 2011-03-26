@@ -10,55 +10,55 @@ test          - check the results using the serial port"""
 
 import sys
 
-from streams import * #use the streams library
-import streams_VHDL #import VHDL plugin 
-import streams_cpp #import C++ plugin 
-import streams_visual
+from chips import * #use the chips library
+import chips_VHDL #import VHDL plugin 
+import chips_cpp #import C++ plugin 
+import chips_visual
 
 
 ################################################################################
 ##make a simulation model that prints to stdout
 
-def make_system(string, output):
-    return System(
+def make_chip(string, output):
+    return Chip(
             output(
                 Sequence(*tuple((ord(i) for i in string))+(0,)),
             )
         )
 
 if "simulate" in sys.argv:
-    #write the system to the code generator plugin
-    system=make_system("helo byd!\n", Console)
-    system.test("Example 1: Hello World .... in welsh!", stop_cycles=100)
+    #write the chip to the code generator plugin
+    chip=make_chip("helo byd!\n", Console)
+    chip.test("Example 1: Hello World .... in welsh!", stop_cycles=100)
 
 if "simulate_vhdl" in sys.argv:
     #simulate using an external vhdl simulator
-    system=make_system("helo byd!\n", Console)
-    vhdl_plugin = streams_VHDL.Plugin()
-    system.write_code(vhdl_plugin)
+    chip=make_chip("helo byd!\n", Console)
+    vhdl_plugin = chips_VHDL.Plugin()
+    chip.write_code(vhdl_plugin)
     vhdl_plugin.ghdl_test("Example 1 : Hello world .... in welsh!", stop_cycles=2000)
 
 if "simulate_cpp" in sys.argv:
     #simulate using an external vhdl simulator
-    system=make_system("helo byd!\n", Console)
-    cpp_plugin = streams_cpp.Plugin()
-    system.write_code(cpp_plugin)
+    chip=make_chip("helo byd!\n", Console)
+    cpp_plugin = chips_cpp.Plugin()
+    chip.write_code(cpp_plugin)
     cpp_plugin.test("Example 1 : Hello world .... in welsh!", stop_cycles=2000)
 
 if "visualize" in sys.argv:
     #simulate using an external vhdl simulator
-    system=make_system("helo byd!\n", Console)
-    visual_plugin = streams_visual.Plugin("Example 1 : Hello world .... in welsh!")
-    system.write_code(visual_plugin)
+    chip=make_chip("helo byd!\n", Console)
+    visual_plugin = chips_visual.Plugin("Example 1 : Hello world .... in welsh!")
+    chip.write_code(visual_plugin)
     visual_plugin.draw("example_1.svg")
 
 if "build" in sys.argv:
     import os
     import shutil
     #compile into a xilinx device
-    system=make_system("helo byd!\n", SerialOut)
-    vhdl_plugin = streams_VHDL.Plugin(internal_reset=False, internal_clock=False)
-    system.write_code(vhdl_plugin)
+    chip=make_chip("helo byd!\n", SerialOut)
+    vhdl_plugin = chips_VHDL.Plugin(internal_reset=False, internal_clock=False)
+    chip.write_code(vhdl_plugin)
     from_file=os.path.join(".", "ucfs", "example_1.ucf")
     to_file=os.path.join(".", "project", "xilinx", "project.ucf")
     shutil.copy(from_file, to_file)

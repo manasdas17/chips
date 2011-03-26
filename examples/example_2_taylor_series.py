@@ -15,7 +15,7 @@ vary r        - the order of the power series, use odd values starting with 3"""
 
 import sys
 from math import pi
-from streams import *
+from chips import *
 
 #fixed point routines
 p = 26
@@ -76,9 +76,9 @@ if "simulate" in sys.argv:
 
     x=n.linspace(to_fixed(0), to_fixed(pi), 100)
     response=Response(taylor(Sequence(*x)))
-    system = System(response)
-    system.reset()
-    system.execute(100000)
+    chip = Chip(response)
+    chip.reset()
+    chip.execute(100000)
     sin_x=[from_fixed(i) for i in response.get_simulation_data()]
     pl.plot(sin_x[:100], 'b-', label="Taylor series approximation")
     pl.plot(n.sin(n.linspace(0,pi,100)), 'r-', label="sin(x)")
@@ -89,12 +89,12 @@ if "simulate" in sys.argv:
 elif "simulate_vhdl" in sys.argv:
     import numpy as n
     from matplotlib import pyplot as pl
-    import streams_VHDL
+    import chips_VHDL
     x=n.linspace(to_fixed(0), to_fixed(pi), 100)
     response=Response(taylor(Sequence(*x)))
-    system = System(response)
-    plugin = streams_VHDL.Plugin()
-    system.write_code(plugin)
+    chip = Chip(response)
+    plugin = chips_VHDL.Plugin()
+    chip.write_code(plugin)
     plugin.ghdl_test("test taylor series", stop_cycles=1000000)
     sin_x=[from_fixed(i) for i in response.get_simulation_data(plugin)]
     pl.plot(sin_x[:100], label="Taylor series approximation")
@@ -106,12 +106,12 @@ elif "simulate_vhdl" in sys.argv:
 elif "simulate_cpp" in sys.argv:
     import numpy as n
     from matplotlib import pyplot as pl
-    import streams_cpp
+    import chips_cpp
     x=n.linspace(to_fixed(0), to_fixed(pi), 100)
     response=Response(taylor(Sequence(*x)))
-    system = System(response)
-    plugin = streams_cpp.Plugin()
-    system.write_code(plugin)
+    chip = Chip(response)
+    plugin = chips_cpp.Plugin()
+    chip.write_code(plugin)
     plugin.test("test taylor series", stop_cycles=100000)
     sin_x=[from_fixed(i) for i in response.get_simulation_data(plugin)]
     pl.plot(sin_x[:100], label="Taylor series approximation")
