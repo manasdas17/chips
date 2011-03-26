@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 """Primitive Operations for Streams library"""
-
+ 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
 __license__ = "None"
 __version__ = "0.1"
-__maintainer__ = "Jon Dawson"
+__maintatiner__ = "Jon Dawson"
 __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
@@ -21,10 +21,34 @@ from instruction import Write, Read
 from exceptions import StreamsConstructionError, SimulationError
 
 class System:
-    """A Streams System
+    """
+    A Chip device containing streams, sinks and processes.
 
-    A streams system is a container for data sources, data.receivers, and processes.
-    Typically a System is used to describe a single device"""
+    Typically a System is used to describe a single device. You need to provide
+    the System object with a list of all the sinks (devie outputs). You don't
+    need to include any process, variables or streams. By analysing the sinks,
+    the system can work out which processes and streams need to be included in
+    the device.
+    
+    Example::
+
+        switches = InPort("SWITCHES", 8)
+        serial_in = SerialIn("RX")
+        leds = OutPort(switches, "LEDS")
+        serial_out = SerialOut("TX", serial_in)
+
+        #We need to tell the *System* that *leds* and *serial_out* are part of
+        #the device. The *System* can work out for itself that *switches* and
+        #*serial_in* are part of the device.
+
+        s = System(
+            leds,
+            serial_out,
+        )
+
+        s.write_code(plugin)
+        
+    """
 
     def __init__(self, *args):
        """Create a streams System
@@ -163,7 +187,28 @@ class Stream:
 ################################################################################
 
 class Repeater(Stream, Unique):
-    """A Stream which repeatedly outputs a constant value."""
+    """
+
+    A stream which repeatedly yields the specified *value*.
+
+    The *Repeater* stream is one of the most fundamental streams available. 
+
+    The width of the stream in bits is calculated automatically. The smallest
+    number of bits that can represent *value* in twos-complement format will be
+    used.
+
+    Examples::
+        
+        Repeater(5) #--> 5 5 5 5 \..
+        #creates a 4 bit stream.
+
+        Repeater(10) #--> 10 10 10 10 \..
+        #creates a 5 bit stream.
+
+        Repeater(5)*2 #--> 10 10 10 10 \..
+        #This is shothand for: Repeater(5)*Repeater(2)
+
+    """
 
     def __init__(self, value):
         """A Stream which repeatedly outputs a constant value.
@@ -193,12 +238,20 @@ class Repeater(Stream, Unique):
         return self.value
 
 class Counter(Stream, Unique):
-    """This versatile Stream emits numbers in the sequence start, start + step,
-    start + 2 * step, .., stop, start, .. Example::
+    """
+    
+    A Stream which yields numbers from *start* to *stop* in *step* increments.
 
-      Counter(1, 3, 1) # --> 1 2 3 1 ..
-      Counter(3, 1, -1) # --> 3 2 1 3 ..
+    A *Counter* is a versatile, and commonly used construct in device design,
+    they can be used to number samples, index memories and so on.
 
+    Example::
+
+        Counter(0, 10, 2) # --> 0 2 4 6 8 10 0 \..
+
+        Counter(10, 0, -2) # --> 10 8 7 6 4 2 0 10 \..
+    
+    
     """
 
     def __init__(self, start, stop, step):
@@ -239,7 +292,30 @@ class Counter(Stream, Unique):
         return "Counter(start={0}, stop={1}, step={2})".format(self.start, self.stop, self.bits)
 
 class Stimulus(Stream, Unique):
-    """A Stream that allows a sequence object to be used as simulation stimulus"""
+    """
+    
+    A Stream that allows a Python iterable to be used as a stream.
+    
+    A Simulus stream allows a transparent method to pass data from the Python
+    envrinment into the simulation environment. The sequence object is set at
+    run time using the set_simulation_data() method. The sequence object can be
+    any iterable Python sequence such as a list, tuple, or even a generator.
+
+    Example:: 
+
+        import PIL
+
+        picture = Stimulus()
+        s = System(Console(Printer(picture)))
+
+        im = PIL.open("test.bmp")
+        image_data = list(im.getdata())
+        picture.set_simulation_data(image_data)
+
+        picture.reset()
+        picture.execute(1000)
+    
+    """
 
     def __init__(self, bits):
         """A Stream that allows a sequence object to be used as simulation stimulus
@@ -276,7 +352,29 @@ class Stimulus(Stream, Unique):
         return "Stimulus({0})".format(self.name, self.bits)
 
 class InPort(Stream, Unique):
-    """A Stream of data obtained from input port pins"""
+    """
+    
+    A device input port stream.
+
+    An *InPort* allows a port pins of the target device to be used as a data
+    stream.  There is no handshaking on the input port. The port pins are
+    sampled at the point when data is transfered by the stream.  When
+    implemented in VHDL, the *InPort* provides double registers on the port
+    pins to synchronise data to the local clock domain.
+
+    Since it is not possible to determine the width of the strean in bits
+    automatically, this must be specified using the *bits* argument.
+
+    The *name* parameter allows a string to be associated with the input port.
+    In a VHDL implementation, *name* will be used as the port name in the
+    top level entity.
+
+    Example::
+
+        dip_switches = Inport("dip_switches", 8) 
+        s = System(SerialOut(Printer(dip_switches)))
+    
+    """
 
     def __init__(self, name, bits):
         """A Stream of data obtained from input port pins
@@ -310,7 +408,13 @@ class InPort(Stream, Unique):
         return "InPort(name={0}, bits={1})".format(self.name, self.bits)
 
 class SerialIn(Stream, Unique):
-    """A Stream of data obtained from a UART input pin"""
+    """
+    
+    A *SerialIn* yields 8-bit data from a serial uart input.
+    
+
+    
+    """
 
     def __init__(self, name="RX", clock_rate=50000000, baud_rate=115200):
         """A Stream of data obtained from input port pins
@@ -1048,182 +1152,3 @@ class HexPrinter(Stream, Unique):
             if val is None: return None
             self.string = deque(hex(val)[2:])
             return ord(self.string.popleft())
-
-
-
-#\{InPort(name, bits)}
-#The \verb|InPort| Stream emits numbers aquired from a physical io port in a
-#target device.
-#
-#\verb|name| is a string parameter specifying a name to identify
-#the port in the target implementation.
-#
-#Since it is not possible to automatically determine the number of bits needed,
-#the width of the port must be explicitly set using the \verb|bits| parameter.
-#
-#No handshaking is implemented, the value emited by an
-#\verb|InPort| Stream is the value present on the io port at the time the
-#stream transaction completes. The \verb|InPort| Stream will automatically
-#generate logic to synchronise the io port to the local clock domain.
-#
-#Example:
-#\begin{verbatim}
-#Example
-#1  dip_switch = InPort("sw0", 8)
-#2  minimal_system = System(OutPort("led0", dip_switch))
-#\end{verbatim}
-#
-#\{Output()}
-#While inputs to a process are created implicitly by reading from a stream,
-#process outputs must be explicitly created by creating an \verb|Output|.
-#
-#::
-	#output1 = Output()
-	#output2 = Output()
-	#data = Variable(0)
-	#Process(bits,
-	  #Loop(
-	    #stream.read(data),
-	    #stream.write(output1),
-	    #stream.write(output2),
-	  #)
-	#)
-#
-#\label{Repeater}
-#\{Repeater(value)}
-#The \verb|Repeater| Stream emits \verb|value| repeatedly.
-#
-#\begin{verbatim}
-#Example
-#a = Repeater(1) + Repeater(1)
-#=> [2, 2, 2, 2, 2, 2, 2 ...]
-#\end{verbatim}
-#
-#\{Scanner()}
-#
-#\{Sequence(seqeunce)}
-#The \verb|Sequence| Stream emits each item in \verb|sequence| in turn. When the
-#end of the sequence is reached, the whole process repeates starting again from
-#the first item.
-#
-#\begin{verbatim}
-#Example
-#Sequence(0, l, l, 3, 4)
-#=> [0, 1, 1, 3, 4, 0, 1, 1 ...]
-#\end{verbatim}
-#
-#\{SerialIn}
-#\{Stimulus}
-#
-#\section{Stream Combinators}
-#\{Array}
-#\{Decoupler}
-#\{HexPrinter}
-#\{Lookup}
-#\{Printer}
-#\{Process}
-#\label{Resizer}
-#\{Resizer}
-#
-#\section{Stream Expressions}
-#
-#A Stream Expression can be formed by combining Streams or Stream Expressions
-#with the following ooperators: 
-#\begin{verbatim}
-#+, -, *, \/, %, &, |, ^, <<, >>, ==, !=, <, <=, >, >=
-#\end{verbatim}
-#Each data item in the resulting Stream Expression will be evaluated by removing
-#a data item from each of the operand streams, and applying the operator function
-#to these data items.
-#
-#Generaly speaking a Stream Expression will have enough bits to contain any
-#possible result without any arithmetic overflow. The one exception to this is
-#the left shift operator where the result is always truncated to the size of the
-#left hand operand. Stream expressions may be explicitly truncated or sign
-#extended using the \verb|Resizer| (section \ref{Resizer}).
-#
-#If one of the operands of a binary operator is not a Stream, Python Streams
-#will attempt to convert this operand into an integer. If the conversion is
-#successfull, a \verb|Repeater| (section \ref{Repeater}) stream will be created
-#using the integer value. The repeater stream will be used in place of the
-#non-stream operand. This allows constructs such as \verb|a = 47+InPort(12, 8)|
-#to be used as a shorthand for \verb|a = Repeater(47)+InPort(12, 8)| or
-#\verb|count = Counter(1, 10, 1)+3*2| to be used as a shorthand for
-#\verb|count = Counter(1, 10, 1)+Repeater(5)|.
-#Of course \verb|a=1+1| still yields the integer 2 rather than a stream.
-#
-#The operators provided in the Python Streams library are summarised in the table
-#below. The bit width field specifies how many bits are used for the result
-#based on the number of bits in the left and right hand operands.
-#
-#\begin{table}[h]
-#\begin{center}
-#\begin{tabular}[]{cll}
-#\textbf{Operator} & \textbf{Function}            & \textbf{Bit Width}\\
-#\verb$+$          & Signed Add                   & $max(left, right) + 1$\\
-#\verb$-$          & Signed Subtract              & $max(left, right) + 1$\\
-#\verb$*$          & Signed Multiply              & $left + right$\\
-#\verb$//$         & Signed Floor Division        & $max(left, right) + 1$\\
-#\verb$%$          & Signed Modulo                & $max(left, right)$\\
-#\verb$&$          & Bitwise AND                  & $max(left, right)$\\
-#\verb$|$          & Bitwise OR                   & $max(left, right)$\\
-#\verb$^$          & Bitwise XOR                  & $max(left, right)$\\
-#\verb$<<$         & Arithmetic Left Shift                   & $left$\\
-#\verb$>>$         & Arithmetic Right Shift                  & $left$\\
-#\verb$==$         & Equality Comparison                     & $1$\\
-#\verb$!=$         & Inequality Comparison                   & $1$\\
-#\verb$<$          & Signed Less Than Comparison             & $1$\\
-#\verb$<=$         & Signed Less Than or Equal Comparison    & $1$\\
-#\verb$>$          & Signed Greater Than Comparison          & $1$\\
-#\verb$>=$         & Signed Greater Than or Equal Comparison & $1$\\
-#\end{tabular}
-#\end{center}
-#\caption{Operator summary}
-#\end{table}
-#
-#\{operator precedence}
-#The operator precedence is inherited from the python language. The following
-#table summarizes the operator precedences, from lowest precedence (least
-#binding) to highest precedence (most binding). Operators in the same row have
-#the same precedence.
-#
-  #\begin{center} \begin{tabular}{ll} \textbf{Operator} & \textbf{Description}\\
-#\verb$==, !=, <, <=, >, >=$ & Comparisons\\ \verb$|$ & Bitwise OR\\ \verb$^$ &
-#Bitwise XOR\\ \verb$&$ & Bitwise AND\\ \verb$<<, >>$ & Shifts\\ \verb$+, -$ &
-#Addition and subtraction\\ \verb$*, //, %$ & multiplication, division and modulo
-#\end{tabular} \end{center} \caption{Operator precedence} \end{table}
-#
-#\section{Sinks}
-#\{Asserter}
-#\{Console}
-#\{OutPort}
-#\{Response}
-#\{SerialOut}
-#\{SVGA}
-#
-#\section{Processes}
-#\{Output}
-#\{Variable}
-#\{VariableArray}
-#\section{Process Statements}
-#\{Block}
-#\{Break}
-#\{Constant}
-#\{Continue}
-#\{DoUntil}
-#\{DoWhile}
-#\{Evaluate}
-#\{If}
-#\{Loop}
-#\{Print}
-#\{Scan}
-#\{Until}
-#\{Value}
-#\{Variable}
-#\{WaitUs}
-#\{While}
-#\{Expressions}
-#
-#\section{Process Expressions}
-#
-##########\section{Patterns of Use}

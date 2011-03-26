@@ -400,6 +400,28 @@ class Statement:
 ################################################################################
 
 class Value(Statement):
+    """
+
+    The *Value* statement gives a value to the surrounding *Evaluate*
+    construct.
+    
+    An *Evaluate*  expression allows a block of statements to be used as an
+    expression. When a *Value* is encountered, the supplied expression becomes
+    the value of the whole evaluate statement.
+
+    Example::
+
+        #provide a And expression similar to Pythons and expression
+        def LogicalAnd(a, b):
+            return Evaluate(
+                If(a,
+                    Value(b),
+                ).Else(
+                    0,
+                ),
+            )
+
+    """
     def __init__(self, expression):
         """Set the value of an evaluate block, and cease execution of the block"""
         self.expression = constantize(expression)
@@ -432,16 +454,16 @@ class Loop(Statement):
 
     The *Loop* statement executes instructions repeatedly.
     
-    A *Loop* can be executed using the *Break* instruction. A *Continue*
+    A *Loop* can be exited using the *Break* instruction. A *Continue*
     instruction causes the remainder of intructions in the loop to be skipped.
-    execution then repeats from the begining of the *Loop*.
+    Execution then repeats from the begining of the *Loop*.
 
     Example::
 
         #filter filter values over 50 out of a stream
         Loop(
             in_stream.read(a),
-            if(a > 50, Continue())
+            If(a > 50, Continue()),
             out_stream.write(a),
         ),
 
@@ -580,23 +602,24 @@ class Break(Statement):
     The *Break* statement causes the flow of control to immediately exit the loop.
 
     Example::
+
         #equivilent to a While loop
         Loop(
             If(condition == 0,
                 Break(),
             ),
-            .. #do stuff here
+            #do stuff here
         ),
-        ..
+
+    Example::
 
         #equivilent to a DoWhile loop
         Loop(
-            .. #do stuff here
+            #do stuff here
             If(condition == 0,
                 Break(),
             ),
         ),
-        ..
         
     """
 
@@ -630,10 +653,11 @@ class WaitUs(Statement):
     In practice, this means that the the process is stalled for less than 1
     microsecond. This behaviour is usefull when implementing a real-time
     counter function because the execution time of statements does not affect
-    the time between *WaitUs" statements (Providing the statements do not take
+    the time between *WaitUs* statements (Providing the statements do not take
     more than 1 microsecond to execute of course!).
 
     Example::
+
         seconds = Variable(0)
         count = Variable(0)
         Process(12,
@@ -677,6 +701,7 @@ class Continue(Statement):
     the next iteration of the contatining loop.
 
     Example::
+
         Process(12,
             Loop(
                 in_stream.read(a),
@@ -744,12 +769,12 @@ class Block(Statement):
     single object.
 
     Example::
+
         intialise = Block(a.set(0), b.set(0), c.set(0))
         Process(8,
             initialise,
             a.set(a+1), b.set(b+1), c.set(c+1),
             initialise,
-            ..
         )
         
     """
