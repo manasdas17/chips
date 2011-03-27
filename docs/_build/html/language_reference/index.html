@@ -82,8 +82,181 @@ the device.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="process">
-<h2>Process<a class="headerlink" href="#process" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-chips.process">
+<h2>Process<a class="headerlink" href="#module-chips.process" title="Permalink to this headline">¶</a></h2>
+<p><em>Processes</em> are used to define the programs that will be executed in the target
+<em>Chip</em>.  Each <em>Process</em> contains a single program made up of instructions. When
+a <em>Chip</em> is simulated, or run in real hardware, the program within each process
+will be run concurrently.</p>
+<div class="section" id="process-inputs">
+<h3>Process Inputs<a class="headerlink" href="#process-inputs" title="Permalink to this headline">¶</a></h3>
+<p>Any <em>Stream</em> may be used as the input to a <em>Process</em>. Only one process may read
+from any particular stream.  A <em>Process</em> may read from a <em>Stream</em> using the
+<em>read</em> method. The <em>read</em> method accepts a <em>Variable</em> as its argument. A <em>read</em>
+from a <em>Stream</em> will stall execution of the <em>Process</em> until data is available.
+Similarly, the stream will be stalled, until data is read from it. This
+provides a handy way to synchronise processes together, and simplifies the
+design of concurrent systems.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#sending process</span>
+<span class="n">theoutput</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
+    <span class="c">#wait for 1 second</span>
+    <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
+    <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> 
+        <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">WaitUs</span><span class="p">()</span>
+    <span class="p">),</span>
+    <span class="c">#send some data</span>
+    <span class="n">theoutput</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">123</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c">#receiving process</span>
+<span class="n">target_variable</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
+    <span class="c">#This instruction will stall the process until data is available</span>
+    <span class="n">theOutput</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">target_variable</span><span class="p">),</span>
+    <span class="c">#This instruction will not be run for 1 second</span>
+    <span class="c">#..</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="process-outputs">
+<h3>Process Outputs<a class="headerlink" href="#process-outputs" title="Permalink to this headline">¶</a></h3>
+<p>An <em>Output</em> is a special <em>Stream</em> that can be written to by a <em>Process</em>. Only one
+<em>Process</em> may write to any particular stream. Like any other <em>Stream</em>, an
+<em>Output</em> may be:</p>
+<blockquote>
+<ul class="simple">
+<li>Read by a <em>Process</em>.</li>
+<li>Consumed by a <em>Sink</em>.</li>
+<li>Modified to form another <em>Stream</em>.</li>
+</ul>
+</blockquote>
+<p>A <em>Process</em> may write to an <em>Output</em> stream using the <em>write</em> method. The
+<em>write</em> method accepts an expression as its argument. A <em>write</em> to an output
+will stall the process until the reciever is ready to recieve data.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#sending process</span>
+<span class="n">theoutput</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
+    <span class="c">#This instruction will stall the process until data is available</span>
+    <span class="n">theoutput</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">123</span><span class="p">),</span>
+    <span class="c">#This instruction will not be run for 1 second</span>
+    <span class="c">#..</span>
+<span class="p">)</span>
+
+<span class="c">#receiving process</span>
+<span class="n">target_variable</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
+    <span class="c">#wait for 1 second</span>
+    <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
+    <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> 
+        <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">WaitUs</span><span class="p">(),</span>
+    <span class="p">),</span>
+    <span class="c">#get some data</span>
+    <span class="n">theoutput</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">target_variable</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="variables">
+<h3>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h3>
+<p>Data is stored and manipulated within a process using <em>Variables</em>. A <em>Variable</em>
+may only be accessed by one process.  When a <em>Variable</em> an initial value must
+be supplied. A variable will be reset to its initial value before any process
+instructions are executed.  A <em>Variable</em> may be assigned a value using the
+<em>set</em> method. The <a href="#id1"><span class="problematic" id="id2">*</span></a>set method accepts an expression as its argument.</p>
+<p>It is important to understand that a <em>Variable</em> object created like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is very different from a normal Python variable created like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="mi">12</span>
+</pre></div>
+</div>
+<p>The key is to understand that a <em>Variable</em> will exist in the target <em>Chip</em>, and
+may be assigned and referenced as the <em>Process</em> executes. A Python variable can
+exist only in the Python environment, and not in a <em>Chip</em>. While a Python
+variable may be converted into a <em>Constant</em> in the target <em>Chip</em>, a <em>Process</em>
+has no way to change its value when it executes.</p>
+</div>
+<div class="section" id="constants">
+<h3>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h3>
+<p>Like a <em>Variable</em>, a constant must be supplied with an initial valkue when it
+is created. Unlike a <em>Variable</em>, a the value of a <em>Constant</em> can never be
+changed.</p>
+</div>
+<div class="section" id="expressions">
+<h3>Expressions<a class="headerlink" href="#expressions" title="Permalink to this headline">¶</a></h3>
+<p><em>Variables</em> and <em>Constants</em> are the most basic form of expressions. More
+complex expressions can be formed by combining <em>Constants</em>, <em>Variables</em> and
+other expressions using following operators:</p>
+<div class="highlight-python"><pre>+, -, *, \/, %, &amp;, |, ^, &lt;&lt;, &gt;&gt;, ==, !=, &lt;, &lt;=, &gt;, &gt;=</pre>
+</div>
+<p>If one of the operands of a binary operator is not an expression, the Chips
+library will attempt to convert this operand into an integer. If the conversion
+is successfull, a <em>Constant</em> object will be created using the integer value.
+The <em>Constant</em> object will be used in place of the non-expression operand. This
+allows constructs such as <tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">47+Constant(10)</span></tt> to be used as a shorthand for
+<tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">Constant(47)+Constant(10)</span></tt> or <tt class="docutils literal"><span class="pre">count.set(Constant(15)+3*2</span></tt> to be used
+as a shorthand for <tt class="docutils literal"><span class="pre">count.set(Constant(15)+Constant(6)</span></tt>.  Of course <tt class="docutils literal"><span class="pre">a=1+1</span></tt>
+still yields the integer 2 rather than an expression.</p>
+<p>An expression within a process will always inherit the data width in bits of
+the <em>Process</em> in which it is evaluated. A <em>Stream</em> expression such as
+<tt class="docutils literal"><span class="pre">Repeater(255)</span> <span class="pre">+</span> <span class="pre">1</span></tt> will automatically yield a 10-bit <em>Stream</em> so that the
+value 256 can be represented. A similar expression Constant(255)+1 will give an
+9-bit result in a 9-bit process yielding the value -1. If the same expression
+is evaluated in a 10-bit process, the result will be 256.</p>
+</div>
+<div class="section" id="operator-precedence">
+<h3>Operator Precedence<a class="headerlink" href="#operator-precedence" title="Permalink to this headline">¶</a></h3>
+<p>The operator precedence is inherited from the Python language. The following
+table summarizes the operator precedences, from lowest precedence (least
+binding) to highest precedence (most binding). Operators in the same row have
+the same precedence.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Operator</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>==, !=, &lt;, &lt;=, &gt;, &gt;=</td>
+<td>Comparisons</td>
+</tr>
+<tr><td><div class="first last line-block">
+<div class="line"><br /></div>
+</div>
+</td>
+<td>Bitwise OR</td>
+</tr>
+<tr><td>^</td>
+<td>Bitwise XOR</td>
+</tr>
+<tr><td>&amp;</td>
+<td>Bitwise AND</td>
+</tr>
+<tr><td>&lt;&lt;, &gt;&gt;</td>
+<td>Shifts</td>
+</tr>
+<tr><td>+, -</td>
+<td>Addition and subtraction</td>
+</tr>
+<tr><td><a href="#id3"><span class="problematic" id="id4">*</span></a>, //, %</td>
+<td>multiplication, division and modulo</td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="class">
 <dt id="chips.Process">
 <em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Process</tt><big>(</big><em>bits</em>, <em>*instructions</em><big>)</big><a class="headerlink" href="#chips.Process" title="Permalink to this definition">¶</a></dt>
@@ -223,8 +396,8 @@ Comparison</td>
 </tbody>
 </table>
 </div>
-<div class="section" id="operator-precedence">
-<h3>Operator Precedence<a class="headerlink" href="#operator-precedence" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>Operator Precedence<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>The operator precedence is inherited from the python language. The following
 table summarizes the operator precedences, from lowest precedence (least
 binding) to highest precedence (most binding). Operators in the same row have
@@ -261,7 +434,7 @@ the same precedence.</p>
 <tr><td>+, -</td>
 <td>Addition and subtraction</td>
 </tr>
-<tr><td><a href="#id1"><span class="problematic" id="id2">*</span></a>, //, %</td>
+<tr><td><a href="#id6"><span class="problematic" id="id7">*</span></a>, //, %</td>
 <td>multiplication, division and modulo</td>
 </tr>
 </tbody>
@@ -450,7 +623,7 @@ simulations and also co-simulations using external tools.</dd></dl>
 </div>
 <div class="section" id="module-chips.instruction">
 <h2>Instructions<a class="headerlink" href="#module-chips.instruction" title="Permalink to this headline">¶</a></h2>
-<p>Process machine instructions</p>
+<p>The instructions provided here form the basis of the software that can be run inside <em>Processes</em>.</p>
 <div class="section" id="instructions-reference">
 <h3>Instructions Reference<a class="headerlink" href="#instructions-reference" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
@@ -649,10 +822,18 @@ more than 1 microsecond to execute of course!).</p>
             <ul>
 <li><a class="reference external" href="#">Chips Language Reference manual</a><ul>
 <li><a class="reference external" href="#chip">Chip</a></li>
-<li><a class="reference external" href="#process">Process</a></li>
+<li><a class="reference external" href="#module-chips.process">Process</a><ul>
+<li><a class="reference external" href="#process-inputs">Process Inputs</a></li>
+<li><a class="reference external" href="#process-outputs">Process Outputs</a></li>
+<li><a class="reference external" href="#variables">Variables</a></li>
+<li><a class="reference external" href="#constants">Constants</a></li>
+<li><a class="reference external" href="#expressions">Expressions</a></li>
+<li><a class="reference external" href="#operator-precedence">Operator Precedence</a></li>
+</ul>
+</li>
 <li><a class="reference external" href="#module-chips.streams">Streams</a><ul>
 <li><a class="reference external" href="#stream-expressions">Stream Expressions</a></li>
-<li><a class="reference external" href="#operator-precedence">Operator Precedence</a></li>
+<li><a class="reference external" href="#id5">Operator Precedence</a></li>
 <li><a class="reference external" href="#streams-reference">Streams Reference</a></li>
 </ul>
 </li>

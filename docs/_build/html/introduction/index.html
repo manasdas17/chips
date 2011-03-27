@@ -50,6 +50,17 @@
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>The Chips library gives Python the ability to design, simulate and realiseV
+digital devices such as FPGAs. Chips provides a simple yet powerful suite of
+primitive components, <em>Streams</em>, <em>Processes</em> and <em>Sinks</em> that can be succinclty
+combined to form <em>Chips</em>. The <em>Chips</em> library can automatically convert
+<em>Streams</em>, <em>Processes</em> and <em>Sinks</em> into a Hardware Description Language, which
+can be synthesised into real hardware.</p>
+<p>Python programs cannot themselves be converted into real hardware, but it is
+possible to programaticaly generate which construct <em>Chips</em>, which can in-turn
+be converted into hardware. When combined with the extensive libraries allready
+supported by Python, such as NumPy and SciPy, Python and Chips make the ideal
+design and verification environment.</p>
 <div class="section" id="a-new-approach-to-device-design">
 <h2>A new approach to device design<a class="headerlink" href="#a-new-approach-to-device-design" title="Permalink to this headline">¶</a></h2>
 <p>Traditionaly, the tool of choice for digital devices is a Hardware Description
@@ -71,16 +82,16 @@ this means that a designer has to do more of the work themselves.</p>
 <blockquote>
 <p>1. A designer is reponsible for designing their own interfaces to the
 outside world.</p>
-<p>#. The designer is responsible for clock to clock timing, manualy
+<p>2. The designer is responsible for clock to clock timing, manualy
 balancing propogation delays between clocked elements to achieve high
 performance.</p>
-<p>#. A designer has to provide their own mechanism to synchronise and
+<p>3. A designer has to provide their own mechanism to synchronise and
 pass data bwetween concurrent computational elements (by implementing a
 bus with control and handshaking signals).</p>
-<p>#. A designer has to provide their own mechanism to control the flow of
+<p>4. A designer has to provide their own mechanism to control the flow of
 execution within a computational element (usually by manually coding a
 finite state machine).</p>
-<ol class="arabic simple">
+<ol class="arabic simple" start="5">
 <li>The primitive elements are primitive.</li>
 </ol>
 </blockquote>
@@ -91,15 +102,15 @@ abstraction. It does a lot more of the work for you.</p>
 <blockquote>
 <p>1. <em>Python Chips</em> provides a suite of device interfaces including portio,
 uart, usb and ethernet.</p>
-<p>#. Synthesisable RTL code is generated automatically by the tool. Clocks,
+<p>2. Synthesisable RTL code is generated automatically by the tool. Clocks,
 resets, and clock to clock timing are all taken care of behind the scenes.</p>
-<p>#. <em>Python Chips</em> provides a simple method to synchronise concurrent
+<p>3. <em>Python Chips</em> provides a simple method to synchronise concurrent
 elements, and to pass data between them - streams. The tool automatically
 generates interconnect busses and handshaking signals behind the scenes.</p>
-<p>#. <em>Python Chips</em> provides processes with imperative style sequeneces
+<p>4. <em>Python Chips</em> provides processes with imperative style sequeneces
 branches and loop. The tool automatically generates state machines, or highly
 optimized soft-core processors behind the scenes.</p>
-<p>#. The primitive elements are not so primitive. Common constructs such as
+<p>6. The primitive elements are not so primitive. Common constructs such as
 counters, lookup tables, ROMS and RAMS are invoked with a single keyword and a
 few parameters. <em>Python Chips</em>. also provides a richer set of arithmetic
 operators including fully synthesiseable division and multiplication.</p>

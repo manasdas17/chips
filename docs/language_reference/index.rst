@@ -8,6 +8,8 @@ Chip
 
 Process
 =======
+.. automodule:: chips.process
+
 .. autoclass:: chips.Process
 .. autoclass:: chips.Variable
 .. autoclass:: chips.VariableArray

@@ -2,7 +2,19 @@
 Introduction
 ============
 
--------------------------------
+The Chips library gives Python the ability to design, simulate and realiseV
+digital devices such as FPGAs. Chips provides a simple yet powerful suite of
+primitive components, *Streams*, *Processes* and *Sinks* that can be succinclty
+combined to form *Chips*. The *Chips* library can automatically convert
+*Streams*, *Processes* and *Sinks* into a Hardware Description Language, which
+can be synthesised into real hardware. 
+
+Python programs cannot themselves be converted into real hardware, but it is
+possible to programaticaly generate which construct *Chips*, which can in-turn
+be converted into hardware. When combined with the extensive libraries allready
+supported by Python, such as NumPy and SciPy, Python and Chips make the ideal
+design and verification environment.
+
 A new approach to device design
 -------------------------------
 
@@ -29,19 +41,19 @@ this means that a designer has to do more of the work themselves.
 	1. A designer is reponsible for designing their own interfaces to the
 	outside world.
 
-	#. The designer is responsible for clock to clock timing, manualy
+	2. The designer is responsible for clock to clock timing, manualy
 	balancing propogation delays between clocked elements to achieve high
 	performance.
 
-	#. A designer has to provide their own mechanism to synchronise and
+	3. A designer has to provide their own mechanism to synchronise and
 	pass data bwetween concurrent computational elements (by implementing a
 	bus with control and handshaking signals).
 
-	#. A designer has to provide their own mechanism to control the flow of
+	4. A designer has to provide their own mechanism to control the flow of
 	execution within a computational element (usually by manually coding a
 	finite state machine). 
 
-	#. The primitive elements are primitive.
+	5. The primitive elements are primitive.
 
 
 This is where *Python Chips* comes in. In *Python Chips*, there is no
@@ -53,23 +65,22 @@ abstraction. It does a lot more of the work for you.
 	1. *Python Chips* provides a suite of device interfaces including portio,
 	uart, usb and ethernet.
 
-	#. Synthesisable RTL code is generated automatically by the tool. Clocks,
+	2. Synthesisable RTL code is generated automatically by the tool. Clocks,
 	resets, and clock to clock timing are all taken care of behind the scenes.
 
-	#. *Python Chips* provides a simple method to synchronise concurrent
+	3. *Python Chips* provides a simple method to synchronise concurrent
 	elements, and to pass data between them - streams. The tool automatically
 	generates interconnect busses and handshaking signals behind the scenes.
 
-	#. *Python Chips* provides processes with imperative style sequeneces
+	4. *Python Chips* provides processes with imperative style sequeneces
 	branches and loop. The tool automatically generates state machines, or highly
 	optimized soft-core processors behind the scenes.
 
-	#. The primitive elements are not so primitive. Common constructs such as
+	6. The primitive elements are not so primitive. Common constructs such as
 	counters, lookup tables, ROMS and RAMS are invoked with a single keyword and a
 	few parameters. *Python Chips*. also provides a richer set of arithmetic
 	operators including fully synthesiseable division and multiplication.
 
-----------------------------
 A language within a language
 ----------------------------
 

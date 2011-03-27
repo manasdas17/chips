@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-"""Process machine instructions"""
+"""
+The instructions provided here form the basis of the software that can be run inside *Processes*.
+
+"""
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"

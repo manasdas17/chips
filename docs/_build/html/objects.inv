@@ -2,9 +2,10 @@
 # Project: Chips
 # Version: 0.1
 chips.sinks mod language_reference/index.html
-chips.streams mod language_reference/index.html
-chips.instruction mod language_reference/index.html
+chips.process mod language_reference/index.html
 chips_cpp mod automatic_code_generation/index.html
+chips.instruction mod language_reference/index.html
+chips.streams mod language_reference/index.html
 chips.While class language_reference/index.html
 chips.Printer class language_reference/index.html
 chips.Resizer class language_reference/index.html
