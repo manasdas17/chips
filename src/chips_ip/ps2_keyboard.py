@@ -6,6 +6,14 @@ import sys
 
 from chips import *
 
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "MIT"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "chips@jondawson.org.uk"
+__status__ = "Prototype"
+
 dirname = os.path.dirname(__file__)
 keyboardipinterface = ExternalIPDefinition(
         name="PS2_KEYBOARD", 

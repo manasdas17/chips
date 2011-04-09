@@ -1,11 +1,10 @@
 """VHDL generation of the Binary Division operator"""
 
-__author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
-__license__ = "None"
+__license__ = "MIT"
 __version__ = "0.1"
 __maintainer__ = "Jon Dawson"
-__email__ = "jon@jondawson.org.uk"
+__email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
 
 def write(stream):

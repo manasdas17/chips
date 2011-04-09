@@ -11,9 +11,6 @@ test          - check the results using the serial port"""
 import sys
 
 from chips import * #use the chips library
-import chips_VHDL #import VHDL plugin 
-import chips_cpp #import C++ plugin 
-import chips_visual
 
 
 ################################################################################
@@ -32,6 +29,7 @@ if "simulate" in sys.argv:
     chip.test("Example 1: Hello World .... in welsh!", stop_cycles=100)
 
 if "simulate_vhdl" in sys.argv:
+    import chips_VHDL #import VHDL plugin 
     #simulate using an external vhdl simulator
     chip=make_chip("helo byd!\n", Console)
     vhdl_plugin = chips_VHDL.Plugin()
@@ -39,6 +37,7 @@ if "simulate_vhdl" in sys.argv:
     vhdl_plugin.ghdl_test("Example 1 : Hello world .... in welsh!", stop_cycles=2000)
 
 if "simulate_cpp" in sys.argv:
+    import chips_cpp #import C++ plugin 
     #simulate using an external vhdl simulator
     chip=make_chip("helo byd!\n", Console)
     cpp_plugin = chips_cpp.Plugin()
@@ -46,6 +45,7 @@ if "simulate_cpp" in sys.argv:
     cpp_plugin.test("Example 1 : Hello world .... in welsh!", stop_cycles=2000)
 
 if "visualize" in sys.argv:
+    import chips_visual
     #simulate using an external vhdl simulator
     chip=make_chip("helo byd!\n", Console)
     visual_plugin = chips_visual.Plugin("Example 1 : Hello world .... in welsh!")

@@ -7,14 +7,6 @@ A sink is used to terminate a stream. A sink may act as:
 
 """
 
-__author__ = "Jon Dawson"
-__copyright__ = "Copyright 2010, Jonathan P Dawson"
-__license__ = "None"
-__version__ = "0.1"
-__maintatiner__ = "Jon Dawson"
-__email__ = "jon@jondawson.org.uk"
-__status__ = "Prototype"
-
 from math import log
 from inspect import currentframe, getsourcefile
 from sys import stdout
@@ -24,6 +16,14 @@ from process import Process
 from common import how_many_bits, Unique, resize, c_style_modulo, c_style_division
 from instruction import Write, Read
 from exceptions import StreamsConstructionError, SimulationError
+
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "MIT"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "chips@jondawson.org.uk"
+__status__ = "Prototype"
 
 class Response(Unique):
     """A Response block allows data to be read from a stream in the python 

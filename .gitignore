@@ -10,3 +10,5 @@ build
 dist
 streams_project
 .coverage
+project.cpp
+project.vhd

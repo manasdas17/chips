@@ -1,20 +1,16 @@
 #!/usr/bin/env python
 
-"""
-The instructions provided here form the basis of the software that can be run inside *Processes*.
+""" The instructions provided here form the basis of the software that can be run inside *Processes*."""
 
-"""
+from inspect import currentframe, getsourcefile
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
-__license__ = "None"
+__license__ = "MIT"
 __version__ = "0.1"
 __maintainer__ = "Jon Dawson"
-__email__ = "jon@jondawson.org.uk"
+__email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
-
-
-from inspect import currentframe, getsourcefile
 
 class StreamsProcessError(Exception):
     """Error in definition of process instructions"""
@@ -559,7 +555,7 @@ class If(Statement):
         return self
 
     def Else(self, *instructions):
-        return self.Elsif(1, *instructions)
+        return self.ElsIf(-1, *instructions)
 
     def set_process(self, process):
         self.process=process

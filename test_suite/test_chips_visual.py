@@ -1,8 +1,18 @@
 #!/usr/bin/env python
+"""A simple test of graphviz based visuaisation plugin"""
+
 import sys
 
-from chips import * #use the chips library
-from chips_visual import Plugin#import VHDL plugin 
+from chips import *
+from chips_visual import Plugin
+
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "MIT"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "chips@jondawson.org.uk"
+__status__ = "Prototype"
 
 a = Repeater(10)
 b = Repeater(20)

@@ -1,14 +1,7 @@
 """VHDL Code Generation for streams library"""
 
-__author__ = "Jon Dawson"
-__copyright__ = "Copyright 2010, Jonathan P Dawson"
-__license__ = "None"
-__version__ = "0.1"
-__maintainer__ = "Jon Dawson"
-__email__ = "jon@jondawson.org.uk"
-__status__ = "Prototype"
-
 #python modules
+import sys
 import subprocess
 import os
 
@@ -41,6 +34,14 @@ import chip
 #processes
 import process
 import external_ip
+
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "MIT"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "chips@jondawson.org.uk"
+__status__ = "Prototype"
 
 class Plugin:
 
@@ -308,7 +309,10 @@ class Plugin:
             print error_message
             return False
 
-        parameters = [os.path.join(".", "streams_vhdl_model")]
+        if sys.platform == "win32":
+            parameters = ["ghdl -r streams_vhdl_model"]
+        else:
+            parameters = [os.path.join(".", "streams_vhdl_model")]
         if generate_wave: 
             parameters.append(" --wave=wave.ghw")
         if stop_cycles: 

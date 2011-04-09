@@ -1,7 +1,17 @@
 #!/usr/bin/env python
+"""Test suite for native chips simulation"""
 
 from chips import *
 import chips_cpp 
+
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "MIT"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "chips@jondawson.org.uk"
+__status__ = "Prototype"
+
 stop_on_fail = False
 
 def resize(val, bits):

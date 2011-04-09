@@ -2,15 +2,15 @@
 
 """common utilities for Streams library"""
 
+from math import log
+
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
-__license__ = "None"
+__license__ = "MIT"
 __version__ = "0.1"
 __maintainer__ = "Jon Dawson"
-__email__ = "jon@jondawson.org.uk"
+__email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
-
-from math import log
 
 def resize(val, bits):
     mask = (2**(bits))-1

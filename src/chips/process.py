@@ -167,18 +167,18 @@ the same precedence.
 
 """
 
-__author__ = "Jon Dawson"
-__copyright__ = "Copyright 2010, Jonathan P Dawson"
-__license__ = "None"
-__version__ = "0.1"
-__maintainer__ = "Jon Dawson"
-__email__ = "jon@jondawson.org.uk"
-__status__ = "Prototype"
-
 from common import Unique, resize
 from instruction import Write, Block
 from inspect import currentframe, getsourcefile
 from exceptions import StreamsConstructionError
+
+__author__ = "Jon Dawson"
+__copyright__ = "Copyright 2010, Jonathan P Dawson"
+__license__ = "MIT"
+__version__ = "0.1"
+__maintainer__ = "Jon Dawson"
+__email__ = "chips@jondawson.org.uk"
+__status__ = "Prototype"
 
 def sign(x):
     return -1 if x < 0 else 1

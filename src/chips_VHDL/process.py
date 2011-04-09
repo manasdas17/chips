@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 """VHDL generation of processes"""
 
+import common
+from math import ceil, log
+
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
 __license__ = "None"
 __version__ = "0.1"
 __maintainer__ = "Jon Dawson"
-__email__ = "jon@jondawson.org.uk"
+__email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
-
-import common
-from math import ceil, log
 
 def resize(val, bits):
     mask_bits = (2**(bits-1))-1

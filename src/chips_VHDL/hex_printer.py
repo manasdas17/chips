@@ -2,18 +2,17 @@ from __future__ import division
 
 """VHDL generation of the HexPrinter primitive"""
 
+from math import ceil
+
+import common
+
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
-__license__ = "None"
+__license__ = "MIT"
 __version__ = "0.1"
 __maintainer__ = "Jon Dawson"
-__email__ = "jon@jondawson.org.uk"
+__email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
-
-#python imports
-from math import ceil
-#local imports
-import common
 
 def write(stream):
 
