@@ -1,6 +1,6 @@
 *.pyc
 *.svg
-*.bmp
+.bmp
 *.aux
 *.log
 *.backup
@@ -12,3 +12,4 @@ streams_project
 .coverage
 project.cpp
 project.vhd
+.ip.py.swp

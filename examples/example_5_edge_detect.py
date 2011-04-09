@@ -152,10 +152,10 @@ if "simulate" in sys.argv:
     new_im.show()
 
 if "simulate_vhdl" in sys.argv:
-    import chips_VHDL
+    from chips.VHDL_plugin import Plugin
     response = Response(edge_detector(Sequence(*image_data)))
     chip = Chip(response)
-    plugin = chips_VHDL.Plugin()
+    plugin = Plugin()
     chip.write_code(plugin)
     plugin.ghdl_test("edge_detect", stop_cycles=10000000)
     new_image = list(response.get_simulation_data(plugin))
@@ -165,10 +165,10 @@ if "simulate_vhdl" in sys.argv:
     new_im.show()
 
 if "simulate_cpp" in sys.argv:
-    import chips_cpp
+    from chips.cpp_plugin import Plugin
     response = Response(edge_detector(Sequence(*image_data)))
     chip = Chip(response)
-    plugin = chips_cpp.Plugin()
+    plugin = Plugin()
     chip.write_code(plugin)
     plugin.test("edge_detect", stop_cycles=10000000)
     new_image = list(response.get_simulation_data(plugin))
@@ -178,12 +178,12 @@ if "simulate_cpp" in sys.argv:
     new_im.show()
 
 if "build" in sys.argv:
-    import chips_VHDL
+    from chips.VHDL_plugin import Plugin
     import os
     import shutil
     response = SerialOut(Printer(edge_detector(Scanner(SerialIn(baud_rate=460800), 9))), baud_rate=460800)
     chip = Chip(response)
-    plugin = chips_VHDL.Plugin(internal_clock=False, internal_reset=False)
+    plugin = Plugin(internal_clock=False, internal_reset=False)
     chip.write_code(plugin)
     from_file=os.path.join(".", "ucfs", "example_7.ucf")
     to_file=os.path.join(".", "project", "xilinx", "project.ucf")

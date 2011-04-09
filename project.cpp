@@ -153,58 +153,58 @@ struct instruction_type_366
 
 instruction_type_366 instructions_366 [54] = 
 {
-  {OP_IMM_366, 1, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 147
-  {OP_IMM_366, 2, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
-  {OP_IMM_366, 3, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 172
-  {OP_READ_364_366, 1, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/streams.py line: 175
-  {OP_IMM_366, 4, 0, 48}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 119
-  {OP_MOVE_366, 5, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 147
-  {OP_GT_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 138
-  {OP_MOVE_366, 5, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 147
-  {OP_IMM_366, 6, 0, 57}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 119
-  {OP_GT_366, 5, 6, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 136
-  {OP_BOR_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 130
-  {OP_IMM_366, 5, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 119
-  {OP_EQ_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 134
+  {OP_IMM_366, 1, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
+  {OP_IMM_366, 2, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 149
+  {OP_IMM_366, 3, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 173
+  {OP_READ_364_366, 1, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/streams.py line: 283
+  {OP_IMM_366, 4, 0, 48}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 118
+  {OP_MOVE_366, 5, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
+  {OP_GT_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 137
+  {OP_MOVE_366, 5, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
+  {OP_IMM_366, 6, 0, 57}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 118
+  {OP_GT_366, 5, 6, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 135
+  {OP_BOR_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 129
+  {OP_IMM_366, 5, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 118
+  {OP_EQ_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 133
   {OP_JMPF_366, 4, 0, 16}, //file: None line: None
-  {OP_JMP_366, 0, 0, 18}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 62
+  {OP_JMP_366, 0, 0, 18}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 63
   {OP_JMP_366, 0, 0, 16}, //file: None line: None
-  {OP_READ_364_366, 1, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/streams.py line: 175
-  {OP_JMP_366, 0, 0, 4}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 63
-  {OP_MOVE_366, 4, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 147
-  {OP_IMM_366, 5, 0, 15}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 119
-  {OP_BAND_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 129
-  {OP_MOVE_366, 2, 4, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 274
-  {OP_READ_364_366, 1, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/streams.py line: 175
-  {OP_MOVE_366, 4, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 147
-  {OP_IMM_366, 5, 0, 48}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 119
-  {OP_GE_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 137
-  {OP_IMM_366, 5, 0, 57}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 119
-  {OP_MOVE_366, 6, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 147
-  {OP_GE_366, 5, 6, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 139
-  {OP_BAND_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 129
+  {OP_READ_364_366, 1, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/streams.py line: 283
+  {OP_JMP_366, 0, 0, 4}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 64
+  {OP_MOVE_366, 4, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
+  {OP_IMM_366, 5, 0, 15}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 118
+  {OP_BAND_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 128
+  {OP_MOVE_366, 2, 4, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 273
+  {OP_READ_364_366, 1, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/streams.py line: 283
+  {OP_MOVE_366, 4, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
+  {OP_IMM_366, 5, 0, 48}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 118
+  {OP_GE_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 136
+  {OP_IMM_366, 5, 0, 57}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 118
+  {OP_MOVE_366, 6, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
+  {OP_GE_366, 5, 6, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 138
+  {OP_BAND_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 128
   {OP_JMPF_366, 4, 0, 42}, //file: None line: None
-  {OP_MOVE_366, 4, 2, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
-  {OP_IMM_366, 5, 0, 10}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 119
-  {OP_MUL_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 126
-  {OP_MOVE_366, 2, 4, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 274
-  {OP_MOVE_366, 4, 2, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
-  {OP_MOVE_366, 5, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 147
-  {OP_IMM_366, 6, 0, 15}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 119
-  {OP_BAND_366, 5, 6, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 129
-  {OP_ADD_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 124
-  {OP_MOVE_366, 2, 4, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 274
+  {OP_MOVE_366, 4, 2, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 149
+  {OP_IMM_366, 5, 0, 10}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 118
+  {OP_MUL_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 125
+  {OP_MOVE_366, 2, 4, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 273
+  {OP_MOVE_366, 4, 2, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 149
+  {OP_MOVE_366, 5, 1, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
+  {OP_IMM_366, 6, 0, 15}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 118
+  {OP_BAND_366, 5, 6, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 128
+  {OP_ADD_366, 4, 5, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 123
+  {OP_MOVE_366, 2, 4, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 273
   {OP_JMP_366, 0, 0, 46}, //file: None line: None
-  {OP_IMM_366, 4, 0, 1}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 119
+  {OP_IMM_366, 4, 0, 1}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 118
   {OP_JMPF_366, 4, 0, 46}, //file: None line: None
-  {OP_JMP_366, 0, 0, 47}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 165
+  {OP_JMP_366, 0, 0, 47}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 166
   {OP_JMP_366, 0, 0, 46}, //file: None line: None
-  {OP_JMP_366, 0, 0, 22}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 165
-  {OP_MOVE_366, 4, 2, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 148
-  {OP_MOVE_366, 3, 4, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 274
-  {OP_MOVE_366, 4, 3, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 172
-  {OP_WRITE_365_366, 4, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/streams.py line: 484
-  {OP_JMP_366, 0, 0, 3}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 177
+  {OP_JMP_366, 0, 0, 22}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 166
+  {OP_MOVE_366, 4, 2, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 149
+  {OP_MOVE_366, 3, 4, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/instruction.py line: 273
+  {OP_MOVE_366, 4, 3, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 173
+  {OP_WRITE_365_366, 4, 0, 0}, //file: /usr/local/lib/python2.6/dist-packages/chips/streams.py line: 592
+  {OP_JMP_366, 0, 0, 3}, //file: /usr/local/lib/python2.6/dist-packages/chips/__init__.py line: 178
   {OP_JMP_366, 0, 0, 52}, //file: None line: None
   {OP_JMP_366, 0, 0, 0} //file: None line: None
 };

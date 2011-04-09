@@ -2,7 +2,7 @@
 """Test suite for vhdl generated code -- needs GHDL to be installed"""
 
 from chips import *
-import chips_VHDL 
+from chips.VHDL_plugin import Plugin
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -52,7 +52,7 @@ Process(8,
 )
 chip = Chip(Asserter(data_out==Sequence(0, 1, 2, 3)))
 
-p = chips_VHDL.Plugin()
+p = Plugin()
 chip.write_code(p)
 good = p.ghdl_test("fifo test", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -81,7 +81,7 @@ Process(8,
 
 chip = Chip(Asserter(data_out==Sequence(0, 1, 2, 3)))
 
-p = chips_VHDL.Plugin()
+p = Plugin()
 chip.write_code(p)
 good = p.ghdl_test("array test", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -95,7 +95,7 @@ Process(8,
 )
 chip = Chip(Asserter(out==0))
 
-p = chips_VHDL.Plugin()
+p = Plugin()
 chip.write_code(p)
 good = good and p.ghdl_test("test sizing", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -107,7 +107,7 @@ a = Stimulus(8)
 s=Chip(Asserter(a==Sequence(*range(100))))
 
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 a.set_simulation_data(range(100), simulation_plugin)
 good = good and simulation_plugin.ghdl_test("stimulus test ", stop_cycles=200, generate_wave=True)
@@ -118,7 +118,7 @@ a = Response(Sequence(*range(100)))
 
 s=Chip(a)
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = simulation_plugin.ghdl_test("response test ", stop_cycles=10000, generate_wave=True)
 for response, expected in zip(a.get_simulation_data(simulation_plugin), range(100)):
@@ -154,7 +154,7 @@ Process(10, #gives integer range -512 to 512
 #Join the elements together into a chip
 s=Chip(Asserter(outstream==Sequence(0, 1, 2, 3)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("feedback test ", stop_cycles=100, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -183,7 +183,7 @@ Process(8,
 )
 
 s=Chip(Asserter(expected_response == z))
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("evaluate test", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -210,7 +210,7 @@ Process(8, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer + test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -237,7 +237,7 @@ Process(8, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer - test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -264,7 +264,7 @@ Process(8, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer * test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -291,7 +291,7 @@ Process(8, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer // test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -318,7 +318,7 @@ Process(8, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer % test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -345,7 +345,7 @@ Process(8, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer & test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -372,7 +372,7 @@ Process(8, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer | test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -399,7 +399,7 @@ Process(8, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer ^ test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -426,7 +426,7 @@ Process(16, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer << test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -453,7 +453,7 @@ Process(8, Loop(
 ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer >> test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -480,7 +480,7 @@ Process(8, Loop(
     ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer == test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -507,7 +507,7 @@ Process(8, Loop(
     ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer != test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -534,7 +534,7 @@ Process(8, Loop(
     ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer >= test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -561,7 +561,7 @@ Process(8, Loop(
     ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer <= test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -587,7 +587,7 @@ Process(8, Loop(
     ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer > test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -613,7 +613,7 @@ Process(8, Loop(
     ))
 s=Chip(Asserter(expected_response == z))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("integer < test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -637,7 +637,7 @@ s=Chip(
         #Printer(z),
 )
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chain test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -655,7 +655,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == stimulus_a + stimulus_b))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = simulation_plugin.ghdl_test("chips + test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -673,7 +673,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == stimulus_a - stimulus_b))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips - test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -691,7 +691,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == stimulus_a * stimulus_b))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips * test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -709,7 +709,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == stimulus_a // stimulus_b))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips // test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -727,7 +727,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == stimulus_a % stimulus_b))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips % test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -745,7 +745,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == stimulus_a & stimulus_b))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips & test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -763,7 +763,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == stimulus_a | stimulus_b))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips | test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -781,7 +781,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == stimulus_a ^ stimulus_b))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips ^ test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -799,7 +799,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == (stimulus_a << stimulus_b)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips << test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -817,7 +817,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == (stimulus_a >> stimulus_b)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips >> test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -835,7 +835,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == (stimulus_a == stimulus_b)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips == test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -853,7 +853,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == (stimulus_a != stimulus_b)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips != test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -871,7 +871,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == (stimulus_a >= stimulus_b)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips >= test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -889,7 +889,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == (stimulus_a <= stimulus_b)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips <= test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -907,7 +907,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == (stimulus_a > stimulus_b)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips > test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -925,7 +925,7 @@ stimulus_b =        Sequence(*b)
 expected_response = Sequence(*z)
 s=Chip(Asserter(expected_response == (stimulus_a < stimulus_b)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("chips < test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -933,7 +933,7 @@ if not good and stop_on_fail: exit()
 #Test Printer
 s=Chip(Asserter(Printer(Repeater(10))==Sequence(ord('1'), ord('0'), ord('\n'))))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("Printer test", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()
@@ -941,7 +941,7 @@ if not good and stop_on_fail: exit()
 #Test Scanner
 s=Chip(Asserter(Scanner(Sequence(ord('1'), ord('0'), ord('\n')), 8)==Repeater(10)))
 
-simulation_plugin = chips_VHDL.Plugin()
+simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.ghdl_test("Scanner test", stop_cycles=2000, generate_wave=True)
 if not good and stop_on_fail: exit()

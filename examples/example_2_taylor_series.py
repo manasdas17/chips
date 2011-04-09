@@ -89,11 +89,11 @@ if "simulate" in sys.argv:
 elif "simulate_vhdl" in sys.argv:
     import numpy as n
     from matplotlib import pyplot as pl
-    import chips_VHDL
+    from chips.VHDL_plugin import Plugin
     x=n.linspace(to_fixed(0), to_fixed(pi), 100)
     response=Response(taylor(Sequence(*x)))
     chip = Chip(response)
-    plugin = chips_VHDL.Plugin()
+    plugin = Plugin()
     chip.write_code(plugin)
     plugin.ghdl_test("test taylor series", stop_cycles=1000000)
     sin_x=[from_fixed(i) for i in response.get_simulation_data(plugin)]
@@ -106,11 +106,11 @@ elif "simulate_vhdl" in sys.argv:
 elif "simulate_cpp" in sys.argv:
     import numpy as n
     from matplotlib import pyplot as pl
-    import chips_cpp
+    from chips.cpp_plugin import Plugin
     x=n.linspace(to_fixed(0), to_fixed(pi), 100)
     response=Response(taylor(Sequence(*x)))
     chip = Chip(response)
-    plugin = chips_cpp.Plugin()
+    plugin = Plugin()
     chip.write_code(plugin)
     plugin.test("test taylor series", stop_cycles=100000)
     sin_x=[from_fixed(i) for i in response.get_simulation_data(plugin)]

@@ -63,7 +63,7 @@ Process(16,
 )
 
 if "build" in sys.argv:
-    import chips_VHDL
+    from chips.VHDL_plugin import Plugin()
     import os
     import shutil
     s = Chip(SerialOut(Resizer(serialout, 8)))

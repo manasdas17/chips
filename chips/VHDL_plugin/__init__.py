@@ -266,6 +266,15 @@ class Plugin:
 
     def ghdl_test(self, name, generate_wave=False, stop_cycles=False):
 
+        #test whether ghdl is installed
+        pipe = subprocess.Popen("ghdl --help", shell=True, stdout=subprocess.PIPE)
+        error_message = pipe.communicate()
+        return_code = pipe.returncode
+        if return_code != 0:
+            print "GHDL does not appear to be installed properly."
+            print "You must have GHDL (http://ghdl.free.fr) installed to simulate vhdl output."
+            exit(-1)
+
         #enter project directory
         if not os.path.isdir(self.project_name): 
             if not os.path.exists(self.project_name):
@@ -281,12 +290,16 @@ class Plugin:
         #regenerate vhdl file
         self.write_chip(None)
 
+        #This prevents GHDL compile errors
+        if os.path.exists("work-obj93.cf"):
+            os.remove("work-obj93.cf")
+            
+        #analyze
         pipe = subprocess.Popen( ''.join([
         "ghdl -a ", 
-        os.path.join(".", self.project_name),
+        self.project_name,
         ".vhd", 
-        ]), shell=True)
-        pipe.wait()
+        ]), shell=True, stderr=subprocess.PIPE)
         error_message = pipe.communicate()[1]
         return_code = pipe.returncode
 
@@ -296,10 +309,8 @@ class Plugin:
             print error_message
             return False
 
-        pipe = subprocess.Popen(''.join([
-        "ghdl -e ",
-        "streams_vhdl_model"]), shell=True)
-        pipe.wait()
+        #elaborate
+        pipe = subprocess.Popen("ghdl -e streams_vhdl_model", shell=True, stderr=subprocess.PIPE)
         error_message = pipe.communicate()[1]
         return_code = pipe.returncode
 
@@ -309,6 +320,7 @@ class Plugin:
             print error_message
             return False
 
+        #simulate
         if sys.platform == "win32":
             parameters = ["ghdl -r streams_vhdl_model"]
         else:
@@ -321,10 +333,9 @@ class Plugin:
         pipe = subprocess.Popen(
                 ''.join(parameters), 
                 shell=True, 
-                stderr=subprocess.PIPE, 
+                stderr=subprocess.PIPE
         )
         error_message = pipe.communicate()[1]
-        pipe.wait()
         return_code = pipe.returncode
 
         if return_code != 0:

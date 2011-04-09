@@ -214,7 +214,7 @@ if "simulate" in sys.argv:
 
 if "simulate_vhdl" in sys.argv:
     r = 128
-    import chips_VHDL
+    from chips.VHDL_plugin import Plugin
     import numpy as n
     import scipy as s
     from matplotlib import pyplot as p
@@ -238,7 +238,7 @@ if "simulate_vhdl" in sys.argv:
     chip = Chip(rer, imr)
 
     #run the simulation
-    plugin = chips_VHDL.Plugin()
+    plugin = Plugin()
     chip.write_code(plugin)
     plugin.ghdl_test("test fft", stop_cycles = 100000)
 
@@ -259,7 +259,7 @@ if "simulate_vhdl" in sys.argv:
 
 if "simulate_cpp" in sys.argv:
     r = 1024
-    import chips_cpp
+    from chips.cpp_plugin import Plugin
     import numpy as n
     import scipy as s
     from matplotlib import pyplot as p
@@ -283,7 +283,7 @@ if "simulate_cpp" in sys.argv:
     chip = Chip(rer, imr)
 
     #run the simulation
-    plugin = chips_cpp.Plugin()
+    plugin = Plugin()
     chip.write_code(plugin)
     plugin.test("test fft", stop_cycles = 750000)
 
@@ -304,7 +304,7 @@ if "simulate_cpp" in sys.argv:
 
 if "visualize" in sys.argv:
     r = 128
-    import chips_visual
+    from chips.visual_plugin import Plugin
     import numpy as n
     import scipy as s
     from matplotlib import pyplot as p
@@ -328,7 +328,7 @@ if "visualize" in sys.argv:
     chip = Chip(rer, imr)
 
     #run the simulation
-    plugin = chips_visual.Plugin("example_6_fft")
+    plugin = Plugin("example_6_fft")
     chip.write_code(plugin)
     plugin.draw("example_6.svg")
 

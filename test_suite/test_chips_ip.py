@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-"""test file"""
+"""Test that ip can be generated and compiled without error."""
 
 from chips import *
-import chips_cpp 
+stop_on_fail = True
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -12,8 +12,3 @@ __maintainer__ = "Jon Dawson"
 __email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
 
-chip = Chip(Console(Printer(Repeater(1))))
-
-p = chips_cpp.Plugin()
-system.write_code(p)
-good = p.test("test", stop_cycles=10)

@@ -29,35 +29,36 @@ if "simulate" in sys.argv:
     chip.test("Example 1: Hello World .... in welsh!", stop_cycles=100)
 
 if "simulate_vhdl" in sys.argv:
-    import chips_VHDL #import VHDL plugin 
+    from chips.VHDL_plugin import Plugin #import VHDL plugin 
     #simulate using an external vhdl simulator
     chip=make_chip("helo byd!\n", Console)
-    vhdl_plugin = chips_VHDL.Plugin()
+    vhdl_plugin = Plugin()
     chip.write_code(vhdl_plugin)
     vhdl_plugin.ghdl_test("Example 1 : Hello world .... in welsh!", stop_cycles=2000)
 
 if "simulate_cpp" in sys.argv:
-    import chips_cpp #import C++ plugin 
+    from chips.cpp_plugin import Plugin#import C++ plugin 
     #simulate using an external vhdl simulator
     chip=make_chip("helo byd!\n", Console)
-    cpp_plugin = chips_cpp.Plugin()
+    cpp_plugin = Plugin()
     chip.write_code(cpp_plugin)
     cpp_plugin.test("Example 1 : Hello world .... in welsh!", stop_cycles=2000)
 
 if "visualize" in sys.argv:
-    import chips_visual
+    from chips.visual_plugin import Plugin
     #simulate using an external vhdl simulator
     chip=make_chip("helo byd!\n", Console)
-    visual_plugin = chips_visual.Plugin("Example 1 : Hello world .... in welsh!")
+    visual_plugin = Plugin("Example 1 : Hello world .... in welsh!")
     chip.write_code(visual_plugin)
     visual_plugin.draw("example_1.svg")
 
 if "build" in sys.argv:
     import os
     import shutil
+    from chips.VHDL_plugin import Plugin #import VHDL plugin 
     #compile into a xilinx device
     chip=make_chip("helo byd!\n", SerialOut)
-    vhdl_plugin = chips_VHDL.Plugin(internal_reset=False, internal_clock=False)
+    vhdl_plugin = Plugin(internal_reset=False, internal_clock=False)
     chip.write_code(vhdl_plugin)
     from_file=os.path.join(".", "ucfs", "example_1.ucf")
     to_file=os.path.join(".", "project", "xilinx", "project.ucf")

@@ -4,15 +4,15 @@ from distutils.core import setup
 
 setup(name="PythonStreams",
       version="0.1",
-      description="A library for designing hardware based on chips",
+      description="Design hardware with Python",
       author="Jon Dawson",
-      author_email="jon@jondawson.org.uk",
+      author_email="chips@jondawson.org.uk",
       packages=[
           "chips", 
-          "chips_VHDL", 
-          "chips_visual", 
-          "chips_cpp",
-          "chips_ip"
+          "chips.ip", 
+          "chips.cpp_plugin", 
+          "chips.VHDL_plugin", 
+          "chips.visual_plugin", 
       ],
       scripts=[
           "test_suite/test_chips.py",
@@ -20,15 +20,8 @@ setup(name="PythonStreams",
           "test_suite/test_chips_VHDL.py",
           "test_suite/test_chips_visual.py",
       ],
-      package_dir={
-          "chips":"src/chips", 
-          "chips_VHDL":"src/chips_VHDL", 
-          "chips_visual":"src/chips_visual", 
-          "chips_cpp":"src/chips_cpp", 
-          "chips_ip":"src/chips_ip", 
-      },
       package_data={
-          "chips_ip":["*.vhd"], 
+          "chips.ip":["*.vhd"], 
       },
 )
 
