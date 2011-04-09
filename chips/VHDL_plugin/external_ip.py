@@ -38,7 +38,6 @@ def write(plugin, stream):
                 ports.append("      {0} : in std_logic_vector({1} downto 0)".format(mapping, size-1))
 
         for output_port, size in definition.output_ports.iteritems():
-            print instance.outport_mapping
             mapping = instance.outport_mapping[output_port]
             if size == 1:
                 ports.append("      {0} : out std_logic".format(mapping))

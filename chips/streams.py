@@ -627,7 +627,7 @@ class ExternalIPDefinition:
         self.input_ports = input_ports
         self.output_ports = output_ports
 
-class ExternalIPInstance(Unique):
+class ExternalIPInstance(Stream, Unique):
     def __init__(self, input_streams, definition, inport_mapping, outport_mapping):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
@@ -650,7 +650,6 @@ class ExternalIPInstance(Unique):
                 no_streams_expected, no_streams_actual), self.filename, self.lineno)
 
         expected_sizes = self.definition.input_streams.values()
-        print expected_sizes
         for stream, expected_size in zip(self.input_streams, expected_sizes):
             if expected_size != stream.get_bits():
                 raise StreamsConstructionError("incorrect bit width, expected: {0} actual: {1}".format(
@@ -667,6 +666,10 @@ class ExternalIPInstance(Unique):
         for i in self.input_streams:
             i.set_system(system)
         system.streams.append(self)
+
+    def set_chip(self, chip):
+        chip.executables.append(self)
+        Stream.set_chip(self, chip)
 
     def get_output_streams(self):
         return self.output_streams
