@@ -1,3 +1,0 @@
-#!/bin/sh
-
-git filter-branch -f --env-filter 'export GIT_AUTHOR_NAME="Jon Dawson";'
