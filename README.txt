@@ -9,7 +9,7 @@ Features
 
 - Provides fast native simulations that integrate with Python.
 
-- Python extension modules such asch as Scipy, Numpy, Matplotlib and PIL provide a rich
+- Python extension modules such as Scipy, Numpy, Matplotlib and PIL provide a rich
   verification environment.
 
 - Automatic generation of synthesisable VHDL.
