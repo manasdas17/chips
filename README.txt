@@ -1,5 +1,24 @@
-README.txt 
-==========
+CHIPS
+=====
+
+The Chips library allows hardware devces to be designed in python
+
+Features
+
+- High level device modeling language makes device design simpler and more powerful.
+
+- Provides fast native simulations that integrate with Python.
+
+- Python extension modules such asch as Scipy, Numpy, Matplotlib and PIL provide a rich
+  verification environment.
+
+- Automatic generation of synthesisable VHDL.
+
+- Plugin mechanism also allows C++ and graphviz outputs to be generated.
+
+- Existing VHDL IP can be imported.
+
+- Seamless co-simulation of C++ and VHDL outputs.
 
 DOCUMENTATION
 -------------
