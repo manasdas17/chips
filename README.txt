@@ -1,39 +1,21 @@
-TO PREPARE A SOURCE DISTRIBUTION
---------------------------------
->python setup sdist
-Distribution is contained in ./dist
+README.txt 
+==========
 
-TO CREATE A WINDOWS DISTRIBUTION
---------------------------------
->python setup bdist_wininst
+DOCUMENTATION
+-------------
+HTML documentation can be found in docs/_build/html
 
-TO INSTALL
-----------
+INSTALLATION
+------------
 >python setup install
 
-TO TEST
--------
->test_streams.py
->test_streams_VHDL.py
->test_streams_visual.py
+TEST
+----
+>test_chips.py
+>test_chips_VHDL.py
+>test_chips_cpp.py
+>test_chips_visual.py
 
-GENERATE VHDL DOCUMENTATION
----------------------------
->cd doc
->pdflatex python-streams.tex
-
-GENERATE HTML DOCUMENTATION
----------------------------
->cd doc
->latex2html python-streams.tex
-
-HTML DOCUMENTATION
-------------------
-html documentation can be found in doc/python_streams
-
-PDF DOCUMENTATION
------------------
-pdf documentation can be found in doc
 
 EXAMPLES
 --------
@@ -53,4 +35,18 @@ test
 
 test
 >./example_xxxx.py visulaize
+
+TO PREPARE A SOURCE DISTRIBUTION
+--------------------------------
+>python setup sdist
+Distribution is contained in ./dist
+
+TO CREATE A WINDOWS DISTRIBUTION
+--------------------------------
+>python setup bdist_wininst
+
+GENERATE HTML DOCUMENTATION
+---------------------------
+>cd docs
+>make html
 

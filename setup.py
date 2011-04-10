@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-setup(name="PythonStreams",
+setup(name="Chips",
       version="0.1",
       description="Design hardware with Python",
       long_description="""\

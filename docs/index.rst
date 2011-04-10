@@ -15,6 +15,7 @@ Contents:
    tutorial/index
    language_reference/index
    automatic_code_generation/index
+   ip_library/index
    extending_chips/index
 
 Indices and tables

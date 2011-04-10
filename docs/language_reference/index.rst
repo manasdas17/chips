@@ -1,5 +1,5 @@
 ===============================
-Chips Language Reference manual
+Chips Language Reference Manual
 ===============================
 
 Chip

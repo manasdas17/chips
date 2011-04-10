@@ -1,23 +1,20 @@
-=========================
 Automatic Code Generation
 =========================
---------------------
+
 VHDL Code Generation
 --------------------
 
-.. automodule:: chips_vhdl
+.. automodule:: chips.VHDL_plugin
    :members:
 
--------------------
 C++ Code Generation
 -------------------
 
-.. automodule:: chips_cpp
+.. automodule:: chips.cpp_plugin
    :members:
 
------------------------------
 Visualisation Code Generation
 -----------------------------
 
-.. automodule:: chips_visualize
+.. automodule:: chips.visual_plugin
    :members:
