@@ -4,8 +4,8 @@ Tutorial
 Learn Python
 ------------
 In order to make any real use of the *Chips* library you will need to be
-familiar with the basics of Python. The `python tutorial`_ is a good place to
-start.
+familiar with the basics of Python. The `python tutorial`_ is a good place
+to start.
 
 .. _`Python tutorial` : http://docs.python.org/tut
 
@@ -99,12 +99,12 @@ In this example we have made only a few changes:
 - ``hello_world = tuple((ord(i) for i in "hello world\n"))`` creates a tuple
   containing the numeric values of the ascii characters in a string.
 
-- This example introduces a new stream, the *Sequence*. The *Sequence* stream
-  outputs each of its arguments in turn, when the arguments are exhausted, the
-  process repeats.
+- This example introduces a new stream, the *Sequence*. The *Sequence*
+  stream outputs each of its arguments in turn, when the arguments are
+  exhausted, the process repeats.
  
 - A *Printer* is  *stream* is not needed in this example since the stream is
-  allready a sequence of ascii values.
+  already a sequence of ASCII values.
 
 Generating VHDL
 ---------------
@@ -130,20 +130,21 @@ VHDL model::
         my_chip.write_code(code_generator)
 
 The *Chips* library uses plugins to generate output code from models. This
-means that new code generators can be added to Chips without having to change
-the way that hardware is designed and simulated. At present, chips supports C++
-and VHDL code generation, but it is VHDL code that allows *Chips" to be
-synthesised. 
+means that new code generators can be added to Chips without having to
+change the way that hardware is designed and simulated. At present, chips
+supports C++ and VHDL code generation, but it is VHDL code that allows
+*Chips" to be synthesised. 
 
 The VHDL code generation plugin is found in ``chips.VHDL_plugin`` If you run
-this example yo0u should find hello_world.vhd has been generated. You can run
-this code in an external vhdl simulator, but you won't be able to synthesise it
-into a device because real hardware devices don't have a concept of a
-*Console*.
+this example you should find hello_world.vhd has been generated. You can
+run this code in an external vhdl simulator, but you won't be able to
+synthesise it into a device because real hardware devices don't have a
+concept of a *Console*.
 
 To make this example synthesise, we need to write the characters to some
-realisable hardware interface. The *Chips* library provides a *SerialOut* sink,
-this provides a simple way to direct the stream of characters to a serial port::
+realisable hardware interface. The *Chips* library provides a *SerialOut*
+sink, this provides a simple way to direct the stream of characters to a
+serial port::
 
         from chips import *
         from chips.VHDL_plugin import Plugin
@@ -162,30 +163,23 @@ this provides a simple way to direct the stream of characters to a serial port::
         my_chip.write_code(code_generator)
 
 Now you should have a hello_world.vhd file that you can synthesise in a real
-device. By default, SerialOut will assume that you are using a 50 MHz clock and
-a baud rate of 115200. If you need something else you can use the clock_rate
-and baud_rate arguments to specify what you need.
+device. By default, SerialOut will assume that you are using a 50 MHz clock
+and a baud rate of 115200. If you need something else you can use the
+clock_rate and baud_rate arguments to specify what you need.
 
 More Streams
 ------------
 So far we have seen three types of streams, *Counter*, *Sequence* and
-*Printer*. Chips provides a few more basic streams which you can read about in
-the `Language Reference Manual`_. It is also possible to combine streams using
-arithmetic operators : ``+, -, *, //, %, <<, >>, &, |, ^, ==, !=, <, <=, >,
->=`` on the whole they have the same (or very similar) meaning as they do in
-Python except that they operate on streams of data.
+*Printer*. Chips provides a few more basic streams which you can read about
+in the `Language Reference Manual`_. It is also possible to combine streams
+using arithmetic operators : ``+, -, *, //, %, <<, >>, &, |, ^, ==, !=, <,
+<=, >, >=`` on the whole they have the same (or very similar) meaning as
+they do in Python except that they operate on streams of data.
 
         .. _`Language Reference Manual` : ../language_reference/index
 
 
 Introducing Processes
 ---------------------
-
-        
-
-        
-
-
-
 
 

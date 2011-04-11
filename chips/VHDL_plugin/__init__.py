@@ -147,14 +147,20 @@ class Plugin:
         self.definitions.extend(definitions)
 
     def write_array(self, stream): 
-        dependencies, ports, declarations, definitions = array.write(self, stream)
+        dependencies, ports, declarations, definitions = array.write(
+            self, 
+            stream
+        )
         self.dependencies.extend(dependencies)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
         self.definitions.extend(definitions)
 
     def write_fifo(self, stream): 
-        dependencies, ports, declarations, definitions = fifo.write(self, stream)
+        dependencies, ports, declarations, definitions = fifo.write(
+            self, 
+            stream
+        )
         self.dependencies.extend(dependencies)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
@@ -179,7 +185,10 @@ class Plugin:
         self.definitions.extend(definitions)
 
     def write_external_ip(self, ip): 
-        dependencies, ports, declarations, definitions = external_ip.write(self, ip)
+        dependencies, ports, declarations, definitions = external_ip.write(
+            self, 
+            ip
+        )
         self.dependencies.extend(dependencies)
         self.ports.extend(ports)
         self.declarations.extend(declarations)
@@ -267,7 +276,11 @@ class Plugin:
     def ghdl_test(self, name, generate_wave=False, stop_cycles=False):
 
         #test whether ghdl is installed
-        pipe = subprocess.Popen("ghdl --help", shell=True, stdout=subprocess.PIPE)
+        pipe = subprocess.Popen(
+            "ghdl --help", 
+            shell=True,
+            stdout=subprocess.PIPE
+        )
         error_message = pipe.communicate()
         return_code = pipe.returncode
         if return_code != 0:
@@ -310,7 +323,11 @@ class Plugin:
             return False
 
         #elaborate
-        pipe = subprocess.Popen("ghdl -e streams_vhdl_model", shell=True, stderr=subprocess.PIPE)
+        pipe = subprocess.Popen(
+            "ghdl -e streams_vhdl_model", 
+            shell=True,
+            stderr=subprocess.PIPE
+        )
         error_message = pipe.communicate()[1]
         return_code = pipe.returncode
 
@@ -328,7 +345,9 @@ class Plugin:
         if generate_wave: 
             parameters.append(" --wave=wave.ghw")
         if stop_cycles: 
-            parameters.append(" --stop-time={0}ns".format((stop_cycles * 10) + 20))
+            parameters.append(
+                " --stop-time={0}ns".format((stop_cycles * 10) + 20)
+            )
 
         pipe = subprocess.Popen(
                 ''.join(parameters), 
@@ -350,7 +369,12 @@ class Plugin:
         print "...Pass"
         return True
 
-    def xilinx_build(self, part="xc5vlx30-3-ff676", synth=True, implement=True, bitgen=True):
+    def xilinx_build(
+            self, 
+            part="xc5vlx30-3-ff676",
+            synth=True, 
+            implement=True, 
+            bitgen=True):
 
         #enter project directory
         if not os.path.isdir(self.project_name): 

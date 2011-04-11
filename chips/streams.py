@@ -9,13 +9,13 @@ A stream is used to represent a flow of data. A stream can act as a:
     * A source of data in its own right such as a *Repeater* or a *Counter*. 
     * A means of performing some operation on a stream of data to form 
       another stream such as a *Printer* or a *Lookup*.
-    * A means of transfering data from one process to another, an *Output*.
+    * A means of transferring data from one process to another, an *Output*.
 
 Stream Expressions
 ------------------
 
 A Stream Expression can be formed by combining Streams or Stream Expressions
-with the following ooperators::
+with the following operators::
 
 	+, -, *, \/, %, &, |, ^, <<, >>, ==, !=, <, <=, >, >=
 
@@ -23,7 +23,7 @@ Each data item in the resulting Stream Expression will be evaluated by removing
 a data item from each of the operand streams, and applying the operator
 function to these data items.
 
-Generaly speaking a Stream Expression will have enough bits to contain any
+Generally speaking a Stream Expression will have enough bits to contain any
 possible result without any arithmetic overflow. The one exception to this is
 the left shift operator where the result is always truncated to the size of the
 left hand operand. Stream expressions may be explicitly truncated or sign
@@ -31,7 +31,7 @@ extended using the *Resizer*.
 
 If one of the operands of a binary operator is not a Stream, Python Streams
 will attempt to convert this operand into an integer. If the conversion is
-successfull, a *Repeater* stream will be created using the integer value. The
+successful, a *Repeater* stream will be created using the integer value. The
 repeater stream will be used in place of the non-stream operand. This allows
 constructs such as ``a = 47+InPort(12, 8)`` to be used as a shorthand for ``a =
 Repeater(47)+InPort("in", 8)`` or ``count = Counter(1, 10, 1)+3*2`` to be used as
@@ -116,7 +116,8 @@ from sys import stdout
 from collections import deque
 
 from process import Process
-from common import how_many_bits, Unique, resize, c_style_modulo, c_style_division
+from common import how_many_bits, Unique, resize, c_style_modulo,\
+    c_style_division
 from instruction import Write, Read
 from exceptions import StreamsConstructionError, SimulationError
 
@@ -133,7 +134,7 @@ class Chip:
     A Chip device containing streams, sinks and processes.
 
     Typically a Chip is used to describe a single device. You need to provide
-    the Chip object with a list of all the sinks (devie outputs). You don't
+    the Chip object with a list of all the sinks (device outputs). You don't
     need to include any process, variables or streams. By analysing the sinks,
     the chip can work out which processes and streams need to be included in
     the device.
@@ -188,7 +189,7 @@ class Chip:
         plugin.write_chip(self)
 
     def reset(self):
-        """Reset the chip to its intial state.
+        """Reset the chip to its initial state.
 
         A chip must be reset before it can be executed."""
 
@@ -245,38 +246,70 @@ class Chip:
 
 class Stream:
 
-    def __add__(self, other): return Binary(self, repeaterize(other), 'add')
-    def __sub__(self, other): return Binary(self, repeaterize(other), 'sub')
-    def __mul__(self, other): return Binary(self, repeaterize(other), 'mul')
-    def __mod__(self, other): return Binary(self, repeaterize(other), 'mod')
-    def __floordiv__(self, other): return Binary(self, repeaterize(other), 'div')
-    def __and__(self, other): return Binary(self, repeaterize(other), 'and')
-    def __or__(self, other): return Binary(self, repeaterize(other), 'or')
-    def __xor__(self, other): return Binary(self, repeaterize(other), 'xor')
-    def __rshift__(self, other): return Binary(self, repeaterize(other), 'sr')
-    def __lshift__(self, other): return Binary(self, repeaterize(other), 'sl')
-    def __eq__(self, other): return Binary(self, repeaterize(other), 'eq')
-    def __ne__(self, other): return Binary(self, repeaterize(other), 'ne')
-    def __gt__(self, other): return Binary(self, repeaterize(other), 'gt')
-    def __ge__(self, other): return Binary(self, repeaterize(other), 'ge')
-    def __lt__(self, other): return Binary(self, repeaterize(other), 'lt')
-    def __le__(self, other): return Binary(self, repeaterize(other), 'le')
-    def __radd__(other, self): return Binary(self, repeaterize(other), 'add')
-    def __rsub__(other, self): return Binary(self, repeaterize(other), 'sub')
-    def __rmul__(other, self): return Binary(self, repeaterize(other), 'mul')
-    def __rmod__(other, self): return Binary(self, repeaterize(other), 'mod')
-    def __rfloordiv__(other, self): return Binary(self, repeaterize(other), 'div')
-    def __rand__(other, self): return Binary(self, repeaterize(other), 'and')
-    def __ror__(other, self): return Binary(self, repeaterize(other), 'or')
-    def __rxor__(other, self): return Binary(self, repeaterize(other), 'xor')
-    def __rrshift__(other, self): return Binary(self, repeaterize(other), 'sr')
-    def __rlshift__(other, self): return Binary(self, repeaterize(other), 'sl')
-    def __req__(other, self): return Binary(self, repeaterize(other), 'eq')
-    def __rne__(other, self): return Binary(self, repeaterize(other), 'ne')
-    def __rgt__(other, self): return Binary(self, repeaterize(other), 'gt')
-    def __rge__(other, self): return Binary(self, repeaterize(other), 'ge')
-    def __rlt__(other, self): return Binary(self, repeaterize(other), 'lt')
-    def __rle__(other, self): return Binary(self, repeaterize(other), 'le')
+    def __add__(self, other): 
+        return Binary(self, repeaterize(other), 'add')
+    def __sub__(self, other): 
+        return Binary(self, repeaterize(other), 'sub')
+    def __mul__(self, other): 
+        return Binary(self, repeaterize(other), 'mul')
+    def __mod__(self, other): 
+        return Binary(self, repeaterize(other), 'mod')
+    def __floordiv__(self, other): 
+        return Binary(self, repeaterize(other), 'div')
+    def __and__(self, other): 
+        return Binary(self, repeaterize(other), 'and')
+    def __or__(self, other): 
+        return Binary(self, repeaterize(other), 'or')
+    def __xor__(self, other): 
+        return Binary(self, repeaterize(other), 'xor')
+    def __rshift__(self, other): 
+        return Binary(self, repeaterize(other), 'sr')
+    def __lshift__(self, other): 
+        return Binary(self, repeaterize(other), 'sl')
+    def __eq__(self, other): 
+        return Binary(self, repeaterize(other), 'eq')
+    def __ne__(self, other): 
+        return Binary(self, repeaterize(other), 'ne')
+    def __gt__(self, other): 
+        return Binary(self, repeaterize(other), 'gt')
+    def __ge__(self, other): 
+        return Binary(self, repeaterize(other), 'ge')
+    def __lt__(self, other): 
+        return Binary(self, repeaterize(other), 'lt')
+    def __le__(self, other): 
+        return Binary(self, repeaterize(other), 'le')
+    def __radd__(other, self): 
+        return Binary(self, repeaterize(other), 'add')
+    def __rsub__(other, self): 
+        return Binary(self, repeaterize(other), 'sub')
+    def __rmul__(other, self): 
+        return Binary(self, repeaterize(other), 'mul')
+    def __rmod__(other, self): 
+        return Binary(self, repeaterize(other), 'mod')
+    def __rfloordiv__(other, self): 
+        return Binary(self, repeaterize(other), 'div')
+    def __rand__(other, self): 
+        return Binary(self, repeaterize(other), 'and')
+    def __ror__(other, self): 
+        return Binary(self, repeaterize(other), 'or')
+    def __rxor__(other, self): 
+        return Binary(self, repeaterize(other), 'xor')
+    def __rrshift__(other, self): 
+        return Binary(self, repeaterize(other), 'sr')
+    def __rlshift__(other, self): 
+        return Binary(self, repeaterize(other), 'sl')
+    def __req__(other, self): 
+        return Binary(self, repeaterize(other), 'eq')
+    def __rne__(other, self): 
+        return Binary(self, repeaterize(other), 'ne')
+    def __rgt__(other, self): 
+        return Binary(self, repeaterize(other), 'gt')
+    def __rge__(other, self): 
+        return Binary(self, repeaterize(other), 'ge')
+    def __rlt__(other, self): 
+        return Binary(self, repeaterize(other), 'lt')
+    def __rle__(other, self): 
+        return Binary(self, repeaterize(other), 'le')
     def get_type(self):
         return "integer"
     def read(self, variable, timout=0):
@@ -284,7 +317,9 @@ class Stream:
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError("Stream is allready part of a chip", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                    "Stream is already part of a chip", 
+                    self.filename, self.lineno)
         self.chip = chip
         chip.streams.append(self)
         if hasattr(self, "a"): self.a.set_chip(chip)
@@ -314,7 +349,7 @@ class Repeater(Stream, Unique):
         #creates a 5 bit stream.
 
         Repeater(5)*2 #--> 10 10 10 10 \..
-        #This is shothand for: Repeater(5)*Repeater(2)
+        #This is shorthand for: Repeater(5)*Repeater(2)
 
     """
 
@@ -397,15 +432,18 @@ class Counter(Stream, Unique):
         return val
 
     def __repr__(self):
-        return "Counter(start={0}, stop={1}, step={2})".format(self.start, self.stop, self.bits)
+        return "Counter(start={0}, stop={1}, step={2})".format(
+            self.start, 
+            self.stop, 
+            self.bits)
 
 class Stimulus(Stream, Unique):
     """
     
     A Stream that allows a Python iterable to be used as a stream.
     
-    A Simulus stream allows a transparent method to pass data from the Python
-    envrinment into the simulation environment. The sequence object is set at
+    A Stimulus stream allows a transparent method to pass data from the Python
+    environment into the simulation environment. The sequence object is set at
     run time using the set_simulation_data() method. The sequence object can be
     any iterable Python sequence such as a list, tuple, or even a generator.
 
@@ -470,7 +508,7 @@ class InPort(Stream, Unique):
     implemented in VHDL, the *InPort* provides double registers on the port
     pins to synchronise data to the local clock domain.
 
-    Since it is not possible to determine the width of the strean in bits
+    Since it is not possible to determine the width of the stream in bits
     automatically, this must be specified using the *bits* argument.
 
     The *name* parameter allows a string to be associated with the input port.
@@ -518,7 +556,7 @@ class InPort(Stream, Unique):
 class SerialIn(Stream, Unique):
     """
     
-    A *SerialIn* yields 8-bit data from a serial uart input.
+    A *SerialIn* yields 8-bit data from a serial UART input.
     
 
     
@@ -577,14 +615,18 @@ class Output(Stream, Unique):
     def set_chip(self, chip):
         if hasattr(self.process, "chip"):
             if self.process.chip is not chip:
-                raise StreamsConstructionError("Process is allready part of another Chip", process.filename, process.lineno)
+                raise StreamsConstructionError(
+                    "Process is already part of another Chip", 
+                    process.filename, process.lineno)
         self.process.set_chip(chip)
         Stream.set_chip(self, chip)
 
     def set_process(self, process):
         if hasattr(self, "process"):
             if self.process is not process:
-                raise StreamsConstructionError("Output is allready part of a Process", self.filename, self.lineno)
+                raise StreamsConstructionError(
+                        "Output is already part of a Process", 
+                        self.filename, self.lineno)
         self.process = process
 
     def write(self, variable): 
@@ -628,32 +670,50 @@ class ExternalIPDefinition:
         self.output_ports = output_ports
 
 class ExternalIPInstance(Stream, Unique):
-    def __init__(self, input_streams, definition, inport_mapping, outport_mapping):
+    def __init__(self, input_streams, definition, inport_mapping, 
+            outport_mapping):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         self.input_streams = input_streams
         self.definition = definition
-        self.output_streams = [ExternalIPStream(self, bits) for name, bits in self.definition.output_streams.iteritems()]
+        self.output_streams = []
+        for name, bits in self.definition.output_streams.iteritems():
+            self.output_streams.append(ExternalIPStream(self, bits))
         self.inport_mapping = inport_mapping
         self.outport_mapping = outport_mapping
 
         for i in self.input_streams:
             if hasattr(i, "receiver"):
-                raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+                raise StreamsConstructionError(
+                    "stream already has receiver", 
+                    self.filename, 
+                    self.lineno)
             else:
                 i.receiver = self
 
         no_streams_expected = len(self.definition.input_streams)
         no_streams_actual = len(self.input_streams)
         if no_streams_expected != no_streams_actual:
-            raise StreamsConstructionError("External IP expects: {0} input streams, actual: {1}".format(
-                no_streams_expected, no_streams_actual), self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "External IP expects: {0} input streams, actual: {1}".format(
+                    no_streams_expected, 
+                    no_streams_actual
+                ), 
+                self.filename, 
+                self.lineno
+            )
 
         expected_sizes = self.definition.input_streams.values()
         for stream, expected_size in zip(self.input_streams, expected_sizes):
             if expected_size != stream.get_bits():
-                raise StreamsConstructionError("incorrect bit width, expected: {0} actual: {1}".format(
-                    expected_size, stream.get_bits()), self.filename, self.lineno)
+                raise StreamsConstructionError(
+                    "incorrect bit width, expected: {0} actual: {1}".format(
+                        expected_size, 
+                        stream.get_bits()
+                    ), 
+                    self.filename, 
+                    self.lineno
+                )
 
         Unique.__init__(self)
 
@@ -661,7 +721,11 @@ class ExternalIPInstance(Stream, Unique):
         #this should only get called if the IP is added to a system
         #ie. it is acting as a sink.
         if self.output_streams:
-            raise StreamsConstructionError("only data sinks can be added to systems", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "only data sinks can be added to systems", 
+                self.filename, 
+                self.lineno
+            )
 
         for i in self.input_streams:
             i.set_system(system)
@@ -695,7 +759,11 @@ class ExternalIPStream(Stream, Unique):
     def set_chip(self, chip):
 
         if hasattr(self, "chip"):
-            raise StreamsConstructionError("stream is allready part of a chip", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream is already part of a chip", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.chip = chip
             chip.streams.append(self)
@@ -711,10 +779,18 @@ class ExternalIPStream(Stream, Unique):
         self.instance.write_input_code(self, plugin)
 
     def reset(self):
-        raise SimulationError("external ip cannot be natively simulated", self.filename, self.lineno)
+        raise SimulationError(
+            "external ip cannot be natively simulated", 
+            self.filename, 
+            self.lineno
+        )
 
     def get(self):
-        raise SimulationError("external ip cannot be natively simulated", self.filename, self.lineno)
+        raise SimulationError(
+            "external ip cannot be natively simulated", 
+            self.filename, 
+            self.linenoi
+        )
 
 #streams combinators
 ################################################################################
@@ -757,12 +833,20 @@ class  Binary(Stream, Unique):
         Unique.__init__(self)
 
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename,
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
         if hasattr(self.b, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.b.receiver = self
 
@@ -785,7 +869,10 @@ class  Binary(Stream, Unique):
         'gt'  : lambda x, y : 1,
         'ge'  : lambda x, y : 1,
         }
-        return bit_function[self.function](self.a.get_bits(), self.b.get_bits())
+        return bit_function[self.function](
+            self.a.get_bits(), 
+            self.b.get_bits()
+        )
 
     def write_code(self, plugin): 
         plugin.write_binary(self)
@@ -817,7 +904,11 @@ class Lookup(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
@@ -837,11 +928,19 @@ class Lookup(Stream, Unique):
             print self.filename, 
             print self.lineno
             print val
-            raise SimulationError("lookup index too large", self.filename, self.lineno)
+            raise SimulationError(
+                "lookup index too large", 
+                self.filename, 
+                self.lineno
+            )
         if resize(val, self.a.get_bits()) < 0:
             print self.filename, 
             print self.lineno
-            raise SimulationError("negative lookup index", self.filename, self.lineno)
+            raise SimulationError(
+                "negative lookup index", 
+                self.filename, 
+                self.lineno
+            )
         return self.args[resize(val, self.a.get_bits())]
 
 class Fifo(Stream, Unique):
@@ -853,7 +952,11 @@ class Fifo(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("address_in allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "address_in already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
@@ -886,19 +989,31 @@ class Array(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("address_in allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "address_in already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
         if hasattr(self.b, "receiver"):
-            raise StreamsConstructionError("data_in allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "data_in already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
         if hasattr(self.c, "receiver"):
-            raise StreamsConstructionError("address_out allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "address_out already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
-    def set_chip(self, chip): # a RAM behaves a a sink for data and address in
+    def set_chip(self, chip): # a RAM behaves a sink for data and address in
         chip.executables.append(self)
         Stream.set_chip(self, chip)
 
@@ -940,7 +1055,11 @@ class Decoupler(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
@@ -965,7 +1084,11 @@ class Resizer(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
@@ -991,7 +1114,11 @@ class Printer(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
@@ -1024,7 +1151,11 @@ class HexPrinter(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
 

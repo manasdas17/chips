@@ -13,7 +13,8 @@ from sys import stdout
 from collections import deque
 
 from process import Process
-from common import how_many_bits, Unique, resize, c_style_modulo, c_style_division
+from common import how_many_bits, Unique, resize, c_style_modulo,\
+    c_style_division
 from instruction import Write, Read
 from exceptions import StreamsConstructionError, SimulationError
 
@@ -36,13 +37,21 @@ class Response(Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename,
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError("stream is allready part of a chip", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream is already part of a chip", 
+                self.filename, 
+                self.lineno
+            )
         self.chip = chip
         chip.streams.append(self)
         self.a.set_chip(chip)
@@ -80,13 +89,21 @@ class OutPort(Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename,
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError("stream is allready part of a chip", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream is already part of a chip", 
+                self.filename, 
+                self.lineno
+            )
         self.chip = chip
         chip.streams.append(self)
         self.a.set_chip(chip)
@@ -122,13 +139,21 @@ class SerialOut(Unique):
         assert a.get_bits()==8
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError("stream is allready part of a chip", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream is already part of a chip", 
+                self.filename, 
+                self.lineno
+            )
         self.chip = chip
         chip.streams.append(self)
         self.a.set_chip(chip)
@@ -147,13 +172,13 @@ class SerialOut(Unique):
 
     def __repr__(self):
         return '\n'.join([
-        "  serial_out( name = ", 
-        self.name, 
-        "clock_rate = ", 
-        self.clock_rate, 
-        "baud_rate", 
-        self.baud_rate, 
-        ")"
+            "  serial_out( name = ", 
+            self.name, 
+            "clock_rate = ", 
+            self.clock_rate, 
+            "baud_rate", 
+            self.baud_rate, 
+            ")"
         ])
 
 class Asserter(Unique):
@@ -164,12 +189,20 @@ class Asserter(Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError("stream is allready part of a chip", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream is already part of a chip", 
+                self.filename, 
+                self.lineno
+            )
         self.chip = chip
         chip.streams.append(self)
         self.a.set_chip(chip)
@@ -186,7 +219,11 @@ class Asserter(Unique):
     def execute(self):
         val = self.a.get()
         if val is not None:
-            assert val, "Python Streams Assertion failure file: {0} line: {1}".format(self.filename, self.lineno)
+            assert val,\
+            "Python Streams Assertion failure file: {0} line: {1}".format(
+                self.filename, 
+                self.lineno
+            )
 
     def __repr__(self):
         return '\n'.join([
@@ -201,13 +238,21 @@ class Console(Unique):
         self.a = a
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError("stream allready has receiver", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename, 
+                self.lineno
+            )
         else:
             self.a.receiver = self
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError("stream is allready part of a chip", self.filename, self.lineno)
+            raise StreamsConstructionError(
+                "stream is already part of a chip", 
+                self.filename,
+                self.lineno
+            )
         self.chip = chip
         chip.streams.append(self)
         self.a.set_chip(chip)

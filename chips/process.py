@@ -56,7 +56,7 @@ An *Output* is a special *Stream* that can be written to by a *Process*. Only on
 
 A *Process* may write to an *Output* stream using the *write* method. The
 *write* method accepts an expression as its argument. A *write* to an output
-will stall the process until the reciever is ready to recieve data.
+will stall the process until the receiver is ready to receive data.
 
 Example::
 
@@ -109,8 +109,8 @@ has no way to change its value when it executes.
 Constants
 ---------
 
-Like a *Variable*, a constant must be supplied with an initial valkue when it
-is created. Unlike a *Variable*, a the value of a *Constant* can never be
+Like a *Variable*, a constant must be supplied with an initial value when it
+is created. Unlike a *Variable*, the value of a *Constant* can never be
 changed.
 
 Expressions
@@ -125,7 +125,7 @@ other expressions using following operators::
 
 If one of the operands of a binary operator is not an expression, the Chips
 library will attempt to convert this operand into an integer. If the conversion
-is successfull, a *Constant* object will be created using the integer value.
+is successful, a *Constant* object will be created using the integer value.
 The *Constant* object will be used in place of the non-expression operand. This
 allows constructs such as ``a = 47+Constant(10)`` to be used as a shorthand for
 ``a = Constant(47)+Constant(10)`` or ``count.set(Constant(15)+3*2`` to be used
@@ -205,7 +205,11 @@ class Process(Unique):
             i.set_process(self)
         for i in self.inputs:
             if hasattr(i, "receiver"):
-                raise ChipConstructionError("stream allready has a receiver", self.filename, self.lineno)
+                raise ChipConstructionError(
+                    "stream already has a receiver", 
+                    self.filename, 
+                    self.lineno
+                )
             i.receiver = self
         self.receivers = {}
         self.transmitters = {}
@@ -248,7 +252,7 @@ class Process(Unique):
             regb = self.registers[instruction.srcb]
             self.registers[instruction.srca] = resize(rega-regb, self.bits)
             self.pc += 1
-        elif instruction.operation == "OP_MUL":
+        elif instruction.operation == "OP_]UL":
             rega = self.registers[instruction.srca]
             regb = self.registers[instruction.srcb]
             self.registers[instruction.srca] = resize(rega*regb, self.bits)
@@ -256,12 +260,18 @@ class Process(Unique):
         elif instruction.operation == "OP_DIV":
             rega = self.registers[instruction.srca]
             regb = self.registers[instruction.srcb]
-            self.registers[instruction.srca] = resize(c_style_division(rega, regb), self.bits)
+            self.registers[instruction.srca] = resize(
+                c_style_division(rega, regb), 
+                self.bits
+            )
             self.pc += 1
         elif instruction.operation == "OP_MOD":
             rega = self.registers[instruction.srca]
             regb = self.registers[instruction.srcb]
-            self.registers[instruction.srca] = resize(c_style_modulo(rega, regb), self.bits)
+            self.registers[instruction.srca] = resize(
+                c_style_modulo(rega, regb), 
+                self.bits
+            )
             self.pc += 1
         elif instruction.operation == "OP_SL":
             rega = self.registers[instruction.srca]
@@ -291,25 +301,39 @@ class Process(Unique):
         elif instruction.operation == "OP_EQ":
             rega = self.registers[instruction.srca]
             regb = self.registers[instruction.srcb]
-            self.registers[instruction.srca] = resize(-int(rega==regb), self.bits)
+            self.registers[instruction.srca] = resize(
+                -int(rega==regb), 
+                self.bits
+            )
             self.pc += 1
         elif instruction.operation == "OP_NE":
             rega = self.registers[instruction.srca]
             regb = self.registers[instruction.srcb]
-            self.registers[instruction.srca] = resize(-int(rega!=regb), self.bits)
+            self.registers[instruction.srca] = resize(
+                -int(rega!=regb), 
+                self.bits
+            )
             self.pc += 1
         elif instruction.operation == "OP_GT":
             rega = self.registers[instruction.srca]
             regb = self.registers[instruction.srcb]
-            self.registers[instruction.srca] = resize(-int(rega>regb), self.bits)
+            self.registers[instruction.srca] = resize(
+                -int(rega>regb), 
+                self.bits
+            )
             self.pc += 1
         elif instruction.operation == "OP_GE":
             rega = self.registers[instruction.srca]
             regb = self.registers[instruction.srcb]
-            self.registers[instruction.srca] = resize(-int(rega>=regb), self.bits)
+            self.registers[instruction.srca] = resize(
+                -int(rega>=regb), 
+                self.bits
+            )
             self.pc += 1
         elif instruction.operation == "OP_MOVE":
-            self.registers[instruction.srca] = self.registers[instruction.srcb]
+            self.registers[instruction.srca] = self.registers[
+                instruction.srcb
+            ]
             self.pc += 1
         elif instruction.operation == "OP_IMM":
             self.registers[instruction.srca] = instruction.immediate
@@ -332,7 +356,10 @@ class Process(Unique):
             transmitter = self.transmitters[key]
             read_data = transmitter.get()
             if read_data is not None:
-                self.registers[instruction.srca] = resize(read_data, self.bits)
+                self.registers[instruction.srca] = resize(
+                    read_data, 
+                    self.bits
+                )
                 self.pc += 1
 
     def __repr__(self):

@@ -28,7 +28,7 @@ class Read:
         self.lineno = currentframe().f_back.f_lineno
 
     def set_process(self, process):
-        #have to explicitly test for identity because we have overriden __eq__
+        #have to explicitly test for identity because we have overridden __eq__
         for i in process.inputs:
             if i is self.stream: break
         else:
@@ -63,7 +63,7 @@ class Write:
         self.process=process
         self.stream.set_process(process)
         self.expression.set_process(process)
-        #have to explicitly test for identity because we have overriden __eq__
+        #have to explicitly test for identity because we have overridden __eq__
         for i in process.outputs:
             if i is self.stream: break
         else:
@@ -107,7 +107,12 @@ class Instruction:
         self.lineno = lineno
     def __repr__(self):
         s = "Instruction(operation={0}, srca={1}, srcb={2}, immediate={3})"
-        return s.format(self.operation, self.srca, self.srcb, self.immediate)
+        return s.format(
+            self.operation, 
+            self.srca, 
+            self.srcb, 
+            self.immediate
+        )
 
 ################################################################################
 
@@ -120,42 +125,73 @@ def constantize(possible_constant):
 class Expression:
     """Do not directly instantiate this class
     It is here to imbue derived expression classes with operators"""
-    def __add__(self, other): return Binary(self, constantize(other), 'OP_ADD')
-    def __sub__(self, other): return Binary(self, constantize(other), 'OP_SUB')
-    def __mul__(self, other): return Binary(self, constantize(other), 'OP_MUL')
-    def __mod__(self, other): return Binary(self, constantize(other), 'OP_MOD')
-    def __floordiv__(self, other): return Binary(self, constantize(other), 'OP_DIV')
-    def __and__(self, other): return Binary(self, constantize(other), 'OP_BAND')
-    def __or__(self, other): return Binary(self, constantize(other), 'OP_BOR')
-    def __xor__(self, other): return Binary(self, constantize(other), 'OP_BXOR')
-    def __rshift__(self, other): return Binary(self, constantize(other), 'OP_SR')
-    def __lshift__(self, other): return Binary(self, constantize(other), 'OP_SL')
-    def __eq__(self, other): return Binary(self, constantize(other), 'OP_EQ')
-    def __ne__(self, other): return Binary(self, constantize(other), 'OP_NE')
-    def __gt__(self, other): return Binary(self, constantize(other), 'OP_GT')
-    def __ge__(self, other): return Binary(self, constantize(other), 'OP_GE')
-    def __lt__(self, other): return Binary(constantize(other), self, 'OP_GT')
-    def __le__(self, other): return Binary(constantize(other), self, 'OP_GE')
-    def __radd__(other, self): return Binary(self, constantize(other), 'OP_ADD')
-    def __rsub__(other, self): return Binary(self, constantize(other), 'OP_SUB')
-    def __rmul__(other, self): return Binary(self, constantize(other), 'OP_MUL')
-    def __rmod__(other, self): return Binary(self, constantize(other), 'OP_MOD')
-    def __rfloordiv__(other, self): return Binary(self, constantize(other), 'OP_DIV')
-    def __rand__(other, self): return Binary(self, constantize(other), 'OP_BAND')
-    def __ror__(other, self): return Binary(self, constantize(other), 'OP_BOR')
-    def __rxor__(other, self): return Binary(self, constantize(other), 'OP_BXOR')
-    def __rrshift__(other, self): return Binary(self, constantize(other), 'OP_SR')
-    def __rlshift__(other, self): return Binary(self, constantize(other), 'OP_SL')
-    def __req__(other, self): return Binary(self, constantize(other), 'OP_EQ')
-    def __rne__(other, self): return Binary(self, constantize(other), 'OP_NE')
-    def __rgt__(other, self): return Binary(self, constantize(other), 'OP_GT')
-    def __rge__(other, self): return Binary(self, constantize(other), 'OP_GE')
-    def __rlt__(other, self): return Binary(constantize(other), self, 'OP_GT')
-    def __rle__(other, self): return Binary(constantize(other), self, 'OP_GE')
+    def __add__(self, other): 
+        return Binary(self, constantize(other), 'OP_ADD')
+    def __sub__(self, other): 
+        return Binary(self, constantize(other), 'OP_SUB')
+    def __mul__(self, other): 
+        return Binary(self, constantize(other), 'OP_MUL')
+    def __mod__(self, other): 
+        return Binary(self, constantize(other), 'OP_MOD')
+    def __floordiv__(self, other): 
+        return Binary(self, constantize(other), 'OP_DIV')
+    def __and__(self, other): 
+        return Binary(self, constantize(other), 'OP_BAND')
+    def __or__(self, other): 
+        return Binary(self, constantize(other), 'OP_BOR')
+    def __xor__(self, other): 
+        return Binary(self, constantize(other), 'OP_BXOR')
+    def __rshift__(self, other): 
+        return Binary(self, constantize(other), 'OP_SR')
+    def __lshift__(self, other): 
+        return Binary(self, constantize(other), 'OP_SL')
+    def __eq__(self, other): 
+        return Binary(self, constantize(other), 'OP_EQ')
+    def __ne__(self, other): 
+        return Binary(self, constantize(other), 'OP_NE')
+    def __gt__(self, other): 
+        return Binary(self, constantize(other), 'OP_GT')
+    def __ge__(self, other): 
+        return Binary(self, constantize(other), 'OP_GE')
+    def __lt__(self, other): 
+        return Binary(constantize(other), self, 'OP_GT')
+    def __le__(self, other): 
+        return Binary(constantize(other), self, 'OP_GE')
+    def __radd__(other, self): 
+        return Binary(self, constantize(other), 'OP_ADD')
+    def __rsub__(other, self): 
+        return Binary(self, constantize(other), 'OP_SUB')
+    def __rmul__(other, self): 
+        return Binary(self, constantize(other), 'OP_MUL')
+    def __rmod__(other, self): 
+        return Binary(self, constantize(other), 'OP_MOD')
+    def __rfloordiv__(other, self): 
+        return Binary(self, constantize(other), 'OP_DIV')
+    def __rand__(other, self): 
+        return Binary(self, constantize(other), 'OP_BAND')
+    def __ror__(other, self): 
+        return Binary(self, constantize(other), 'OP_BOR')
+    def __rxor__(other, self): 
+        return Binary(self, constantize(other), 'OP_BXOR')
+    def __rrshift__(other, self): 
+        return Binary(self, constantize(other), 'OP_SR')
+    def __rlshift__(other, self): 
+        return Binary(self, constantize(other), 'OP_SL')
+    def __req__(other, self): 
+        return Binary(self, constantize(other), 'OP_EQ')
+    def __rne__(other, self): 
+        return Binary(self, constantize(other), 'OP_NE')
+    def __rgt__(other, self): 
+        return Binary(self, constantize(other), 'OP_GT')
+    def __rge__(other, self): 
+        return Binary(self, constantize(other), 'OP_GE')
+    def __rlt__(other, self): 
+        return Binary(constantize(other), self, 'OP_GT')
+    def __rle__(other, self): 
+        return Binary(constantize(other), self, 'OP_GE')
 
-################################################################################
 class UserDefinedExpression(Expression):
-
+    
     def set_process(self, process):
         self.process = process
         self.instructions = self.on_evaluate()
@@ -276,12 +312,12 @@ class Variable(Expression):
         """Returns the width of the variable.
         
         Remember that variables are signed, so an 8 bit variable can
-        accecpt value from -128 to 127 for example."""
+        accept value from -128 to 127 for example."""
         return self.parent.get_bits()
 
     def set_process(self, process):
         self.process=process
-        #have to explicitly test for identity because we have overriden __eq__
+        #have to explicitly test for identity because we have overridden __eq__
         for i in process.variables:
             if i is self: break
         else:
@@ -289,7 +325,7 @@ class Variable(Expression):
 
     def __repr__(self):
         """Remember that variables are signed, so an 8 bit variable can
-        accecpt value from -128 to 127 for example."""
+        accept value from -128 to 127 for example."""
         return "Variable({0})".format(self.initial)
 
     def initialise(self, rmap):
@@ -297,13 +333,30 @@ class Variable(Expression):
         if not hasattr(self, "register"):
             self.register = rmap.tos
             rmap.tos+=1
-            return [Instruction("OP_IMM", self.register, None, self.initial, lineno=self.lineno, filename=self.filename)]
+            return [
+                Instruction(
+                    "OP_IMM", 
+                    self.register, 
+                    None, 
+                    self.initial,
+                    lineno=self.lineno, 
+                    filename=self.filename
+                )
+            ]
         else:
             return []
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return [Instruction("OP_MOVE", rmap.tos, self.register, lineno=self.lineno, filename=self.filename)]
+        return [
+            Instruction(
+                "OP_MOVE", 
+                rmap.tos, 
+                self.register, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        ]
 
 ################################################################################
 
@@ -327,7 +380,15 @@ class Constant(Expression):
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return [Instruction("OP_IMM", rmap.tos, immediate=self.constant, lineno=self.lineno, filename=self.filename)]
+        return [
+            Instruction(
+                "OP_IMM", 
+                rmap.tos, 
+                immediate=self.constant, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        ]
 
 ################################################################################
 
@@ -386,7 +447,9 @@ class Statement:
         elif hasattr(self.parent, 'parent'):
             return self.parent.get_enclosing_eval()
         else:
-            raise StreamsProcessError("Value() must be within a evaluate block")
+            raise StreamsProcessError(
+                    "Value() must be within a evaluate block"
+            )
 
     def get_enclosing_process(self):
         if self.parent.is_process():
@@ -442,8 +505,23 @@ class Value(Statement):
         """Do not directly call this method, it is called automatically"""
         end_of_eval = self.get_enclosing_eval().end_of_eval
         instructions = self.expression.comp(rmap)
-        instructions.append(Instruction("OP_MOVE", 0, rmap.tos, lineno=self.lineno, filename=self.filename))
-        instructions.append(Instruction("OP_JMP", immediate = end_of_eval, lineno=self.lineno, filename=self.filename))
+        instructions.append(
+            Instruction(
+                "OP_MOVE", 
+                0, 
+                rmap.tos, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        )
+        instructions.append(
+            Instruction(
+                "OP_JMP", 
+                immediate = end_of_eval, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        )
         return instructions
 
 ################################################################################
@@ -454,8 +532,8 @@ class Loop(Statement):
     The *Loop* statement executes instructions repeatedly.
     
     A *Loop* can be exited using the *Break* instruction. A *Continue*
-    instruction causes the remainder of intructions in the loop to be skipped.
-    Execution then repeats from the begining of the *Loop*.
+    instruction causes the remainder of instructions in the loop to be skipped.
+    Execution then repeats from the beginning of the *Loop*.
 
     Example::
 
@@ -508,11 +586,32 @@ class Loop(Statement):
         instructions = []
         self.start_of_loop = "START_{0}".format(id(self))
         self.end_of_loop = "END_{0}".format(id(self))
-        instructions.append(Instruction("LABEL", label = self.start_of_loop, lineno=self.lineno, filename=self.filename))
+        instructions.append(
+            Instruction(
+                "LABEL", 
+                label = self.start_of_loop, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        )
         for instruction in self.instructions:
             instructions.extend(instruction.comp(rmap))
-        instructions.append(Instruction("OP_JMP", immediate = self.start_of_loop, lineno=self.lineno, filename=self.filename)) 
-        instructions.append(Instruction("LABEL", label = self.end_of_loop, lineno=self.lineno, filename=self.filename))
+        instructions.append(
+            Instruction(
+                "OP_JMP", 
+                immediate = self.start_of_loop, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        ) 
+        instructions.append(
+            Instruction(
+                "LABEL", 
+                label = self.end_of_loop, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        )
         return instructions
 
 ################################################################################
@@ -520,7 +619,7 @@ class Loop(Statement):
 class If(Statement):
     """
 
-    The *If* statement conditionaly executes instructions.
+    The *If* statement conditionally executes instructions.
 
     The condition of the *If* branch is evaluated, followed by the condition of
     each of the optional *ElsIf* branches. If one of the conditions evaluates
@@ -532,7 +631,7 @@ class If(Statement):
 
         If(condition,
             #do something
-        ).Elsif(condition,
+        ).ElsIf(condition,
             #do something else
         ).Else(
             #if all else fails do this
@@ -584,11 +683,27 @@ class If(Statement):
         for condition, instructions in self.conditionals:
             skip_to_if_false = "SKIP_{0}_{1}".format(id(self), i)
             machine_instructions.extend(condition.comp(rmap))
-            machine_instructions.append(Instruction("OP_JMPF", rmap.tos, immediate=skip_to_if_false))
+            machine_instructions.append(
+                Instruction(
+                    "OP_JMPF", 
+                    rmap.tos, 
+                    immediate=skip_to_if_false
+                )
+            )
             for instruction in instructions:
                 machine_instructions.extend(instruction.comp(rmap))
-            machine_instructions.append(Instruction("OP_JMP", immediate=skip_to_end))
-            machine_instructions.append(Instruction("LABEL", label=skip_to_if_false))
+            machine_instructions.append(
+                Instruction(
+                    "OP_JMP", 
+                    immediate=skip_to_end
+                )
+            )
+            machine_instructions.append(
+                Instruction(
+                    "LABEL", 
+                    label=skip_to_if_false
+                )
+            )
             i+=1
         machine_instructions.append(Instruction("LABEL", label=skip_to_end))
         return machine_instructions
@@ -602,7 +717,7 @@ class Break(Statement):
 
     Example::
 
-        #equivilent to a While loop
+        #equivalent to a While loop
         Loop(
             If(condition == 0,
                 Break(),
@@ -612,7 +727,7 @@ class Break(Statement):
 
     Example::
 
-        #equivilent to a DoWhile loop
+        #equivalent to a DoWhile loop
         Loop(
             #do stuff here
             If(condition == 0,
@@ -639,7 +754,14 @@ class Break(Statement):
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
         end_of_loop = self.get_enclosing_loop().end_of_loop
-        return [Instruction("OP_JMP", immediate = end_of_loop, lineno=self.lineno, filename=self.filename)]
+        return [
+            Instruction(
+                "OP_JMP", 
+                immediate = end_of_loop, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        ]
 
 ################################################################################
 
@@ -649,8 +771,8 @@ class WaitUs(Statement):
     *WaitUs* causes execution to halt until the next tick of the microsecond
     timer. 
 
-    In practice, this means that the the process is stalled for less than 1
-    microsecond. This behaviour is usefull when implementing a real-time
+    In practice, this means that the process is stalled for less than 1
+    microsecond. This behaviour is useful when implementing a real-time
     counter function because the execution time of statements does not affect
     the time between *WaitUs* statements (Providing the statements do not take
     more than 1 microsecond to execute of course!).
@@ -689,7 +811,13 @@ class WaitUs(Statement):
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return [Instruction("OP_WAIT_US", lineno=self.lineno, filename=self.filename)]
+        return [
+            Instruction(
+                "OP_WAIT_US", 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        ]
 
 ################################################################################
 
@@ -697,7 +825,7 @@ class Continue(Statement):
     """
 
     The *Continue* statement causes the flow of control to immediately jump to
-    the next iteration of the contatining loop.
+    the next iteration of the containing loop.
 
     Example::
 
@@ -730,7 +858,14 @@ class Continue(Statement):
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
         start_of_loop = self.get_enclosing_loop().start_of_loop
-        return [Instruction("OP_JMP", immediate = start_of_loop, lineno=self.lineno, filename=self.filename)]
+        return [
+            Instruction(
+                "OP_JMP", 
+                immediate = start_of_loop, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
+        ]
 
 ################################################################################
 class UserDefinedStatement(Statement):
@@ -769,7 +904,7 @@ class Block(Statement):
 
     Example::
 
-        intialise = Block(a.set(0), b.set(0), c.set(0))
+        Initialise = Block(a.set(0), b.set(0), c.set(0))
         Process(8,
             initialise,
             a.set(a+1), b.set(b+1), c.set(c+1),
@@ -782,7 +917,7 @@ class Block(Statement):
         """A block of statements
 
         Accepts an arbitrary number of statements as arguments, and executes
-        each one in sequeunce"""
+        each one in sequence"""
         for child in instructions:
             child.parent = self
 
@@ -836,13 +971,20 @@ class Set(Statement):
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return self.variable.initialise(rmap)+self.expression.initialise(rmap)
+        return self.variable.initialise(rmap)+\
+           self.expression.initialise(rmap)
 
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
         instructions = self.expression.comp(rmap)
         instructions.append(
-            Instruction("OP_MOVE", self.variable.register, rmap.tos, lineno=self.lineno, filename=self.filename)
+            Instruction(
+                "OP_MOVE", 
+                self.variable.register, 
+                rmap.tos, 
+                lineno=self.lineno, 
+                filename=self.filename
+            )
         )
         return instructions
 

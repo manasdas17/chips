@@ -24,31 +24,42 @@ def address_bits(length):
 
 def write_process(process, plugin):
 
-################################################################################
+#############################################################################
 #CALCULATE PROCESS PARAMETERS
-################################################################################
+#############################################################################
     process_instructions = tuple(process.instructions)
-    operations = ["OP_DIV", "OP_MOD", "OP_MUL", "OP_ADD", "OP_SUB", "OP_BAND",
-                "OP_BOR", "OP_BXOR", "OP_SL", "OP_SR", "OP_EQ", "OP_NE", 
-                "OP_GE", "OP_GT", "OP_WAIT_US", "OP_JMP", "OP_JMPF", "OP_MOVE",
-                "OP_IMM"]
+    operations = ["OP_DIV", "OP_MOD", "OP_MUL", "OP_ADD", "OP_SUB",
+            "OP_BAND", "OP_BOR", "OP_BXOR", "OP_SL", "OP_SR", "OP_EQ",
+            "OP_NE", "OP_GE", "OP_GT", "OP_WAIT_US", "OP_JMP", "OP_JMPF",
+            "OP_MOVE", "OP_IMM"]
 
     #calculate processor parameters
-    number_of_operations = len(operations) + len(process.inputs) + len(process.outputs)
+    number_of_operations = (
+        len(operations) + 
+        len(process.inputs) + 
+        len(process.outputs)
+    )
     process_id = process.get_identifier()
     process_bits = process.get_bits()
     num_instructions = len(process_instructions)
-    registers = [i.srca for i in process_instructions] + [i.srcb for i in process_instructions]
+    registers = (
+        [i.srca for i in process_instructions] + 
+        [i.srcb for i in process_instructions]
+    )
     num_registers = max([0] +registers) + 1
     instruction_address_bits = address_bits(num_instructions)
     register_address_bits = address_bits(num_registers)
     num_registers = 2**register_address_bits
     operation_bits = address_bits(number_of_operations)
-    instruction_bits = operation_bits + register_address_bits + max((register_address_bits, process_bits))
+    instruction_bits = (
+        operation_bits + 
+        register_address_bits + 
+        max((register_address_bits, process_bits))
+    )
 
-################################################################################
+#############################################################################
 #GENERATE ADDITIONAL INSTRUCTIONS FOR READING INPUT STREAMS
-################################################################################
+#############################################################################
 
     input_instructions = []
     for i in process.inputs:

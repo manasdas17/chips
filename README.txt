@@ -1,18 +1,20 @@
 CHIPS
 =====
 
-The Chips library allows hardware devces to be designed in python
+The Chips library allows hardware devices to be designed in python
 
-Features
+FEATURES
+--------
 
-- High level device modeling language makes device design simpler and more powerful.
+- High level device modeling language makes device design simpler and more
+  powerful.
 
 - Provides fast native simulations that integrate with Python.
 
-- Python extension modules such as Scipy, Numpy, Matplotlib and PIL provide a rich
-  verification environment.
+- Python extension modules such as Scipy, Numpy, Matplotlib and PIL provide a
+  rich verification environment.
 
-- Automatic generation of synthesisable VHDL.
+- Automatic generation of synthesizable VHDL.
 
 - Plugin mechanism also allows C++ and graphviz outputs to be generated.
 
@@ -53,7 +55,7 @@ test
 >./example_xxxx.py test
 
 test
->./example_xxxx.py visulaize
+>./example_xxxx.py visualize
 
 TO PREPARE A SOURCE DISTRIBUTION
 --------------------------------
