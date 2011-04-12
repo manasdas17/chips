@@ -281,7 +281,15 @@ class Binary(Expression):
         rmap.tos += 1
         instructions.extend(self.right.comp(rmap))
         instructions.extend(
-          [Instruction(self.operation, rmap.tos-1, rmap.tos, lineno=self.lineno, filename=self.filename)]
+            [
+                Instruction(
+                    self.operation, 
+                    rmap.tos-1, 
+                    rmap.tos, 
+                    lineno=self.lineno, 
+                    filename=self.filename
+                )
+            ]
         )
         rmap.tos -= 1
         return instructions

@@ -43,7 +43,7 @@ Sinks
 .. automodule:: chips.sinks
 
 Sinks Reference
-===============
+---------------
 
 .. autoclass:: chips.Response
 .. autoclass:: chips.OutPort

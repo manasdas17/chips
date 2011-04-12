@@ -247,69 +247,69 @@ class Chip:
 class Stream:
 
     def __add__(self, other): 
-        return Binary(self, repeaterize(other), 'add')
+        return Binary(self, _repeaterize(other), 'add')
     def __sub__(self, other): 
-        return Binary(self, repeaterize(other), 'sub')
+        return Binary(self, _repeaterize(other), 'sub')
     def __mul__(self, other): 
-        return Binary(self, repeaterize(other), 'mul')
+        return Binary(self, _repeaterize(other), 'mul')
     def __mod__(self, other): 
-        return Binary(self, repeaterize(other), 'mod')
+        return Binary(self, _repeaterize(other), 'mod')
     def __floordiv__(self, other): 
-        return Binary(self, repeaterize(other), 'div')
+        return Binary(self, _repeaterize(other), 'div')
     def __and__(self, other): 
-        return Binary(self, repeaterize(other), 'and')
+        return Binary(self, _repeaterize(other), 'and')
     def __or__(self, other): 
-        return Binary(self, repeaterize(other), 'or')
+        return Binary(self, _repeaterize(other), 'or')
     def __xor__(self, other): 
-        return Binary(self, repeaterize(other), 'xor')
+        return Binary(self, _repeaterize(other), 'xor')
     def __rshift__(self, other): 
-        return Binary(self, repeaterize(other), 'sr')
+        return Binary(self, _repeaterize(other), 'sr')
     def __lshift__(self, other): 
-        return Binary(self, repeaterize(other), 'sl')
+        return Binary(self, _repeaterize(other), 'sl')
     def __eq__(self, other): 
-        return Binary(self, repeaterize(other), 'eq')
+        return Binary(self, _repeaterize(other), 'eq')
     def __ne__(self, other): 
-        return Binary(self, repeaterize(other), 'ne')
+        return Binary(self, _repeaterize(other), 'ne')
     def __gt__(self, other): 
-        return Binary(self, repeaterize(other), 'gt')
+        return Binary(self, _repeaterize(other), 'gt')
     def __ge__(self, other): 
-        return Binary(self, repeaterize(other), 'ge')
+        return Binary(self, _repeaterize(other), 'ge')
     def __lt__(self, other): 
-        return Binary(self, repeaterize(other), 'lt')
+        return Binary(self, _repeaterize(other), 'lt')
     def __le__(self, other): 
-        return Binary(self, repeaterize(other), 'le')
+        return Binary(self, _repeaterize(other), 'le')
     def __radd__(other, self): 
-        return Binary(self, repeaterize(other), 'add')
+        return Binary(self, _repeaterize(other), 'add')
     def __rsub__(other, self): 
-        return Binary(self, repeaterize(other), 'sub')
+        return Binary(self, _repeaterize(other), 'sub')
     def __rmul__(other, self): 
-        return Binary(self, repeaterize(other), 'mul')
+        return Binary(self, _repeaterize(other), 'mul')
     def __rmod__(other, self): 
-        return Binary(self, repeaterize(other), 'mod')
+        return Binary(self, _repeaterize(other), 'mod')
     def __rfloordiv__(other, self): 
-        return Binary(self, repeaterize(other), 'div')
+        return Binary(self, _repeaterize(other), 'div')
     def __rand__(other, self): 
-        return Binary(self, repeaterize(other), 'and')
+        return Binary(self, _repeaterize(other), 'and')
     def __ror__(other, self): 
-        return Binary(self, repeaterize(other), 'or')
+        return Binary(self, _repeaterize(other), 'or')
     def __rxor__(other, self): 
-        return Binary(self, repeaterize(other), 'xor')
+        return Binary(self, _repeaterize(other), 'xor')
     def __rrshift__(other, self): 
-        return Binary(self, repeaterize(other), 'sr')
+        return Binary(self, _repeaterize(other), 'sr')
     def __rlshift__(other, self): 
-        return Binary(self, repeaterize(other), 'sl')
+        return Binary(self, _repeaterize(other), 'sl')
     def __req__(other, self): 
-        return Binary(self, repeaterize(other), 'eq')
+        return Binary(self, _repeaterize(other), 'eq')
     def __rne__(other, self): 
-        return Binary(self, repeaterize(other), 'ne')
+        return Binary(self, _repeaterize(other), 'ne')
     def __rgt__(other, self): 
-        return Binary(self, repeaterize(other), 'gt')
+        return Binary(self, _repeaterize(other), 'gt')
     def __rge__(other, self): 
-        return Binary(self, repeaterize(other), 'ge')
+        return Binary(self, _repeaterize(other), 'ge')
     def __rlt__(other, self): 
-        return Binary(self, repeaterize(other), 'lt')
+        return Binary(self, _repeaterize(other), 'lt')
     def __rle__(other, self): 
-        return Binary(self, repeaterize(other), 'le')
+        return Binary(self, _repeaterize(other), 'le')
     def get_type(self):
         return "integer"
     def read(self, variable, timout=0):
@@ -555,11 +555,23 @@ class InPort(Stream, Unique):
 
 class SerialIn(Stream, Unique):
     """
-    
-    A *SerialIn* yields 8-bit data from a serial UART input.
-    
 
-    
+    A *SerialIn* yields data from a serial UART port.
+
+    *SerialIn* yields one data item from the serial input port for each
+    character read from the source stream.  The stream is always 8 bits wide.
+
+    A *SerialIn* accepts an optional *name* argument which is used as the name
+    for the serial RX line in generated VHDL. The clock rate of the target
+    device in MHz can be specified using the *clock_rate* argument. The baud
+    rate of the serial input can be specified using the *baud_rate* argument.
+
+    Example::
+
+        #echo typed characters
+        my_chip = Chip(SerialOut(SerialIn())
+
+
     """
 
     def __init__(self, name="RX", clock_rate=50000000, baud_rate=115200):
@@ -605,6 +617,32 @@ class SerialIn(Stream, Unique):
 
 
 class Output(Stream, Unique):
+    """
+
+    An *Output* is a stream that can be written to by a process.
+
+    Any stream can be read from by a process. Only an *Output* stream can be
+    written to by a process.  A process can be written to by using the *read*
+    method. The read method accepts one argument, an expression to write.
+
+
+    Example::
+
+        def tee(input_stream):
+            output_stream_1 = Output()
+            output_stream_2 = Output()
+            temp = Variable(0)
+            Process(input_stream.get_bits,
+                Loop(
+                    input_stream.read(temp),
+                    output_stream_1.write(temp),
+                    output_stream_2.write(temp),
+                )
+            )
+            return input_stream_1, input_stream_2
+
+
+    """
 
     def __init__(self):
         """create a process output"""
@@ -669,7 +707,7 @@ class ExternalIPDefinition:
         self.input_ports = input_ports
         self.output_ports = output_ports
 
-class ExternalIPInstance(Stream, Unique):
+class ExternalIPInstance(Unique):
     def __init__(self, input_streams, definition, inport_mapping, 
             outport_mapping):
         self.filename = getsourcefile(currentframe().f_back)
@@ -795,14 +833,14 @@ class ExternalIPStream(Stream, Unique):
 #streams combinators
 ################################################################################
 
-def repeaterize(potential_repeater):
+def _repeaterize(potential_repeater):
     if hasattr(potential_repeater, "write_code"):
         return potential_repeater
     else:
         return Repeater(int(potential_repeater))
 
 
-functions = {
+_functions = {
     'add' : lambda a, b: a+b,
     'sub' : lambda a, b: a-b,
     'mul' : lambda a, b: a*b,
@@ -820,6 +858,7 @@ functions = {
     'gt'  : lambda a, b: -int(a>b),
     'ge'  : lambda a, b: -int(a>=b),
 }
+
 class  Binary(Stream, Unique):
 
     def __init__(self, a, b, function):
@@ -827,7 +866,7 @@ class  Binary(Stream, Unique):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         self.function = function
-        self.binary_function = functions[function]
+        self.binary_function = _functions[function]
         self.stored_a = None
         self.stored_b = None
         Unique.__init__(self)
@@ -895,6 +934,29 @@ class  Binary(Stream, Unique):
         return resize(val, self.get_bits())
 
 class Lookup(Stream, Unique):
+    """
+
+    A *Lookup* is a stream yields values from a read-only look up table.
+
+    For each data item in the source stream, a *Lookup* will yield the
+    addressed value in the lookup table. A *Lookup* is basically a Read Only
+    Memory(ROM) with the source stream forming the address, and the *Lookup*
+    itself forming the data output.
+
+    Example::
+
+        def binary_2_gray(input_stream): 
+            return Lookup(input_stream, 0, 1, 3, 2, 6, 7, 5, 4)
+
+    The first argument to a *Lookup* is the source stream, all additional
+    arguments form the lookup table. If you want to use a Python sequence
+    object such as a tuple or a list to form the lookup table use the following
+    syntax::
+
+        my_list = [0, 1, 3, 2, 6, 7, 5, 4] 
+        my_sequence = Sequence(Counter(0, 7, 1), *my_list)
+
+    """
 
     def __init__(self, source, *args):
         self.a = source
@@ -944,6 +1006,40 @@ class Lookup(Stream, Unique):
         return self.args[resize(val, self.a.get_bits())]
 
 class Fifo(Stream, Unique):
+    """
+
+    A *Fifo* stores a buffer of data items.
+
+    A *Fifo* contains a fixed size buffer of objects obtained from the source
+    stream. A *Fifo* yields the data items in the same order in which they were
+    stored.
+
+    The first argument to a *Fifo*, is the source stream, the *depth* argument
+    determines the size of the Fifo buffer.
+
+    Example::
+
+        def digital_oscilloscope(ADC_stream, trigger_level): 
+            temp = Variable(0)
+            count = Variable(0)
+
+            Process(16,
+                Loop(
+                    ADC_stream.read(temp),
+                    If(temp > trigger_level,
+                        count.set(buffer_depth),
+                        While(count,
+                            ADC_stream.read(temp),
+                            buffer.write(temp),
+                            count.set(count-1),
+                        ),
+                    ),
+                ),
+            )
+                    
+            return SerialOut(Printer(Fifo(buffer, buffer_depth)))
+
+    """
 
     def __init__(self, data_in, depth):
         self.a = data_in
@@ -976,6 +1072,51 @@ class Fifo(Stream, Unique):
         return self.a.get()
 
 class Array(Stream, Unique):
+    """
+
+    An *Array* is a stream yields values from a writeable lookup table.
+
+    Like a *Lookup*, an *Array* looks up each data item in the *address_in*
+    stream, and yields the value in the lookup table. In an *Array*, the lookup
+    table is set up dynamically using data items from the *address_in* and
+    *data_in* streams. An *Array* is equivalent to a Random Access Memory (RAM)
+    with independent read, and write ports.
+
+    A *Lookup* accepts *address_in*, *data_in* and *address_out* arguments as
+    source streams. The *depth* argument specifies the size of the lookup table.
+
+    Example::
+
+        def video_raster_stream(width, height, row_stream, col_stream, 
+                                pixel_intensity):
+
+            pixel_clock = Counter(0, width*height, 1)
+            red_intensity, green_intensity, blue_intensity = pixel_intensity
+             
+            red = Array(
+                address_in = row_stream * width_stream + col_stream,
+                data_in = red_intensity,
+                address_out = pixel_clock,
+                depth = width * height,
+            )
+
+            green = Array(
+                address_in = row_stream * width_stream + col_stream,
+                data_in = green_intensity,
+                address_out = pixel_clock,
+                depth = width * height,
+            )
+
+            blue = Array(
+                address_in = row_stream * width_stream + col_stream,
+                data_in = blue_intensity,
+                address_out = pixel_clock,
+                depth = width * height,
+            )
+
+            return red, green, blue
+
+    """
 
     def __init__(self, address_in, data_in, address_out, depth):
         self.a = address_in

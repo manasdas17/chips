@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""common utilities for Streams library"""
+"""Common utilities for Streams library"""
 
 from math import log
 

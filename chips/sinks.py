@@ -27,9 +27,41 @@ __email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
 
 class Response(Unique):
-    """A Response block allows data to be read from a stream in the python 
-    design environment. A similar interface can be used in native python
-    simulations and also co-simulations using external tools."""
+    """
+   
+    A *Response* sink allows data to be transfered into Python.
+
+    As a simulation is run, the *Response* sink accumulates data. After a
+    simulation is run, you can retrieve a python iterable using the
+    get_simulation_data method. Using a *Response* sink allows you to
+    seamlessly integrate your *Chips* simulation into a wider Python
+    simulation. This works for simulations using an external simulator as well,
+    in this case you also need to pass the code generation plugin to
+    get_simulation_data. 
+
+    A *Response* sink accepts a single stream argument as its source.
+
+    Example::
+
+        import PIL
+
+        def image_processor():
+            #some image processing algorithm
+            pass
+
+        response = Response(image_processor)
+        chip = Chip(response)
+
+        chip.reset()
+        chip.execute(10000)
+
+
+        image_data = list(response.get_simulation_data(plugin))
+        im = PIL.Image.new("L", (64, 64))
+        im.putdata(image_data)
+        im.show()
+    
+    """
 
     def __init__(self, a):
         self.a = a
@@ -82,6 +114,23 @@ class Response(Unique):
 
 
 class OutPort(Unique):
+    """
+
+    An *OutPort* sink outputs a stream of data to I/O port pins.
+
+    No handshaking is performed on the output port, data will appear at the
+    time when the source stream transfers data.
+
+    An output port take two arguments, the source stream *a* and a string
+    *name*. Name is used as the port name in generated VHDL.
+
+    Example::
+
+        dip_switches = Inport("dip_switches", 8) 
+        led_array = OutPort(dip_switched, "led_array")
+        s = Chip(led_array)
+
+    """
 
     def __init__(self, a, name):
         self.name, self.a = name, a
@@ -128,6 +177,36 @@ class OutPort(Unique):
         ])
 
 class SerialOut(Unique):
+    """
+
+    A *SerialOut* outputs data to a serial UART port.
+
+    *SerialOut* outputs one character to the serial output port for each item
+    of data in the source stream. At present only 8 data bits are supported, so
+    the source stream must be 8 bits wide. The source stream could be truncated
+    to 8 bits using a *Resizer*, but it is usually more convenient to use a
+    *Printer* as the source stream. The will allow a stream of any width to be
+    represented as a decimal string.
+
+    A SerialOut accepts a source stream argument *a*. An optional *name*
+    argument is used as the name for the serial TX line in generated VHDL. The
+    clock rate of the target device in Mhz can be specified using the
+    *clock_rate* argument. The baud rate of the serial output can be specified
+    using the *baud_rate* argument.
+
+    Example::
+
+        #convert string into a sequence of characters
+        hello_world = tuple((ord(i) for i in \"hello world\\n\"))
+
+        my_chip = Chip(
+            SerialOut(
+                Sequence(*hello_world),
+            )
+        )
+
+
+    """
 
     def __init__(self, a, name="TX", clock_rate=50000000, baud_rate=115200):
         self.a=a
@@ -172,7 +251,7 @@ class SerialOut(Unique):
 
     def __repr__(self):
         return '\n'.join([
-            "  serial_out( name = ", 
+            "  SerialOut( name = ", 
             self.name, 
             "clock_rate = ", 
             self.clock_rate, 
@@ -182,6 +261,27 @@ class SerialOut(Unique):
         ])
 
 class Asserter(Unique):
+    """
+
+    An *Asserter* causes an exception if any data in the source stream is zero.
+
+    An *Asserter* is particularly useful in automated tests, as it causes a
+    simulation to fail is a condition is not met. In generated VHDL code, an
+    asserter is represented by a VHDL assert statement. In practice this means
+    that an *Asserter* will function correctly in a VHDL simulation, but will
+    have no effect when synthesized.
+
+    The *Asserter* sink accepts a source stream argument, *a*.
+
+    Example::
+
+        a = Sequence(1, 2, 3, 4)
+        Chip(Asserter((a+1) == Sequence(2, 3, 4, 5)))
+
+    Look at the Chips test suite for more examples of the Asserter being used
+    for automated testing.
+
+    """
 
     def __init__(self, a):
         self.a = a
@@ -227,10 +327,37 @@ class Asserter(Unique):
 
     def __repr__(self):
         return '\n'.join([
-        "  asserter()", 
+        "  Asserter()", 
         ])
 
 class Console(Unique):
+    """
+
+    A *Console* outputs data to the simulation console.
+
+    *Console* stores characters for output to the console in a buffer. When an
+    end of line character is seen, the buffer is written to the console.  A
+    *Console* interprets a stream of numbers as ASCII characters. The source
+    stream must be 8 bits wide. The source stream could be truncated to 8 bits
+    using a *Resizer*, but it is usually more convenient to use a *Printer* as
+    the source stream. The will allow a stream of any width to be represented
+    as a decimal string.
+
+    A *Console* accepts a source stream argument *a*.
+
+    Example::
+
+        #convert string into a sequence of characters
+        hello_world = tuple((ord(i) for i in \"hello world\\n\"))
+
+        my_chip = Chip(
+            Console(
+                Sequence(*hello_world),
+            )
+        )
+
+
+    """
 
     def __init__(self, a):
         self.filename = getsourcefile(currentframe().f_back)
