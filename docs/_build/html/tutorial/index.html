@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial &mdash; Chips v0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Chips v0.1 documentation" href="../index.html" />
+    <link rel="next" title="Chips Language Reference Manual" href="../language_reference/index.html" />
+    <link rel="prev" title="Introduction" href="../introduction/index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="../language_reference/index.html" title="Chips Language Reference Manual"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../introduction/index.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Chips v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="learn-python">
+<h2>Learn Python<a class="headerlink" href="#learn-python" title="Permalink to this headline">¶</a></h2>
+<p>In order to make any real use of the <em>Chips</em> library you will need to be
+familiar with the basics of Python. The <a class="reference external" href="http://docs.python.org/tut">python tutorial</a> is a good place
+to start.</p>
+</div>
+<div class="section" id="install-chips">
+<h2>Install Chips<a class="headerlink" href="#install-chips" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>First <a class="reference external" href="http://python.org/download">install python</a>. You need Python 2.6 or later, but not Python 3.</li>
+<li>Then install the chips library from the <a class="reference external" href="http://github.com/dawsonjon/chips">windows installer</a>.</li>
+</ol>
+</div>
+<div class="section" id="linux">
+<h3>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">First <a class="reference external" href="http://python.org/download">install python</a>. You need Python 2.6 or later, but not Python 3.</p>
+</li>
+<li><p class="first">Then install the chips library from the <a class="reference external" href="http://github.com/dawsonjon/chips">source distribution</a>:</p>
+<div class="highlight-python"><pre>desktop:~$ tar -zxf Chips-0.1.tar.gz
+desktop:~$ cd Chips-0.1
+desktop:~$ python setup.py install #run as root</pre>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="first-simulations">
+<h2>First Simulations<a class="headerlink" href="#first-simulations" title="Permalink to this headline">¶</a></h2>
+<p>Once you have python and chips all set up, you can start with some simple
+examples. This one counts to 10 repeatedly:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">streams</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c">#create a chip model</span>
+<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+  <span class="n">Console</span><span class="p">(</span>
+    <span class="n">Printer</span><span class="p">(</span>
+        <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">),</span>
+  <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c">#run a simulation</span>
+<span class="n">my_chip</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">my_chip</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The example can be broken down as follows:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">from</span> <span class="pre">stream</span> <span class="pre">import</span> <span class="pre">*</span></tt> adds the basic features of the streams
+library to the local namespace.</li>
+<li>A <em>Chip</em> models a target device. You need to tell it what the outputs
+(<em>sinks</em>) are, but it will work out what the inputs are by itself. In
+this case the only <em>sink</em> is the <em>Console</em>.</li>
+<li>A <em>Console</em> is a sink that outputs a stream of data to the console.
+The only argument it needs is the data stream, <em>Printer</em>.</li>
+<li>A <em>Printer</em> is a <em>stream</em> object that represents a stream of data in
+decimal format as a string of ASCII characters. A <em>Printer</em> is not a
+source of data in itself, it transforms a stream of data that you
+supply, the <em>Counter</em>.</li>
+<li>The <em>Counter</em> is a fundamental data stream. It accepts three
+arguments: start, stop and step. The <em>Counter</em> will yield a stream of
+data counting from <em>start</em> to <em>stop</em> in <em>step</em> increments.</li>
+</ul>
+</div>
+<div class="section" id="hello-world">
+<h2>Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
+<p>No language would be complete without a &#8220;hello world&#8221; example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c">#convert string into a sequence of characters</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span>
+
+<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+    <span class="n">Console</span><span class="p">(</span>
+        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c">#run a simulation</span>
+<span class="n">my_chip</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">my_chip</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example we have made only a few changes:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">hello_world</span> <span class="pre">=</span> <span class="pre">tuple((ord(i)</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">&quot;hello</span> <span class="pre">world\n&quot;))</span></tt> creates a tuple
+containing the numeric values of the ascii characters in a string.</li>
+<li>This example introduces a new stream, the <em>Sequence</em>. The <em>Sequence</em>
+stream outputs each of its arguments in turn, when the arguments are
+exhausted, the process repeats.</li>
+<li>A <em>Printer</em> is  <em>stream</em> is not needed in this example since the stream is
+already a sequence of ASCII values.</li>
+</ul>
+</div>
+<div class="section" id="generating-vhdl">
+<h2>Generating VHDL<a class="headerlink" href="#generating-vhdl" title="Permalink to this headline">¶</a></h2>
+<p>Now lets consider how the &#8220;hello world&#8221; example could be implemented in an
+actual device. A first step to implementing a device would be to generate a
+VHDL model:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">chips.VHDL_plugin</span> <span class="kn">import</span> <span class="n">Plugin</span>
+
+<span class="c">#convert string into a sequence of characters</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span>
+
+<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+    <span class="n">Console</span><span class="p">(</span>
+        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c">#generate a VHDL model</span>
+<span class="n">code_generator</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="n">project_name</span><span class="o">=</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
+<span class="n">my_chip</span><span class="o">.</span><span class="n">write_code</span><span class="p">(</span><span class="n">code_generator</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <em>Chips</em> library uses plugins to generate output code from models. This
+means that new code generators can be added to Chips without having to
+change the way that hardware is designed and simulated. At present, chips
+supports C++ and VHDL code generation, but it is VHDL code that allows
+<a href="#id1"><span class="problematic" id="id2">*</span></a>Chips&#8221; to be synthesised.</p>
+<p>The VHDL code generation plugin is found in <tt class="docutils literal"><span class="pre">chips.VHDL_plugin</span></tt> If you run
+this example you should find hello_world.vhd has been generated. You can
+run this code in an external vhdl simulator, but you won&#8217;t be able to
+synthesise it into a device because real hardware devices don&#8217;t have a
+concept of a <em>Console</em>.</p>
+<p>To make this example synthesise, we need to write the characters to some
+realisable hardware interface. The <em>Chips</em> library provides a <em>SerialOut</em>
+sink, this provides a simple way to direct the stream of characters to a
+serial port:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">chips.VHDL_plugin</span> <span class="kn">import</span> <span class="n">Plugin</span>
+
+<span class="c">#convert string into a sequence of characters</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span>
+
+<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+    <span class="n">SerialOut</span><span class="p">(</span>
+        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c">#generate a VHDL model</span>
+<span class="n">code_generator</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="n">project_name</span><span class="o">=</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
+<span class="n">my_chip</span><span class="o">.</span><span class="n">write_code</span><span class="p">(</span><span class="n">code_generator</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now you should have a hello_world.vhd file that you can synthesise in a real
+device. By default, SerialOut will assume that you are using a 50 MHz clock
+and a baud rate of 115200. If you need something else you can use the
+clock_rate and baud_rate arguments to specify what you need.</p>
+</div>
+<div class="section" id="more-streams">
+<h2>More Streams<a class="headerlink" href="#more-streams" title="Permalink to this headline">¶</a></h2>
+<p>So far we have seen three types of streams, <em>Counter</em>, <em>Sequence</em> and
+<em>Printer</em>. Chips provides a few more basic streams which you can read about
+in the <a class="reference external" href="../language_reference/index">Language Reference Manual</a>. It is also possible to combine streams
+using arithmetic operators : <tt class="docutils literal"><span class="pre">+,</span> <span class="pre">-,</span> <span class="pre">*,</span> <span class="pre">//,</span> <span class="pre">%,</span> <span class="pre">&lt;&lt;,</span> <span class="pre">&gt;&gt;,</span> <span class="pre">&amp;,</span> <span class="pre">|,</span> <span class="pre">^,</span> <span class="pre">==,</span> <span class="pre">!=,</span> <span class="pre">&lt;,</span>
+<span class="pre">&lt;=,</span> <span class="pre">&gt;,</span> <span class="pre">&gt;=</span></tt> on the whole they have the same (or very similar) meaning as
+they do in Python except that they operate on streams of data.</p>
+<blockquote>
+</blockquote>
+</div>
+<div class="section" id="introducing-processes">
+<h2>Introducing Processes<a class="headerlink" href="#introducing-processes" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Tutorial</a><ul>
+<li><a class="reference external" href="#learn-python">Learn Python</a></li>
+<li><a class="reference external" href="#install-chips">Install Chips</a><ul>
+<li><a class="reference external" href="#windows">Windows</a></li>
+<li><a class="reference external" href="#linux">Linux</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#first-simulations">First Simulations</a></li>
+<li><a class="reference external" href="#hello-world">Hello World</a></li>
+<li><a class="reference external" href="#generating-vhdl">Generating VHDL</a></li>
+<li><a class="reference external" href="#more-streams">More Streams</a></li>
+<li><a class="reference external" href="#introducing-processes">Introducing Processes</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="../introduction/index.html"
+                                  title="previous chapter">Introduction</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../language_reference/index.html"
+                                  title="next chapter">Chips Language Reference Manual</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/tutorial/index.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../language_reference/index.html" title="Chips Language Reference Manual"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../introduction/index.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="../index.html">Chips v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2011, Jonathan P Dawson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.6.
+    </div>
+  </body>
+</html>
