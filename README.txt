@@ -24,7 +24,8 @@ FEATURES
 
 DOCUMENTATION
 -------------
-HTML documentation can be found in docs/_build/html
+- HTML documentation can be found in docs/build/html. 
+- PDF documentation can be found in docs/build/latex.
 
 INSTALLATION
 ------------
@@ -32,6 +33,7 @@ INSTALLATION
 
 TEST
 ----
+>cd test
 >test_chips.py
 >test_chips_VHDL.py
 >test_chips_cpp.py

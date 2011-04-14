@@ -5,8 +5,8 @@
 *.log
 *.backup
 *~
+build/
 project
-build
 dist
 streams_project
 .coverage

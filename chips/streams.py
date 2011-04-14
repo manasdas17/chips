@@ -1189,6 +1189,51 @@ class Array(Stream, Unique):
         return self.memory[address_out]
 
 class Decoupler(Stream, Unique):
+    """
+
+    A *Decoupler* removes stream handshaking.
+
+    Usually, data is transfered though streams using blocking transfers. When a
+    process writes to a stream, execution will be halted until the receiving
+    process reads the data. While this behaviour greatly simplifies the design
+    of parallel processes, sometimes Non-blocking transfers are needed. When a
+    data item is written to a *Decoupler*, it is stored. When a *Decoupler* is
+    read from, the value of the last stored value is yielded. Neither the
+    sending or the receiving process ever blocks. This also means that the
+    number of data items written into the *Decoupler* and the number read out
+    do not have to be the same.
+
+    A *Decoupler* accepts only one argument, the source stream.
+
+    Example::
+
+        def time_stamp_data(data_stream):
+        
+            us_time = Output()
+            time = Variable(0)
+            Process(8,
+                Loop(
+                    WaitUs,
+                    time.set(time + 1),
+                    us_time.write(time),
+                ),
+            )
+
+            output_stream = Output()
+            temp = Variable(0)
+            Process(8,
+                Loop(
+                    data_stream.read(temp),
+                    output_stream.write(temp),
+                    us_time.read(temp),
+                    output_stream.write(temp),
+                ),
+            )
+
+            return output_stream
+        
+
+    """
 
     def __init__(self, source):
         self.a = source
@@ -1217,6 +1262,22 @@ class Decoupler(Stream, Unique):
         return self.a.get()
 
 class Resizer(Stream, Unique):
+    """
+
+    A *Resizer* changes the width, in bits, of the source stream.
+
+    The *Resizer* takes two arguments, the source stream, and the *width* in
+    bits. The *Resizer* will truncate data if it is reducing the width, ans
+    sign extend if it is increasing the width.
+
+    Example::
+
+        a = InPort(name="din", bits=8) a has a width of 8 bits
+        b = Inport + 1 #b has a width of 9 bits
+        c = Resizer(b, 8) #c is truncated to 8 bits
+        Chip(OutPort(name="dout"))
+
+    """
 
     def __init__(self, source, bits):
         self.a = source
@@ -1248,6 +1309,29 @@ class Resizer(Stream, Unique):
         return resize(val, self.get_bits())
 
 class Printer(Stream, Unique):
+    """
+
+    A *Printer* turns data into decimal ASCII characters.
+
+    Each each data item is turned into the ASCII representation of its decimal
+    value, terminated with a newline character. Each character then forms a
+    data item in the *Printer* stream.
+
+    A *Printer* accepts a single argument, the source stream. A *Printer*
+    stream is always 8 bits wide.
+
+    Example::
+
+        #print the numbers 0-10 to the console repeatedly
+        Chip(
+            Console(
+                Printer(
+                    Counter(0, 10, 1),
+                ),
+            ),
+        )
+
+    """
 
     def __init__(self, source):
         self.a = source
@@ -1285,6 +1369,29 @@ class Printer(Stream, Unique):
             return ord(self.string.popleft())
 
 class HexPrinter(Stream, Unique):
+    """
+
+    A *HexPrinter* turns data into hexadecimal ASCII characters.
+
+    Each each data item is turned into the ASCII representation of its
+    hexadecimal value, terminated with a newline character. Each character then
+    forms a data item in the *HexPrinter* stream.
+
+    A *HexPrinter* accepts a single argument, the source stream. A *HexPrinter*
+    stream is always 8 bits wide.
+
+    Example::
+
+        #print the numbers 0x0-0x10 to the console repeatedly
+        Chip(
+            Console(
+                Printer(
+                    Counter(0x0, 0x10, 1),
+                ),
+            ),
+        )
+
+    """
 
     def __init__(self, source):
         self.a = source

@@ -1,0 +1,14 @@
+\begin{theindex}
+\def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
+
+  \bigletter C
+  \item {\texttt  {chips.cpp\_plugin}}, \hyperpage{25}
+  \item {\texttt  {chips.instruction}}, \hyperpage{20}
+  \item {\texttt  {chips.ip}}, \hyperpage{27}
+  \item {\texttt  {chips.process}}, \hyperpage{9}
+  \item {\texttt  {chips.sinks}}, \hyperpage{18}
+  \item {\texttt  {chips.streams}}, \hyperpage{12}
+  \item {\texttt  {chips.VHDL\_plugin}}, \hyperpage{25}
+  \item {\texttt  {chips.visual\_plugin}}, \hyperpage{25}
+
+\end{theindex}

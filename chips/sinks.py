@@ -190,7 +190,7 @@ class SerialOut(Unique):
 
     A SerialOut accepts a source stream argument *a*. An optional *name*
     argument is used as the name for the serial TX line in generated VHDL. The
-    clock rate of the target device in Mhz can be specified using the
+    clock rate of the target device in MHz can be specified using the
     *clock_rate* argument. The baud rate of the serial output can be specified
     using the *baud_rate* argument.
 
