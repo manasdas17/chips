@@ -125,6 +125,12 @@ def constantize(possible_constant):
 class Expression:
     """Do not directly instantiate this class
     It is here to imbue derived expression classes with operators"""
+    def __invert__(self): 
+        return Unary(self, 'OP_INVERT')
+    def __abs__(self): 
+        return Unary(self, 'OP_ABS')
+    def __add__(self, other): 
+        return Binary(self, constantize(other), 'OP_ADD')
     def __add__(self, other): 
         return Binary(self, constantize(other), 'OP_ADD')
     def __sub__(self, other): 
@@ -280,6 +286,42 @@ class Binary(Expression):
         instructions = self.left.comp(rmap)
         rmap.tos += 1
         instructions.extend(self.right.comp(rmap))
+        instructions.extend(
+            [
+                Instruction(
+                    self.operation, 
+                    rmap.tos-1, 
+                    rmap.tos, 
+                    lineno=self.lineno, 
+                    filename=self.filename
+                )
+            ]
+        )
+        rmap.tos -= 1
+        return instructions
+
+class Unary(Expression):
+
+    def __init__(self, left, operation):
+        """Do not directly instantiate this class
+        It is created automatically by operators ~, abs() ..."""
+        self.left = constantize(left)
+        self.operation = operation
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+
+    def set_process(self, process):
+        self.process=process
+        self.left.set_process(process)
+
+    def initialise(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        return self.left.initialise(rmap)
+
+    def comp(self, rmap):
+        """compile an expression into a list of machine instructions"""
+        instructions = self.left.comp(rmap)
+        rmap.tos += 1
         instructions.extend(
             [
                 Instruction(

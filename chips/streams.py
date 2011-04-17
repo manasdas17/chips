@@ -246,6 +246,50 @@ class Chip:
 
 class Stream:
 
+    def __invert__(self):
+        return Unary(self, 'invert')
+    def __abs__(self):
+        return Unary(self, 'abs')
+    def Not(self):
+        """
+        
+        Return the logical inverse of the stream.
+        
+        The resulting stream will yield 0 for data items in the stream with
+        non-zero values, and -1 for data items in the stream with zero values.
+        
+        """
+        return Unary(self, 'not')
+    def shift_left(self, n):
+        """
+        
+        Return a stream which has been shifted left by a constant value.
+        
+        Unlike the << operator, the stream returned by this function will be
+        shifted by a constant value. Where shifting by a constant value is all
+        that is needed, this function should be implemented in significantly
+        less logic since a barrel shifter is not required.
+
+        *shift_left* takes a single argument *n* specifying thew number of bits
+        to shift by.
+        
+        """
+        return Unary(self, 'sln', n)
+    def shift_right(self, n):
+        """
+        
+        Return a stream which has been shifted right by a constant value.
+        
+        Unlike the >> operator, the stream returned by this function will be
+        shifted by a constant value. Where shifting by a constant value is all
+        that is needed, this function should be implemented in significantly
+        less logic since a barrel shifter is not required.
+
+        *shift_right* takes a single argument *n* specifying thew number of bits
+        to shift by.
+        
+        """
+        return Unary(self, 'srn', n)
     def __add__(self, other): 
         return Binary(self, _repeaterize(other), 'add')
     def __sub__(self, other): 
@@ -931,6 +975,58 @@ class  Binary(Stream, Unique):
         val = self.binary_function(self.stored_a, self.stored_b)
         self.stored_a = None
         self.stored_b = None
+        return resize(val, self.get_bits())
+
+_unary_functions = {
+    'not' : lambda a, b: not a,
+    'invert' : lambda a, b: ~a,
+    'sln' : lambda a, b: a << b,
+    'srn' : lambda a, b: a >> b,
+    'abs' : lambda a, b: abs(a),
+}
+class  Unary(Stream, Unique):
+
+    def __init__(self, a, function, constant=0):
+        self.a, self.function, self.constant = a, function, constant
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        self.function = function
+        self.unary_function = _unary_functions[function]
+        self.stored_a = None
+        Unique.__init__(self)
+
+        if hasattr(self.a, "receiver"):
+            raise StreamsConstructionError(
+                "stream already has receiver", 
+                self.filename,
+                self.lineno
+            )
+        else:
+            self.a.receiver = self
+
+    def get_bits(self):
+        bit_function = {
+        'not' : lambda x : 1,
+        'invert' : lambda x : x,
+        'sln' : lambda x : x,
+        'srn' : lambda x : x,
+        'abs' : lambda x : x,
+        }
+        return bit_function[self.function](self.a.get_bits())
+
+    def write_code(self, plugin): 
+        plugin.write_unary(self)
+
+    def reset(self):
+        pass
+
+    def get(self):
+        if self.stored_a is None:
+            self.stored_a = self.a.get()
+        if self.stored_a is None:
+            return None
+        val = self.unary_function(self.stored_a, self.constant)
+        self.stored_a = None
         return resize(val, self.get_bits())
 
 class Lookup(Stream, Unique):

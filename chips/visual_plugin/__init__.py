@@ -180,6 +180,28 @@ class Plugin:
             )
         )
 
+    def write_unary(self, stream): 
+        labels = { 'abs' : 'abs', 'not' : '!', 'invert' : '~', 'sln' : '<<', 
+            'srn' : '>>',
+        }
+        self.nodes.append((id(stream), labels[stream.function], "circle"))
+        self.edges.append(
+            (
+                id(stream.a), 
+                id(stream), 
+                stream.a.get_bits(), 
+                "nw"
+            )
+        )
+        self.edges.append(
+            (
+                id(stream.b), 
+                id(stream), 
+                stream.b.get_bits(), 
+                "sw"
+            )
+        )
+
     def write_lookup(self, stream): 
         self.nodes.append((id(stream), "Lookup", "ellipse"))
         self.edges.append(

@@ -136,10 +136,15 @@ supports C++ and VHDL code generation, but it is VHDL code that allows
 *Chips" to be synthesised. 
 
 The VHDL code generation plugin is found in ``chips.VHDL_plugin`` If you run
-this example you should find hello_world.vhd has been generated. You can
-run this code in an external vhdl simulator, but you won't be able to
-synthesise it into a device because real hardware devices don't have a
-concept of a *Console*.
+this example you should find that a VHDL file called hello_world.vhd has been
+generated. 
+
+Take a look through this file. You may find that it is difficult to
+understand what is going on. The file isn't meant to be read by humans, *Chips*
+treats VHDL as a compatibility layer. *VHDL* is pretty much universally
+supported by synthesis tools.  You can run this code in an external VHDL
+simulator, but you won't be able to synthesise it into a device because real
+hardware devices don't have a concept of a *Console*.
 
 To make this example synthesise, we need to write the characters to some
 realisable hardware interface. The *Chips* library provides a *SerialOut*
@@ -171,15 +176,29 @@ More Streams
 ------------
 So far we have seen three types of streams, *Counter*, *Sequence* and
 *Printer*. Chips provides a few more basic streams which you can read about
-in the `Language Reference Manual`_. It is also possible to combine streams
-using arithmetic operators : ``+, -, *, //, %, <<, >>, &, |, ^, ==, !=, <,
+in the Language Reference Manual. It is also possible to combine streams
+using the arithmetic operators : ``+, -, *, //, %, <<, >>, &, |, ^, ==, !=, <,
 <=, >, >=`` on the whole they have the same (or very similar) meaning as
 they do in Python except that they operate on streams of data.
 
-        .. _`Language Reference Manual` : ../language_reference/index
-
-
 Introducing Processes
 ---------------------
+
+Hierarchical Design
+-------------------
+You may be expecting Chips to provide some mechanism for hierarchical design.
+You might expect that Chips would provide a means too group items together to
+form re-usable components or modules. A really good design tool would allow you
+to parameterise components and modules using generics or templates. Chips does
+not provide any of these things. It doesn't have to.
+
+The Python language itself already provides all these things and more. If you
+want to make a reusable component you can simply write a Python function:: 
+
+        def double(input_stream):
+            """If you use Python functions to build components you can take
+            advantage of docstrings to document your design."""
+            
+            return input_stream * 2
 
 

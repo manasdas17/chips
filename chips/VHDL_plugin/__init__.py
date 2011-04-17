@@ -21,6 +21,7 @@ import response
 
 #combinators
 import binary
+import unary
 import lookup
 import array
 import fifo
@@ -133,6 +134,12 @@ class Plugin:
         self.definitions.extend(definitions)
 
     #combinators
+
+    def write_unary(self, stream): 
+        ports, declarations, definitions = unary.write(stream)
+        self.ports.extend(ports)
+        self.declarations.extend(declarations)
+        self.definitions.extend(definitions)
 
     def write_binary(self, stream): 
         ports, declarations, definitions = binary.write(stream)

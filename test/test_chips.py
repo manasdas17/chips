@@ -621,6 +621,123 @@ s=Chip(
 good = good and s.test("chain test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
+#Test Unary Abs
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(resize(abs(i), 4))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response == (abs(stimulus_a))))
+
+good = good and s.test("chips abs test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary Not
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(-int(not i))
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==stimulus_a.Not()))
+
+good = good and s.test("chips not test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary ~
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(~i)
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==(~stimulus_a)))
+
+good = good and s.test("chips ~ test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary shift_left(1)
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(resize(i<<1, 4))
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==stimulus_a.shift_left(1)))
+
+good = good and s.test("chips shift_left(1) test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary shift_left(2)
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(resize(i<<2, 4))
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==stimulus_a.shift_left(2)))
+
+good = good and s.test("chips shift_left(2) test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary shift_left(4)
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(resize(i<<2, 4))
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==stimulus_a.shift_left(2)))
+
+good = good and s.test("chips shift_left(4) test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary shift_left(8)
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(resize(i<<2, 4))
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==stimulus_a.shift_left(2)))
+
+good = good and s.test("chips shift_left(8) test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Binary -
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i-j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+s=Chip(Asserter(expected_response == stimulus_a - stimulus_b))
+
+good = good and s.test("chips - test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Binary *
+a, b, z = [], [], []
+for i in range(-8, 8):
+    for j in range(-8, 8):
+        a.append(i)
+        b.append(j)
+        z.append(i*j)
+
+stimulus_a =        Sequence(*a)
+stimulus_b =        Sequence(*b)
+expected_response = Sequence(*z)
+s=Chip(Asserter(expected_response == stimulus_a * stimulus_b))
+
+good = good and s.test("chips * test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
 #Test Binary +
 a, b, z = [], [], []
 for i in range(-8, 8):
