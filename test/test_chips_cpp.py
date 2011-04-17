@@ -188,6 +188,258 @@ s.write_code(simulation_plugin)
 good = good and simulation_plugin.test("evaluate test", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
+#Test Integer abs
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(abs(i), 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(abs(a))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer abs test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer Not
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(-int(not i))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.Not())
+))
+s=Chip(Asserter(expected_response == z))
+
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer Not test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer ~
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(~i)
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(~a)
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer ~ test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_left(1)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i<<1, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_left(1))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer shift_left(1) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_left(2)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i<<2, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_left(2))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer shift_left(2) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_left(4)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i<<4, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_left(4))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer shift_left(4) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_left(8)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i<<8, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_left(8))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer shift_left(8) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_right(1)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i>>1, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_right(1))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer shift_right(1) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_right(2)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i>>2, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_right(2))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer shift_right(2) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_right(4)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i>>4, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_right(4))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer shift_right(4) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_right(8)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i>>8, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_right(8))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("integer shift_right(8) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
 #Test Integer +
 a, b, z = [], [], []
 for i in range(-8, 8):

@@ -129,8 +129,12 @@ class Expression:
         return Unary(self, 'OP_INVERT')
     def __abs__(self): 
         return Unary(self, 'OP_ABS')
-    def __add__(self, other): 
-        return Binary(self, constantize(other), 'OP_ADD')
+    def Not(self): 
+        return Unary(self, 'OP_LNOT')
+    def shift_left(self, n): 
+        return Unary(self, 'OP_SLN_{0}'.format(n))
+    def shift_right(self, n): 
+        return Unary(self, 'OP_SRN_{0}'.format(n))
     def __add__(self, other): 
         return Binary(self, constantize(other), 'OP_ADD')
     def __sub__(self, other): 
@@ -302,11 +306,12 @@ class Binary(Expression):
 
 class Unary(Expression):
 
-    def __init__(self, left, operation):
+    def __init__(self, left, operation, constant=0):
         """Do not directly instantiate this class
         It is created automatically by operators ~, abs() ..."""
-        self.left = constantize(left)
+        self.left = left
         self.operation = operation
+        self.constant = constant
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
 
@@ -321,19 +326,17 @@ class Unary(Expression):
     def comp(self, rmap):
         """compile an expression into a list of machine instructions"""
         instructions = self.left.comp(rmap)
-        rmap.tos += 1
         instructions.extend(
             [
                 Instruction(
                     self.operation, 
-                    rmap.tos-1, 
+                    rmap.tos, 
                     rmap.tos, 
                     lineno=self.lineno, 
                     filename=self.filename
                 )
             ]
         )
-        rmap.tos -= 1
         return instructions
 
 ################################################################################

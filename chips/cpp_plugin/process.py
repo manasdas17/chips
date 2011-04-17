@@ -31,7 +31,20 @@ def write_process(process, plugin):
     operations = ["OP_DIV", "OP_MOD", "OP_MUL", "OP_ADD", "OP_SUB",
             "OP_BAND", "OP_BOR", "OP_BXOR", "OP_SL", "OP_SR", "OP_EQ",
             "OP_NE", "OP_GE", "OP_GT", "OP_WAIT_US", "OP_JMP", "OP_JMPF",
-            "OP_MOVE", "OP_IMM"]
+            "OP_MOVE", "OP_IMM", "OP_ABS", "OP_LNOT", "OP_INVERT"]
+
+    left_shifts = []
+    right_shifts = []
+
+    for i in process_instructions:
+        if i.operation.startswith("OP_SLN_"):
+            operations.append(i.operation)
+            left_shifts.append(int(i.operation[7:]))
+
+    for i in process_instructions:
+        if i.operation.startswith("OP_SRN_"):
+            operations.append(i.operation)
+            right_shifts.append(int(i.operation[7:]))
 
     #calculate processor parameters
     number_of_operations = (
@@ -92,6 +105,28 @@ def write_process(process, plugin):
 "            break;",
         ])
         operations.append("OP_WRITE_{0}".format(i.get_identifier()))
+
+
+    ls_instructions = []
+    for i in left_shifts:
+        output_instructions.extend([
+"        case OP_SLN_{0}_{1}:".format(i, process_id),
+"            result = resize(rega<<{0}, {1}); ".format(i, process_bits),
+"            pc_{0}++;".format(process_id),
+"            registers_{0}[instruction.srca] = result;".format(process_id),
+"            break;",
+        ])
+
+    rs_instructions = []
+    for i in right_shifts:
+        output_instructions.extend([
+"        case OP_SRN_{0}_{1}:".format(i, process_id),
+"            result = resize(rega>>{0}, {1}); ".format(i, process_bits),
+"            pc_{0}++;".format(process_id),
+"            registers_{0}[instruction.srca] = result;".format(process_id),
+"            break;",
+        ])
+
 
 ################################################################################
 #GENERATE INSTRUCTION CONSTANTS
@@ -160,12 +195,27 @@ instructions,
 "void execute_{0}()".format(process_id),
 "{",
 "    instruction_type_{0} instruction = instructions_{0}[pc_{0}];".format(process_id),
-"    data_type data;".format(i.get_identifier()),
+"    data_type data;",
 "    int result = 0;",
 "    int rega = registers_{0}[instruction.srca];".format(process_id),
 "    int regb = registers_{0}[instruction.srcb];".format(process_id),
 "    switch(instruction.operation)",
 "    {",
+"        case OP_ABS_{0}:".format(process_id),
+"            result = resize(abs(rega), {0}); ".format(process_bits),
+"            pc_{0}++;".format(process_id),
+"            registers_{0}[instruction.srca] = result;".format(process_id),
+"            break;",
+"        case OP_LNOT_{0}:".format(process_id),
+"            result = resize(not rega, {0}); ".format(process_bits),
+"            pc_{0}++;".format(process_id),
+"            registers_{0}[instruction.srca] = result;".format(process_id),
+"            break;",
+"        case OP_INVERT_{0}:".format(process_id),
+"            result = resize(~rega, {0}); ".format(process_bits),
+"            pc_{0}++;".format(process_id),
+"            registers_{0}[instruction.srca] = result;".format(process_id),
+"            break;",
 "        case OP_DIV_{0}:".format(process_id),
 "            result = resize(rega/regb, {0}); ".format(process_bits),
 "            pc_{0}++;".format(process_id),
@@ -264,6 +314,8 @@ instructions,
 "            break;",
 "\n".join(input_instructions),
 "\n".join(output_instructions),
+"\n".join(ls_instructions),
+"\n".join(rs_instructions),
 "        default:",
 "            break;",
 "    }",

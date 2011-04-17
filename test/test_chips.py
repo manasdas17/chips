@@ -134,7 +134,7 @@ s.test("response test ", stop_cycles=100)
 for response, expected in zip(a.get_simulation_data(), range(100)):
     good = response==expected
     if not good:
-        print "Failed to retireve simulation data"
+        print "Failed to retrieve simulation data"
 
 if not good and stop_on_fail: exit()
 
@@ -199,6 +199,237 @@ s=Chip( Asserter(expected_response == z))
 good = good and s.test("evaluate test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
+#Test Integer abs
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(abs(i), 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(abs(a))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer abs test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer Not
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(int(not i))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.Not())
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer Not test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer ~
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(~i)
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(~a)
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer ~ test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_left(1)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i<<1, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_left(1))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer shift_left(1) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_left(2)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i<<2, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_left(2))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer shift_left(2) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_left(4)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i<<4, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_left(4))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer shift_left(4) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_left(8)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i<<8, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_left(8))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer shift_left(8) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_right(1)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i>>1, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_right(1))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer shift_right(1) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_right(2)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i>>2, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_right(2))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer shift_right(2) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_right(4)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i>>4, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_right(4))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer shift_right(4) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Integer shift_right(8)
+a, b, z = [], [], []
+for i in range(-8, 8):
+        a.append(i)
+        z.append(resize(i>>8, 8))
+
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+
+a = Variable(0)
+z = Output()
+Process(8, Loop(
+    stimulus_a.read(a),
+    z.write(a.shift_right(8))
+))
+s=Chip(Asserter(expected_response == z))
+
+#simulate in python
+good = good and s.test("integer shift_right(8) test ", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
 #Test Integer +
 a, b, z = [], [], []
 for i in range(-8, 8):
@@ -224,6 +455,7 @@ s=Chip( Asserter(expected_response == z))
 #simulate in python
 good = good and s.test("integer + test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
+
 
 #Test Integer -
 a, b, z = [], [], []
@@ -704,6 +936,54 @@ expected_response = Sequence(*z)
 s=Chip( Asserter(expected_response==stimulus_a.shift_left(2)))
 
 good = good and s.test("chips shift_left(8) test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary shift_right(1)
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(resize(i>>1, 4))
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==stimulus_a.shift_right(1)))
+
+good = good and s.test("chips shift_right(1) test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary shift_right(2)
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(resize(i>>2, 4))
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==stimulus_a.shift_right(2)))
+
+good = good and s.test("chips shift_right(2) test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary shift_right(4)
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(resize(i>>2, 4))
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==stimulus_a.shift_right(2)))
+
+good = good and s.test("chips shift_right(4) test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#Test Unary shift_right(8)
+a, z = [], []
+for i in range(-8, 8):
+    a.append(i)
+    z.append(resize(i>>2, 4))
+stimulus_a =        Sequence(*a)
+expected_response = Sequence(*z)
+s=Chip( Asserter(expected_response==stimulus_a.shift_right(2)))
+
+good = good and s.test("chips shift_right(8) test", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
 #Test Binary -

@@ -30,16 +30,26 @@ def write_process(process, plugin):
     process_instructions = tuple(process.instructions)
     operations = []
     states = ["STALL", "EXECUTE"]
+    left_shifts = []
+    right_shifts = []
 
     #save logic by turning off features if not used
     for instruction in process_instructions:
         for j in ["OP_DIV", "OP_MOD", "OP_MUL", "OP_ADD", "OP_SUB", "OP_BAND",
                 "OP_BOR", "OP_BXOR", "OP_SL", "OP_SR", "OP_EQ", "OP_NE", 
                 "OP_GE", "OP_GT", "OP_WAIT_US", "OP_JMP", "OP_JMPF", "OP_MOVE",
-                "OP_IMM", "OP_WAIT_US"]:
+                "OP_IMM", "OP_WAIT_US", "OP_LNOT", "OP_ABS", "OP_INVERT"]:
             if instruction.operation == j:
                 if j not in operations:
                     operations.append(j)
+        if instruction.operation.startswith("OP_SLN_"):
+            if instruction.operation not in operations:
+                operations.append(instruction.operation)
+            left_shifts.append(int(instruction.operation[7:]))
+        if instruction.operation.startswith("OP_SRN_"):
+            if instruction.operation not in operations:
+                operations.append(instruction.operation)
+            right_shifts.append(int(instruction.operation[7:]))
         if instruction.operation == "OP_DIV" or instruction.operation == "OP_MOD":
             if "DIVIDE_0" not in states:
                 states.extend(["DIVIDE_0", "DIVIDE_1", "DIVIDE_2"])
@@ -453,6 +463,36 @@ def write_process(process, plugin):
         plugin.definitions.extend([
 "          when OP_IMM_{0}  => ".format(process_id),
 "            RESULT := IMMEDIATE_{0};".format(process_id),
+"            REGISTERS_EN := '1';"])
+
+    if ("OP_ABS" in operations):
+        plugin.definitions.extend([
+"          when OP_ABS_{0}  => ".format(process_id),
+"            RESULT := STD_RESIZE( ABSOLUTE(REGA), {0});".format(process_bits),
+"            REGISTERS_EN := '1';"])
+
+    if ("OP_INVERT" in operations):
+        plugin.definitions.extend([
+"          when OP_INVERT_{0}  => ".format(process_id),
+"            RESULT := not REGA;",
+"            REGISTERS_EN := '1';"])
+
+    for i in left_shifts:
+        plugin.definitions.extend([
+"          when OP_SLN_{0}_{1}  => ".format(i, process_id),
+"            RESULT := STD_RESIZE( SL(REGA, {0}), {1});".format(common.binary(i, process_bits), process_bits),
+"            REGISTERS_EN := '1';"])
+
+    for i in right_shifts:
+        plugin.definitions.extend([
+"          when OP_SRN_{0}_{1}  => ".format(i, process_id),
+"            RESULT := STD_RESIZE( SR(REGA, {0}), {1});".format(common.binary(i, process_bits), process_bits),
+"            REGISTERS_EN := '1';"])
+
+    if ("OP_LNOT" in operations):
+        plugin.definitions.extend([
+"          when OP_LNOT_{0}  => ".format(process_id),
+"            RESULT := STD_RESIZE( LNOT(REGA), {0});".format(process_bits),
 "            REGISTERS_EN := '1';"])
 
     if ("OP_JMP" in operations):

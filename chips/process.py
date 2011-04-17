@@ -283,6 +283,34 @@ class Process(Unique):
             regb = self.registers[instruction.srcb]
             self.registers[instruction.srca] = resize(rega>>regb, self.bits)
             self.pc += 1
+        elif instruction.operation == "OP_ABS":
+            rega = self.registers[instruction.srca]
+            self.registers[instruction.srca] = resize(abs(rega), self.bits)
+            self.pc += 1
+        elif instruction.operation == "OP_LNOT":
+            rega = self.registers[instruction.srca]
+            self.registers[instruction.srca] = resize(not rega, self.bits)
+            self.pc += 1
+        elif instruction.operation == "OP_INVERT":
+            rega = self.registers[instruction.srca]
+            self.registers[instruction.srca] = resize(~rega, self.bits)
+            self.pc += 1
+        elif instruction.operation.startswith("OP_SLN_"):
+            rega = self.registers[instruction.srca]
+            shift_by = int(instruction.operation[7:])
+            self.registers[instruction.srca] = resize(
+                    rega<<shift_by, 
+                    self.bits
+            )
+            self.pc += 1
+        elif instruction.operation.startswith("OP_SRN_"):
+            rega = self.registers[instruction.srca]
+            shift_by = int(instruction.operation[7:])
+            self.registers[instruction.srca] = resize(
+                    rega>>shift_by, 
+                    self.bits
+            )
+            self.pc += 1
         elif instruction.operation == "OP_BAND":
             rega = self.registers[instruction.srca]
             regb = self.registers[instruction.srcb]
