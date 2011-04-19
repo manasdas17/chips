@@ -1,9 +1,4 @@
-.. Chips documentation master file, created by
-   sphinx-quickstart on Wed Mar 16 19:23:17 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Chips documentation!
+Chips v0.1 documentation!
 =================================
 
 Contents:
