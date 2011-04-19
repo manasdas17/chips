@@ -1,16 +1,1 @@
-*.pyc
-*.svg
-.bmp
-*.aux
-*.log
-*.backup
 *~
-build/
-project
-dist
-streams_project
-.coverage
-project.cpp
-project.vhd
-.ip.py.swp
-MANIFEST

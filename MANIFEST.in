@@ -1,7 +1,0 @@
-include COPYING.txt
-recursive-include chips/ip *.vhd
-recursive-include docs/build/html *.html *.css *.png *.gif
-recursive-include docs/build/latex *.pdf
-include examples/test.bmp
-recursive-include examples *.py *.ucf
-exclude examples/run_all.py

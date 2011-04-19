@@ -1,5 +1,0 @@
-import ps2_keyboard
-import character_svga
-
-PS2Keyboard=ps2_keyboard.PS2Keyboard
-CharacterSVGA=character_svga.CharacterSVGA
