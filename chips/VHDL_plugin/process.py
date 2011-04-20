@@ -32,6 +32,7 @@ def write_process(process, plugin):
     states = ["STALL", "EXECUTE"]
     left_shifts = []
     right_shifts = []
+    availables = []
 
     #save logic by turning off features if not used
     for instruction in process_instructions:
@@ -50,6 +51,11 @@ def write_process(process, plugin):
             if instruction.operation not in operations:
                 operations.append(instruction.operation)
             right_shifts.append(int(instruction.operation[7:]))
+        if instruction.operation.startswith("OP_AVAILABLE_"):
+            if instruction.operation not in operations:
+                operations.append(instruction.operation)
+                input_ident = int(instruction.operation[13:])
+                availables.append(input_ident)
         if instruction.operation == "OP_DIV" or instruction.operation == "OP_MOD":
             if "DIVIDE_0" not in states:
                 states.extend(["DIVIDE_0", "DIVIDE_1", "DIVIDE_2"])
@@ -487,6 +493,16 @@ def write_process(process, plugin):
         plugin.definitions.extend([
 "          when OP_SRN_{0}_{1}  => ".format(i, process_id),
 "            RESULT := STD_RESIZE( SR(REGA, {0}), {1});".format(common.binary(i, process_bits), process_bits),
+"            REGISTERS_EN := '1';"])
+
+    for i in availables:
+        plugin.definitions.extend([
+"          when OP_AVAILABLE_{0}_{1}  => ".format(i, process_id),
+"            if STREAM_{0}_STB = '1' then".format(i),
+"              RESULT := {0};".format(common.binary(-1, process_bits)),
+"            else",
+"              RESULT := {0};".format(common.binary(0, process_bits)),
+"            end if;",
 "            REGISTERS_EN := '1';"])
 
     if ("OP_LNOT" in operations):

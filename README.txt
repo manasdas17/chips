@@ -1,7 +1,7 @@
 CHIPS
 =====
 
-The Chips library allows hardware devices to be designed in python.
+Chips is a Python library for designing hardware devices.
 
 FEATURES
 --------

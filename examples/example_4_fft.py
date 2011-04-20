@@ -5,7 +5,7 @@
 Options are:
 
 simulate      - native python simulation
-simulate_vhdl - simulate using ghdl cosimulation
+simulate_vhdl - simulate using ghdl cosmulation
 
 Thing to try:
 
@@ -43,7 +43,7 @@ def fft(input_stream, n):
     nd2=n>>1
     m=int(log(n,2))
 
-    #set up initial values for trig reccurence
+    #set up initial values for trig recurrence
     thetas = []
     for l in range(1, m+1):
         le=1<<l
@@ -112,7 +112,7 @@ def fft(input_stream, n):
             le.set(1<<l),
             le2.set(le>>1),
 
-            #initialize trigonometric reccurence
+            #initialize trigonometric recurrence
 
             ur.set(to_fixed(1.0)),
             ui.set(to_fixed(0.0)),
@@ -143,7 +143,7 @@ def fft(input_stream, n):
 
                     i.set(i+le),
                 ),
-                #trigonometric reccurence
+                #trigonometric recurrence
                 tr.set(ur),
                 ur.set(((tr*sr)>>q)-((ui*si)>>q)),
                 ui.set(((tr*si)>>q)+((ui*sr)>>q)),
@@ -195,7 +195,7 @@ if "simulate" in sys.argv:
 
     #run the simulation
     chip.reset()
-    chip.execute(750000)
+    chip.execute(1000000)
 
     #unpack the frequency domain representation
     real_frequency = list(rer.get_simulation_data())

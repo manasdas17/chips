@@ -114,6 +114,88 @@ system = Chip(Asserter(out==-128))
 good = good and system.test("test sizing", 100)
 if not good and stop_on_fail: exit()
 
+#test process to process
+stream = Output()
+Process(8,
+    stream.write(1),
+    stream.write(2),
+    stream.write(3),
+)
+result = Output()
+temp = Variable(0)
+Process(8,
+    stream.read(temp),
+    If(temp == 1,
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    ),
+    stream.read(temp),
+    If(temp == 2,
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    ),
+    stream.read(temp),
+    If(temp == 3,
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    )
+)
+
+system = Chip(Asserter(result))
+good = good and system.test("test process to process", 100)
+if not good and stop_on_fail: exit()
+
+#test available
+stream = Output()
+Process(8,
+    stream.write(1),
+    stream.write(1),
+)
+result = Output()
+temp = Variable(0)
+Process(8,
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    If(stream.available(),
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    ),
+    stream.read(temp),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    If(stream.available(),
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    ),
+    stream.read(temp),
+    If(stream.available(),
+        result.write(0),
+    ).Else(
+        result.write(-1),
+    )
+)
+
+system = Chip(Asserter(result))
+good = good and system.test("test available", 100)
+if not good and stop_on_fail: exit()
+
 #test stimulus
 a = Stimulus(8)
 a = Stimulus(8)
@@ -186,7 +268,7 @@ Process(8,
             Evaluate(
                 If(a>0, 
                     Value(1),
-                ).ElsIf(1,
+                ).Elif(1,
                     Value(0),
                 )
             )

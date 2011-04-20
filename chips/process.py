@@ -170,7 +170,7 @@ the same precedence.
 from common import Unique, resize
 from instruction import Write, Block
 from inspect import currentframe, getsourcefile
-from exceptions import StreamsConstructionError
+from exceptions import ChipsSyntaxError
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -193,19 +193,21 @@ class Process(Unique):
 
     def __init__(self, bits, *instructions):
         Unique.__init__(self)
+        self.instructions = None
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         self.bits = int(bits)
         self.variables = []
         self.inputs = []
         self.outputs = []
+        self.prefetch = {}
         self.timeouts = {}
         self.timer_number = 0
         for i in instructions:
             i.set_process(self)
         for i in self.inputs:
             if hasattr(i, "receiver"):
-                raise ChipConstructionError(
+                raise ChipsSyntaxError(
                     "stream already has a receiver", 
                     self.filename, 
                     self.lineno
@@ -240,6 +242,18 @@ class Process(Unique):
         self.registers = {}
         self.pc = 0
 
+    def get_data(self, key):
+        if (key not in self.prefetch) or (self.prefetch[key] is None):
+            self.prefetch[key] = self.transmitters[key].get()
+        data = self.prefetch[key]
+        self.prefetch[key] = None
+        return data
+
+    def peek_data(self, key):
+        if (key not in self.prefetch) or (self.prefetch[key] is None):
+            self.prefetch[key] = self.transmitters[key].get()
+        return self.prefetch[key]
+
     def execute(self):
         instruction = self.instruction_memory[self.pc]
         if instruction.operation == "OP_ADD":
@@ -252,7 +266,7 @@ class Process(Unique):
             regb = self.registers[instruction.srcb]
             self.registers[instruction.srca] = resize(rega-regb, self.bits)
             self.pc += 1
-        elif instruction.operation == "OP_]UL":
+        elif instruction.operation == "OP_MUL":
             rega = self.registers[instruction.srca]
             regb = self.registers[instruction.srcb]
             self.registers[instruction.srca] = resize(rega*regb, self.bits)
@@ -381,14 +395,28 @@ class Process(Unique):
             self.pc += 1
         elif instruction.operation.startswith("OP_READ"):
             key = instruction.operation[8:]
-            transmitter = self.transmitters[key]
-            read_data = transmitter.get()
+            read_data = self.get_data(key)
             if read_data is not None:
                 self.registers[instruction.srca] = resize(
                     read_data, 
                     self.bits
                 )
                 self.pc += 1
+        elif instruction.operation.startswith("OP_AVAILABLE"):
+            key = instruction.operation[13:]
+            transmitter = self.transmitters[key]
+            read_data = self.peek_data(key)
+            if read_data is None:
+                self.registers[instruction.srca] = resize(
+                    0, 
+                    self.bits
+                )
+            else:
+                self.registers[instruction.srca] = resize(
+                    -1, 
+                    self.bits
+                )
+            self.pc += 1
 
     def __repr__(self):
         return '\n'.join([

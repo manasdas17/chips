@@ -174,7 +174,7 @@ Process(8,
             Evaluate(
                 If(a>0, 
                     Value(1),
-                ).ElsIf(1,
+                ).Elif(1,
                     Value(0),
                 )
             )
@@ -186,6 +186,92 @@ s=Chip(Asserter(expected_response == z))
 simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
 good = good and simulation_plugin.test("evaluate test", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#test process to process
+stream = Output()
+Process(8,
+    stream.write(1),
+    stream.write(2),
+    stream.write(3),
+)
+result = Output()
+temp = Variable(0)
+Process(8,
+    stream.read(temp),
+    If(temp == 1,
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    ),
+    stream.read(temp),
+    If(temp == 2,
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    ),
+    stream.read(temp),
+    If(temp == 3,
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    )
+)
+
+s = Chip(Asserter(result))
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("test process to process", stop_cycles=1000)
+if not good and stop_on_fail: exit()
+
+#test available
+stream = Output()
+Process(8,
+    stream.write(1),
+    stream.write(1),
+)
+result = Output()
+temp = Variable(0)
+Process(8,
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    If(stream.available(),
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    ),
+    stream.read(temp),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    temp.set(stream.available()),
+    If(stream.available(),
+        result.write(-1),
+    ).Else(
+        result.write(0),
+    ),
+    stream.read(temp),
+    If(stream.available(),
+        result.write(0),
+    ).Else(
+        result.write(-1),
+    )
+)
+
+s = Chip(Asserter(result))
+simulation_plugin = Plugin()
+s.write_code(simulation_plugin)
+good = good and simulation_plugin.test("test available", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
 #Test Integer abs

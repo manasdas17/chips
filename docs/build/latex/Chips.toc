@@ -12,6 +12,7 @@
 \contentsline {section}{\numberline {2.5}Generating VHDL}{6}{section.2.5}
 \contentsline {section}{\numberline {2.6}More Streams}{7}{section.2.6}
 \contentsline {section}{\numberline {2.7}Introducing Processes}{8}{section.2.7}
+\contentsline {section}{\numberline {2.8}Hierarchical Design}{8}{section.2.8}
 \contentsline {chapter}{\numberline {3}Chips Language Reference Manual}{9}{chapter.3}
 \contentsline {section}{\numberline {3.1}Chip}{9}{section.3.1}
 \contentsline {section}{\numberline {3.2}Process}{9}{section.3.2}

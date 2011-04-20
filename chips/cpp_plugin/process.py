@@ -35,16 +35,26 @@ def write_process(process, plugin):
 
     left_shifts = []
     right_shifts = []
+    availables = []
 
     for i in process_instructions:
         if i.operation.startswith("OP_SLN_"):
-            operations.append(i.operation)
-            left_shifts.append(int(i.operation[7:]))
+            if i.operation not in operations:
+                operations.append(i.operation)
+                left_shifts.append(int(i.operation[7:]))
 
     for i in process_instructions:
         if i.operation.startswith("OP_SRN_"):
-            operations.append(i.operation)
-            right_shifts.append(int(i.operation[7:]))
+            if i.operation not in operations:
+                operations.append(i.operation)
+                right_shifts.append(int(i.operation[7:]))
+
+    for i in process_instructions:
+        if i.operation.startswith("OP_AVAILABLE_"):
+            if i.operation not in operations:
+                input_ident = int(i.operation[13:])
+                operations.append(i.operation)
+                availables.append(input_ident)
 
     #calculate processor parameters
     number_of_operations = (
@@ -78,12 +88,16 @@ def write_process(process, plugin):
     for i in process.inputs:
         input_instructions.extend([
 "          case OP_READ_{0}_{1}:".format(i.get_identifier(), process_id),
-"            data = get_stream_{0}();".format(i.get_identifier()),
-"            if (!data.stalled)",
+"            if (buffer_{0}.stalled)".format(i.get_identifier()),
 "            {",
-"              registers_{0}[instruction.srca] = data.value;".format(process_id),
+"              buffer_{0} = get_stream_{0}();".format(i.get_identifier()),
+"            }",
+"            if (!buffer_{0}.stalled)".format(i.get_identifier()),
+"            {",
+"              registers_{0}[instruction.srca] = buffer_{1}.value;".format(process_id, i.get_identifier()),
 "              pc_{0}++;".format(process_id),
 "            }",
+"            buffer_{0}.stalled = true;".format(i.get_identifier()),
 "            break;",
         ])
         operations.append("OP_READ_{0}".format(i.get_identifier()))
@@ -122,6 +136,25 @@ def write_process(process, plugin):
         output_instructions.extend([
 "        case OP_SRN_{0}_{1}:".format(i, process_id),
 "            result = resize(rega>>{0}, {1}); ".format(i, process_bits),
+"            pc_{0}++;".format(process_id),
+"            registers_{0}[instruction.srca] = result;".format(process_id),
+"            break;",
+        ])
+
+    available_instructions = []
+    for i in availables:
+        available_instructions.extend([
+"        case OP_AVAILABLE_{0}_{1}:".format(i, process_id),
+"            if (buffer_{0}.stalled)".format(i),
+"            {",
+"              buffer_{0} = get_stream_{0}();".format(i),
+"            }",
+"            if (buffer_{0}.stalled)".format(i),
+"            {",
+"              result = resize(0, {0}); ".format(process_bits),
+"            } else {",
+"              result = resize(-1, {0}); ".format(process_bits),
+"            }",
 "            pc_{0}++;".format(process_id),
 "            registers_{0}[instruction.srca] = result;".format(process_id),
 "            break;",
@@ -316,6 +349,7 @@ instructions,
 "\n".join(output_instructions),
 "\n".join(ls_instructions),
 "\n".join(rs_instructions),
+"\n".join(available_instructions),
 "        default:",
 "            break;",
 "    }",

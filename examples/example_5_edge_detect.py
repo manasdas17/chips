@@ -100,7 +100,7 @@ def edge_detector(image):
             While(i < width,
                 If(j < (height-1),
                     image.read(p),
-                ).ElsIf(-1,
+                ).Elif(-1,
                     p.set(0),
                 ),
                 im.write(i, p),

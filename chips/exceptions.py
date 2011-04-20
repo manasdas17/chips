@@ -8,20 +8,29 @@ __maintainer__ = "Jon Dawson"
 __email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
 
-class StreamsConstructionError(Exception):
+class ChipsSyntaxError(Exception):
     """Error in definition of streams system"""
 
-    def __init__(self, message, filename, lineno):
-        self.message = message + "\nfile : {0}, line : {1}".format(filename, lineno)
+    def __str__(self):
+        message = self.args["message"]
+        filename = self.args["filename"]
+        lineno = self.args["lineno"]
+        return message + "\nfile : {0}, line : {1}".format(filename, line)
 
-class StreamsProcessError(Exception):
+class ChipsProcessError(Exception):
     """Error in definition of process instructions"""
 
-    def __init__(self, message, filename, lineno):
-        self.message = message + "\nfile : {0}, line : {1}".format(filename, lineno)
+    def __str__(self):
+        message = self.args["message"]
+        filename = self.args["filename"]
+        lineno = self.args["lineno"]
+        return message + "\nfile : {0}, line : {1}".format(filename, line)
 
-class SimulationError(Exception):
+class ChipsSimulationError(Exception):
     """Error in definition of process instructions"""
 
-    def __init__(self, message, filename, lineno):
-        self.message = message + "\nfile : {0}, line : {1}".format(filename, lineno)
+    def __str__(self):
+        message = self.args["message"]
+        filename = self.args["filename"]
+        lineno = self.args["lineno"]
+        return message + "\nfile : {0}, line : {1}".format(filename, line)

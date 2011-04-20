@@ -1,12 +1,26 @@
-.. Chips documentation master file, created by
-   sphinx-quickstart on Wed Mar 16 19:23:17 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Chips v0.1
+==========
 
-Welcome to Chips documentation!
-=================================
+Chips is a Python library for designing hardware devices. Some of its key features include:
 
-Contents:
+
+- High level device modeling language makes device design simpler and more
+  powerful.
+
+- Provides fast native simulations that integrate with Python.
+
+- Python extension modules such as Scipy, Numpy, Matplotlib and PIL provide a
+  rich verification environment.
+
+- Automatic generation of synthesizable VHDL.
+
+- Plugin mechanism also allows C++ and graphviz outputs to be generated.
+
+- Existing VHDL IP can be imported.
+
+- Seamless co-simulation of C++ and VHDL outputs.
+
+Documentation:
 
 .. toctree::
    :maxdepth: 2

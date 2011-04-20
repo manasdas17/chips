@@ -118,8 +118,8 @@ from collections import deque
 from process import Process
 from common import how_many_bits, Unique, resize, c_style_modulo,\
     c_style_division
-from instruction import Write, Read
-from exceptions import StreamsConstructionError, SimulationError
+from instruction import Write, Read, Available
+from exceptions import ChipsSyntaxError, ChipsSimulationError
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -241,9 +241,6 @@ class Chip:
     def __repr__(self):
         return "Chip(sinks={0})".format(self.sinks)
 
-# Stream Classes
-################################################################################
-
 class Stream:
 
     def __invert__(self):
@@ -356,12 +353,14 @@ class Stream:
         return Binary(self, _repeaterize(other), 'le')
     def get_type(self):
         return "integer"
-    def read(self, variable, timout=0):
+    def read(self, variable):
         return Read(self, variable)
+    def available(self):
+        return Available(self)
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                     "Stream is already part of a chip", 
                     self.filename, self.lineno)
         self.chip = chip
@@ -589,10 +588,10 @@ class InPort(Stream, Unique):
         plugin.write_in_port(self)
 
     def reset(self):
-        raise SimulationError("Inport ignored in native simulation")
+        raise ChipsSimulationError("Inport ignored in native simulation")
 
     def get(self):
-        raise SimulationError("Inport ignored in native simulation")
+        raise ChipsSimulationError("Inport ignored in native simulation")
 
     def __repr__(self):
         return "InPort(name={0}, bits={1})".format(self.name, self.bits)
@@ -643,10 +642,10 @@ class SerialIn(Stream, Unique):
         plugin.write_serial_in(self)
 
     def reset(self):
-        raise SimulationError("SerialIn ignored in native simulation")
+        raise ChipsSimulationError("SerialIn ignored in native simulation")
 
     def get(self):
-        raise SimulationError("SerialIn ignored in native simulation")
+        raise ChipsSimulationError("SerialIn ignored in native simulation")
 
     def __repr__(self):
         return '\n'.join([
@@ -697,7 +696,7 @@ class Output(Stream, Unique):
     def set_chip(self, chip):
         if hasattr(self.process, "chip"):
             if self.process.chip is not chip:
-                raise StreamsConstructionError(
+                raise ChipsSyntaxError(
                     "Process is already part of another Chip", 
                     process.filename, process.lineno)
         self.process.set_chip(chip)
@@ -706,7 +705,7 @@ class Output(Stream, Unique):
     def set_process(self, process):
         if hasattr(self, "process"):
             if self.process is not process:
-                raise StreamsConstructionError(
+                raise ChipsSyntaxError(
                         "Output is already part of a Process", 
                         self.filename, self.lineno)
         self.process = process
@@ -766,7 +765,7 @@ class ExternalIPInstance(Unique):
 
         for i in self.input_streams:
             if hasattr(i, "receiver"):
-                raise StreamsConstructionError(
+                raise ChipsSyntaxError(
                     "stream already has receiver", 
                     self.filename, 
                     self.lineno)
@@ -776,7 +775,7 @@ class ExternalIPInstance(Unique):
         no_streams_expected = len(self.definition.input_streams)
         no_streams_actual = len(self.input_streams)
         if no_streams_expected != no_streams_actual:
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "External IP expects: {0} input streams, actual: {1}".format(
                     no_streams_expected, 
                     no_streams_actual
@@ -788,7 +787,7 @@ class ExternalIPInstance(Unique):
         expected_sizes = self.definition.input_streams.values()
         for stream, expected_size in zip(self.input_streams, expected_sizes):
             if expected_size != stream.get_bits():
-                raise StreamsConstructionError(
+                raise ChipsSyntaxError(
                     "incorrect bit width, expected: {0} actual: {1}".format(
                         expected_size, 
                         stream.get_bits()
@@ -803,7 +802,7 @@ class ExternalIPInstance(Unique):
         #this should only get called if the IP is added to a system
         #ie. it is acting as a sink.
         if self.output_streams:
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "only data sinks can be added to systems", 
                 self.filename, 
                 self.lineno
@@ -841,7 +840,7 @@ class ExternalIPStream(Stream, Unique):
     def set_chip(self, chip):
 
         if hasattr(self, "chip"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream is already part of a chip", 
                 self.filename, 
                 self.lineno
@@ -861,14 +860,14 @@ class ExternalIPStream(Stream, Unique):
         self.instance.write_input_code(self, plugin)
 
     def reset(self):
-        raise SimulationError(
+        raise ChipsSimulationError(
             "external ip cannot be natively simulated", 
             self.filename, 
             self.lineno
         )
 
     def get(self):
-        raise SimulationError(
+        raise ChipsSimulationError(
             "external ip cannot be natively simulated", 
             self.filename, 
             self.linenoi
@@ -916,7 +915,7 @@ class  Binary(Stream, Unique):
         Unique.__init__(self)
 
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename,
                 self.lineno
@@ -925,7 +924,7 @@ class  Binary(Stream, Unique):
             self.a.receiver = self
 
         if hasattr(self.b, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename, 
                 self.lineno
@@ -996,7 +995,7 @@ class  Unary(Stream, Unique):
         Unique.__init__(self)
 
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename,
                 self.lineno
@@ -1062,7 +1061,7 @@ class Lookup(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename, 
                 self.lineno
@@ -1086,7 +1085,7 @@ class Lookup(Stream, Unique):
             print self.filename, 
             print self.lineno
             print val
-            raise SimulationError(
+            raise ChipsSimulationError(
                 "lookup index too large", 
                 self.filename, 
                 self.lineno
@@ -1094,7 +1093,7 @@ class Lookup(Stream, Unique):
         if resize(val, self.a.get_bits()) < 0:
             print self.filename, 
             print self.lineno
-            raise SimulationError(
+            raise ChipsSimulationError(
                 "negative lookup index", 
                 self.filename, 
                 self.lineno
@@ -1144,7 +1143,7 @@ class Fifo(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "address_in already has receiver", 
                 self.filename, 
                 self.lineno
@@ -1226,7 +1225,7 @@ class Array(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "address_in already has receiver", 
                 self.filename, 
                 self.lineno
@@ -1234,7 +1233,7 @@ class Array(Stream, Unique):
         else:
             self.a.receiver = self
         if hasattr(self.b, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "data_in already has receiver", 
                 self.filename, 
                 self.lineno
@@ -1242,7 +1241,7 @@ class Array(Stream, Unique):
         else:
             self.a.receiver = self
         if hasattr(self.c, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "address_out already has receiver", 
                 self.filename, 
                 self.lineno
@@ -1337,7 +1336,7 @@ class Decoupler(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename, 
                 self.lineno
@@ -1382,7 +1381,7 @@ class Resizer(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename, 
                 self.lineno
@@ -1435,7 +1434,7 @@ class Printer(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename, 
                 self.lineno
@@ -1495,7 +1494,7 @@ class HexPrinter(Stream, Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename, 
                 self.lineno

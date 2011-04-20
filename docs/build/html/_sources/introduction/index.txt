@@ -37,24 +37,24 @@ written in a very specific style.
 An RTL designer has to work at a low level of abstraction. In practical
 terms this means that a designer has to do more of the work themselves.
 
-        1. A designer is responsible for designing their own interfaces to
-           the outside world.
+1. A designer is responsible for designing their own interfaces to
+   the outside world.
 
-        2. The designer is responsible for clock to clock timing, manually
-           balancing propagation delays between clocked elements to achieve
-           high performance.
+2. The designer is responsible for clock to clock timing, manually
+   balancing propagation delays between clocked elements to achieve
+   high performance.
 
-        3. A designer has to provide their own mechanism to synchronise and
-           pass data between concurrent computational elements (by
-           implementing a bus with control and handshaking signals).
+3. A designer has to provide their own mechanism to synchronise and
+   pass data between concurrent computational elements (by
+   implementing a bus with control and handshaking signals).
 
-        4. A designer has to provide their own mechanism to control the flow
-           of execution within a computational element (usually by manually
-           coding a finite state machine). 
+4. A designer has to provide their own mechanism to control the flow
+   of execution within a computational element (usually by manually
+   coding a finite state machine). 
 
-        5. The primitive elements are primitive. Synthesis tools provide
-           limited support for multiplication, and division is not usually
-           supported at all.
+5. The primitive elements are primitive. Synthesis tools provide
+   limited support for multiplication, and division is not usually
+   supported at all.
 
 
 This is where *Python Chips* comes in. In *Python Chips*, there is no
@@ -63,28 +63,28 @@ of Python. *Python Chips* allows designers to work at a higher level of
 abstraction. It does a lot more of the work for you.
 
 
-        1. *Python Chips* provides a suite of device interfaces including
-           I/O ports and USARTs.
+1. *Python Chips* provides a suite of device interfaces including
+   I/O ports and UARTs.
 
-        2. Synthesizable RTL code is generated automatically by the tool.
-           Clocks, resets, and clock to clock timing are all taken care of
-           behind the scenes.
+2. Synthesizable RTL code is generated automatically by the tool.
+   Clocks, resets, and clock to clock timing are all taken care of
+   behind the scenes.
 
-        3. *Python Chips* provides a simple method to synchronise concurrent
-           elements, and to pass data between them - streams. The tool
-           automatically generates interconnect buses and handshaking
-           signals behind the scenes.
+3. *Python Chips* provides a simple method to synchronise concurrent
+   elements, and to pass data between them - streams. The tool
+   automatically generates interconnect buses and handshaking
+   signals behind the scenes.
 
-        4. *Python Chips* provides processes with imperative style
-           sequences branches and loop. The tool automatically generates
-           state machines, or highly optimized soft-core processors behind
-           the scenes.
+4. *Python Chips* provides processes with imperative style
+   sequences branches and loop. The tool automatically generates
+   state machines, or highly optimized soft-core processors behind
+   the scenes.
 
-        5. The primitive elements are not so primitive. Common constructs
-           such as counters, lookup tables, ROMS and RAMS are invoked with a
-           single keyword and a few parameters. *Python Chips* also provides
-           a richer set of arithmetic operators including fully
-           synthesizable division and multiplication.
+5. The primitive elements are not so primitive. Common constructs
+   such as counters, lookup tables, ROMS and RAMS are invoked with a
+   single keyword and a few parameters. *Python Chips* also provides
+   a richer set of arithmetic operators including fully
+   synthesizable division and multiplication.
 
 A language within a language 
 ----------------------------

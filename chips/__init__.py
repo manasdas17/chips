@@ -74,7 +74,11 @@ def Until(condition, *instructions):
 def DoUntil(condition, *instructions):
     loop_instructions = instructions+(If(condition!=0, Break()),)
     return Loop(*loop_instructions)
-        
+
+def Not(thing):
+    """Not(thing) is a nicer way of saying thing.Not()"""
+    return thing.Not()
+
 class Print(instruction.UserDefinedStatement):
 
     variables={}
@@ -113,7 +117,7 @@ class Print(instruction.UserDefinedStatement):
             If(self.exp < 0,
                 self.stream.write(ord("-")),
                 count.set(0-self.exp),
-            ).ElsIf(1,
+            ).Elif(1,
                 count.set(self.exp),
             ),
             decade.set(initial_decade),
@@ -162,7 +166,7 @@ class Scan(instruction.UserDefinedStatement):
                 If((digit >= 0x30) & (digit <= 0x39),
                     count.set(count*10),
                     count.set(count+(digit & 0xf)),
-                ).ElsIf(1, 
+                ).Elif(1, 
                     Break(),
                 ),
             ),

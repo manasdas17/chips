@@ -16,7 +16,7 @@ from process import Process
 from common import how_many_bits, Unique, resize, c_style_modulo,\
     c_style_division
 from instruction import Write, Read
-from exceptions import StreamsConstructionError, SimulationError
+from exceptions import ChipsSyntaxError, ChipsSimulationError
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -69,7 +69,7 @@ class Response(Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename,
                 self.lineno
@@ -79,7 +79,7 @@ class Response(Unique):
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream is already part of a chip", 
                 self.filename, 
                 self.lineno
@@ -138,7 +138,7 @@ class OutPort(Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename,
                 self.lineno
@@ -148,7 +148,7 @@ class OutPort(Unique):
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream is already part of a chip", 
                 self.filename, 
                 self.lineno
@@ -218,7 +218,7 @@ class SerialOut(Unique):
         assert a.get_bits()==8
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename, 
                 self.lineno
@@ -228,7 +228,7 @@ class SerialOut(Unique):
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream is already part of a chip", 
                 self.filename, 
                 self.lineno
@@ -289,7 +289,7 @@ class Asserter(Unique):
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename, 
                 self.lineno
@@ -298,7 +298,7 @@ class Asserter(Unique):
             self.a.receiver = self
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream is already part of a chip", 
                 self.filename, 
                 self.lineno
@@ -365,7 +365,7 @@ class Console(Unique):
         self.a = a
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream already has receiver", 
                 self.filename, 
                 self.lineno
@@ -375,7 +375,7 @@ class Console(Unique):
 
     def set_chip(self, chip):
         if hasattr(self, "chip"):
-            raise StreamsConstructionError(
+            raise ChipsSyntaxError(
                 "stream is already part of a chip", 
                 self.filename,
                 self.lineno

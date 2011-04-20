@@ -3,6 +3,7 @@
 """ The instructions provided here form the basis of the software that can be run inside *Processes*."""
 
 from inspect import currentframe, getsourcefile
+from exceptions import ChipsProcessError
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -11,12 +12,6 @@ __version__ = "0.1"
 __maintainer__ = "Jon Dawson"
 __email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
-
-class StreamsProcessError(Exception):
-    """Error in definition of process instructions"""
-
-    def __init__(self, message):
-       self.message = message 
 
 class Read:
     def __init__(self, stream, variable):
@@ -41,8 +36,10 @@ class Read:
     def comp(self, rmap):
         """compile an expression into a list of machine instructions"""
         instructions = [
-          Instruction("OP_READ_{0}".format(
-              self.stream.get_identifier()), 
+          Instruction(
+              "OP_READ_{0}".format(
+                  self.stream.get_identifier()
+              ), 
               srca=self.variable.register, 
               lineno=self.lineno, 
               filename=self.filename
@@ -87,13 +84,9 @@ class Write:
         return instructions
 
 
-################################################################################
-
 class RegisterMap:
     def __init__(self):
         self.tos = 0
-
-################################################################################
 
 class Instruction:
     def __init__(self, operation, srca=None, srcb=None, immediate=None, 
@@ -113,8 +106,6 @@ class Instruction:
             self.srcb, 
             self.immediate
         )
-
-################################################################################
 
 def constantize(possible_constant):
     if hasattr(possible_constant, "comp"):
@@ -227,6 +218,34 @@ class UserDefinedExpression(Expression):
             instructions.extend(instruction.comp(rmap))
         return instructions
 
+class Available(Expression):
+    def __init__(self, stream):
+        """Do not directly call this method, it is called automatically
+         Use stream.available()"""
+        self.stream = stream
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+
+    def set_process(self, process):
+        self.process = process
+
+    def initialise(self, rmap):
+        """Do not directly call this method, it is called automatically"""
+        return []
+
+    def comp(self, rmap):
+        """compile an expression into a list of machine instructions"""
+        instructions = [
+          Instruction("OP_AVAILABLE_{0}".format(
+                  self.stream.get_identifier()
+              ), 
+              srca=rmap.tos,
+              lineno=self.lineno, 
+              filename=self.filename
+          ) 
+        ]
+        return instructions
+
 class Evaluate(Expression):
 
     def __init__(self, *instructions):
@@ -261,9 +280,6 @@ class Evaluate(Expression):
         instructions.append(Instruction("LABEL", label = self.end_of_eval, lineno=self.lineno, filename=self.filename))
         instructions.append(Instruction("OP_MOVE", rmap.tos, 0, lineno=self.lineno, filename=self.filename))
         return instructions
-
-
-################################################################################
 
 class Binary(Expression):
 
@@ -331,15 +347,12 @@ class Unary(Expression):
                 Instruction(
                     self.operation, 
                     rmap.tos, 
-                    rmap.tos, 
                     lineno=self.lineno, 
                     filename=self.filename
                 )
             ]
         )
         return instructions
-
-################################################################################
 
 class Variable(Expression):
 
@@ -411,8 +424,6 @@ class Variable(Expression):
             )
         ]
 
-################################################################################
-
 class Constant(Expression):
 
     def __init__(self, constant):
@@ -442,8 +453,6 @@ class Constant(Expression):
                 filename=self.filename
             )
         ]
-
-################################################################################
 
 def calculate_jumps(instructions):
     address = 0
@@ -492,7 +501,11 @@ class Statement:
         elif hasattr(self.parent, 'parent'):
             return self.parent.get_enclosing_loop()
         else:
-            raise StreamsProcessError("Break() must be within a loop")
+            raise ChipsProcessError(
+                "Break() must be within a loop", 
+                self.filename, 
+                self.lineno
+            )
 
     def get_enclosing_eval(self):
         if self.parent.is_eval():
@@ -500,19 +513,11 @@ class Statement:
         elif hasattr(self.parent, 'parent'):
             return self.parent.get_enclosing_eval()
         else:
-            raise StreamsProcessError(
-                    "Value() must be within a evaluate block"
+            raise ChipsProcessError(
+                "Value() must be within a evaluate block",
+                self.filename, 
+                self.lineno
             )
-
-    def get_enclosing_process(self):
-        if self.parent.is_process():
-            return self.parent
-        elif hasattr(self.parent, 'parent'):
-            return self.parent.get_enclosing_process()
-        else:
-            raise StreamsProcessError()
-
-################################################################################
 
 class Value(Statement):
     """
@@ -576,8 +581,6 @@ class Value(Statement):
             )
         )
         return instructions
-
-################################################################################
 
 class Loop(Statement):
     """
@@ -667,24 +670,22 @@ class Loop(Statement):
         )
         return instructions
 
-################################################################################
-
 class If(Statement):
     """
 
     The *If* statement conditionally executes instructions.
 
     The condition of the *If* branch is evaluated, followed by the condition of
-    each of the optional *ElsIf* branches. If one of the conditions evaluates
+    each of the optional *Elif* branches. If one of the conditions evaluates
     to non-zero then the corresponding instructions will be executed. If the
-    *If* condition, and all of the *ElsIf* conditions evaluate to zero, then
+    *If* condition, and all of the *Elif* conditions evaluate to zero, then
     the instructions in the optional *Else* branch will be evaluated.
 
     Example::
 
         If(condition,
             #do something
-        ).ElsIf(condition,
+        ).Elif(condition,
             #do something else
         ).Else(
             #if all else fails do this
@@ -700,14 +701,14 @@ class If(Statement):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
 
-    def ElsIf(self, condition, *instructions):
+    def Elif(self, condition, *instructions):
         for child in instructions:
             child.parent = self
         self.conditionals.append((constantize(condition), instructions))
         return self
 
     def Else(self, *instructions):
-        return self.ElsIf(-1, *instructions)
+        return self.Elif(-1, *instructions)
 
     def set_process(self, process):
         self.process=process
@@ -761,8 +762,6 @@ class If(Statement):
         machine_instructions.append(Instruction("LABEL", label=skip_to_end))
         return machine_instructions
 
-################################################################################
-
 class Break(Statement):
     """
 
@@ -815,8 +814,6 @@ class Break(Statement):
                 filename=self.filename
             )
         ]
-
-################################################################################
 
 class WaitUs(Statement):
     """
@@ -872,8 +869,6 @@ class WaitUs(Statement):
             )
         ]
 
-################################################################################
-
 class Continue(Statement):
     """
 
@@ -920,7 +915,6 @@ class Continue(Statement):
             )
         ]
 
-################################################################################
 class UserDefinedStatement(Statement):
 
     def set_process(self, process):
@@ -1003,8 +997,6 @@ class Block(Statement):
         for instruction in self.instructions:
             instructions.extend(instruction.comp(rmap))
         return instructions
-
-################################################################################
 
 class Set(Statement):
     def __init__(self, variable, expression):

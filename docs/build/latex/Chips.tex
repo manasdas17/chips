@@ -10,10 +10,10 @@
 
 
 \title{Chips Documentation}
-\date{April 14, 2011}
+\date{April 19, 2011}
 \release{0.1}
 \author{Jonathan P Dawson}
-\newcommand{\sphinxlogo}{}
+\newcommand{\sphinxlogo}{\includegraphics{chips.png}\par}
 \renewcommand{\releasename}{Release}
 \makeindex
 \makemodindex
@@ -108,7 +108,34 @@
 \hypertarget{--doc-index}{}
 
 
-Contents:
+Chips is a Python library for designing hardware devices. Some of its key features include:
+\begin{itemize}
+\item {} 
+High level device modeling language makes device design simpler and more
+powerful.
+
+\item {} 
+Provides fast native simulations that integrate with Python.
+
+\item {} 
+Python extension modules such as Scipy, Numpy, Matplotlib and PIL provide a
+rich verification environment.
+
+\item {} 
+Automatic generation of synthesizable VHDL.
+
+\item {} 
+Plugin mechanism also allows C++ and graphviz outputs to be generated.
+
+\item {} 
+Existing VHDL IP can be imported.
+
+\item {} 
+Seamless co-simulation of C++ and VHDL outputs.
+
+\end{itemize}
+
+Documentation:
 
 \resetcurrentobjects
 \hypertarget{--doc-introduction/index}{}
@@ -184,7 +211,7 @@ abstraction. It does a lot more of the work for you.
 \begin{enumerate}
 \item {} 
 \emph{Python Chips} provides a suite of device interfaces including
-I/O ports and USARTs.
+I/O ports and UARTs.
 
 \item {} 
 Synthesizable RTL code is generated automatically by the tool.
@@ -390,10 +417,15 @@ supports C++ and VHDL code generation, but it is VHDL code that allows
 {\color{red}\bfseries{}*}Chips'' to be synthesised.
 
 The VHDL code generation plugin is found in \code{chips.VHDL\_plugin} If you run
-this example you should find hello\_world.vhd has been generated. You can
-run this code in an external vhdl simulator, but you won't be able to
-synthesise it into a device because real hardware devices don't have a
-concept of a \emph{Console}.
+this example you should find that a VHDL file called hello\_world.vhd has been
+generated.
+
+Take a look through this file. You may find that it is difficult to
+understand what is going on. The file isn't meant to be read by humans, \emph{Chips}
+treats VHDL as a compatibility layer. \emph{VHDL} is pretty much universally
+supported by synthesis tools.  You can run this code in an external VHDL
+simulator, but you won't be able to synthesise it into a device because real
+hardware devices don't have a concept of a \emph{Console}.
 
 To make this example synthesise, we need to write the characters to some
 realisable hardware interface. The \emph{Chips} library provides a \emph{SerialOut}
@@ -429,14 +461,32 @@ clock\_rate and baud\_rate arguments to specify what you need.
 So far we have seen three types of streams, \emph{Counter}, \emph{Sequence} and
 \emph{Printer}. Chips provides a few more basic streams which you can read about
 in the Language Reference Manual. It is also possible to combine streams
-using arithmetic operators : \code{+, -, *, //, \%, \textless{}\textless{}, \textgreater{}\textgreater{}, \&, \textbar{}, \textasciicircum{}, ==, !=, \textless{},
+using the arithmetic operators : \code{+, -, *, //, \%, \textless{}\textless{}, \textgreater{}\textgreater{}, \&, \textbar{}, \textasciicircum{}, ==, !=, \textless{},
 \textless{}=, \textgreater{}, \textgreater{}=} on the whole they have the same (or very similar) meaning as
 they do in Python except that they operate on streams of data.
-\begin{quote}
-\end{quote}
 
 
 \section{Introducing Processes}
+
+
+\section{Hierarchical Design}
+
+You may be expecting Chips to provide some mechanism for hierarchical design.
+You might expect that Chips would provide a means too group items together to
+form re-usable components or modules. A really good design tool would allow you
+to parameterise components and modules using generics or templates. Chips does
+not provide any of these things. It doesn't have to.
+
+The Python language itself already provides all these things and more. If you
+want to make a reusable component you can simply write a Python function:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{def} \PYG{n+nf}{double}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{p}{)}\PYG{p}{:}
+    \PYG{l+s+sd}{"""If you use Python functions to build components you can take}
+\PYG{l+s+sd}{    advantage of docstrings to document your design."""}
+
+    \PYG{k}{return} \PYG{n}{input\PYGZus{}stream} \PYG{o}{*} \PYG{l+m+mi}{2}
+\end{Verbatim}
 
 \resetcurrentobjects
 \hypertarget{--doc-language\_reference/index}{}
@@ -1555,9 +1605,9 @@ Example:
 The \emph{If} statement conditionally executes instructions.
 
 The condition of the \emph{If} branch is evaluated, followed by the condition of
-each of the optional \emph{ElsIf} branches. If one of the conditions evaluates
+each of the optional \emph{Elif} branches. If one of the conditions evaluates
 to non-zero then the corresponding instructions will be executed. If the
-\emph{If} condition, and all of the \emph{ElsIf} conditions evaluate to zero, then
+\emph{If} condition, and all of the \emph{Elif} conditions evaluate to zero, then
 the instructions in the optional \emph{Else} branch will be evaluated.
 
 Example:
@@ -1565,7 +1615,7 @@ Example:
 \begin{Verbatim}[commandchars=\\\{\}]
 \PYG{n}{If}\PYG{p}{(}\PYG{n}{condition}\PYG{p}{,}
     \PYG{c}{\#do something}
-\PYG{p}{)}\PYG{o}{.}\PYG{n}{ElsIf}\PYG{p}{(}\PYG{n}{condition}\PYG{p}{,}
+\PYG{p}{)}\PYG{o}{.}\PYG{n}{Elif}\PYG{p}{(}\PYG{n}{condition}\PYG{p}{,}
     \PYG{c}{\#do something else}
 \PYG{p}{)}\PYG{o}{.}\PYG{n}{Else}\PYG{p}{(}
     \PYG{c}{\#if all else fails do this}

@@ -19,7 +19,10 @@
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Chips v0.1 documentation" href="../index.html" /> 
+    <link rel="shortcut icon" href="../_static/chips.ico"/>
+    <link rel="top" title="Chips v0.1 documentation" href="../index.html" />
+    <link rel="next" title="Chips Language Reference Manual" href="../language_reference/index.html" />
+    <link rel="prev" title="Introduction" href="../introduction/index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -31,6 +34,12 @@
         <li class="right" >
           <a href="../modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="../language_reference/index.html" title="Chips Language Reference Manual"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../introduction/index.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
         <li><a href="../index.html">Chips v0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -167,10 +176,14 @@ change the way that hardware is designed and simulated. At present, chips
 supports C++ and VHDL code generation, but it is VHDL code that allows
 <a href="#id1"><span class="problematic" id="id2">*</span></a>Chips&#8221; to be synthesised.</p>
 <p>The VHDL code generation plugin is found in <tt class="docutils literal"><span class="pre">chips.VHDL_plugin</span></tt> If you run
-this example you should find hello_world.vhd has been generated. You can
-run this code in an external vhdl simulator, but you won&#8217;t be able to
-synthesise it into a device because real hardware devices don&#8217;t have a
-concept of a <em>Console</em>.</p>
+this example you should find that a VHDL file called hello_world.vhd has been
+generated.</p>
+<p>Take a look through this file. You may find that it is difficult to
+understand what is going on. The file isn&#8217;t meant to be read by humans, <em>Chips</em>
+treats VHDL as a compatibility layer. <em>VHDL</em> is pretty much universally
+supported by synthesis tools.  You can run this code in an external VHDL
+simulator, but you won&#8217;t be able to synthesise it into a device because real
+hardware devices don&#8217;t have a concept of a <em>Console</em>.</p>
 <p>To make this example synthesise, we need to write the characters to some
 realisable hardware interface. The <em>Chips</em> library provides a <em>SerialOut</em>
 sink, this provides a simple way to direct the stream of characters to a
@@ -201,15 +214,30 @@ clock_rate and baud_rate arguments to specify what you need.</p>
 <h2>More Streams<a class="headerlink" href="#more-streams" title="Permalink to this headline">¶</a></h2>
 <p>So far we have seen three types of streams, <em>Counter</em>, <em>Sequence</em> and
 <em>Printer</em>. Chips provides a few more basic streams which you can read about
-in the <a class="reference external" href="../language_reference/index">Language Reference Manual</a>. It is also possible to combine streams
-using arithmetic operators : <tt class="docutils literal"><span class="pre">+,</span> <span class="pre">-,</span> <span class="pre">*,</span> <span class="pre">//,</span> <span class="pre">%,</span> <span class="pre">&lt;&lt;,</span> <span class="pre">&gt;&gt;,</span> <span class="pre">&amp;,</span> <span class="pre">|,</span> <span class="pre">^,</span> <span class="pre">==,</span> <span class="pre">!=,</span> <span class="pre">&lt;,</span>
+in the Language Reference Manual. It is also possible to combine streams
+using the arithmetic operators : <tt class="docutils literal"><span class="pre">+,</span> <span class="pre">-,</span> <span class="pre">*,</span> <span class="pre">//,</span> <span class="pre">%,</span> <span class="pre">&lt;&lt;,</span> <span class="pre">&gt;&gt;,</span> <span class="pre">&amp;,</span> <span class="pre">|,</span> <span class="pre">^,</span> <span class="pre">==,</span> <span class="pre">!=,</span> <span class="pre">&lt;,</span>
 <span class="pre">&lt;=,</span> <span class="pre">&gt;,</span> <span class="pre">&gt;=</span></tt> on the whole they have the same (or very similar) meaning as
 they do in Python except that they operate on streams of data.</p>
-<blockquote>
-</blockquote>
 </div>
 <div class="section" id="introducing-processes">
 <h2>Introducing Processes<a class="headerlink" href="#introducing-processes" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="hierarchical-design">
+<h2>Hierarchical Design<a class="headerlink" href="#hierarchical-design" title="Permalink to this headline">¶</a></h2>
+<p>You may be expecting Chips to provide some mechanism for hierarchical design.
+You might expect that Chips would provide a means too group items together to
+form re-usable components or modules. A really good design tool would allow you
+to parameterise components and modules using generics or templates. Chips does
+not provide any of these things. It doesn&#8217;t have to.</p>
+<p>The Python language itself already provides all these things and more. If you
+want to make a reusable component you can simply write a Python function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">double</span><span class="p">(</span><span class="n">input_stream</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;If you use Python functions to build components you can take</span>
+<span class="sd">    advantage of docstrings to document your design.&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">input_stream</span> <span class="o">*</span> <span class="mi">2</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -219,6 +247,9 @@ they do in Python except that they operate on streams of data.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/chips.png" alt="Logo"/>
+            </a></p>
             <h3><a href="../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="#">Tutorial</a><ul>
@@ -233,10 +264,17 @@ they do in Python except that they operate on streams of data.</p>
 <li><a class="reference external" href="#generating-vhdl">Generating VHDL</a></li>
 <li><a class="reference external" href="#more-streams">More Streams</a></li>
 <li><a class="reference external" href="#introducing-processes">Introducing Processes</a></li>
+<li><a class="reference external" href="#hierarchical-design">Hierarchical Design</a></li>
 </ul>
 </li>
 </ul>
 
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="../introduction/index.html"
+                                  title="previous chapter">Introduction</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../language_reference/index.html"
+                                  title="next chapter">Chips Language Reference Manual</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../_sources/tutorial/index.txt"
@@ -268,6 +306,12 @@ they do in Python except that they operate on streams of data.</p>
         <li class="right" >
           <a href="../modindex.html" title="Global Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="../language_reference/index.html" title="Chips Language Reference Manual"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../introduction/index.html" title="Introduction"
+             >previous</a> |</li>
         <li><a href="../index.html">Chips v0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
