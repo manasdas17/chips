@@ -2,90 +2,96 @@
 \def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
 
   \bigletter A
-  \item Array (class in chips), \hyperpage{13}
-  \item Asserter (class in chips), \hyperpage{20}
+  \item Array (class in chips), \hyperpage{25}
+  \item Asserter (class in chips), \hyperpage{34}
 
   \indexspace
   \bigletter B
-  \item Block (class in chips), \hyperpage{20}
-  \item Break (class in chips), \hyperpage{21}
+  \item Block (class in chips), \hyperpage{36}
+  \item Break (class in chips), \hyperpage{36}
 
   \indexspace
   \bigletter C
-  \item Chip (class in chips), \hyperpage{9}
-  \item chips.cpp\_plugin (module), \hyperpage{25}
-  \item chips.instruction (module), \hyperpage{20}
-  \item chips.ip (module), \hyperpage{27}
-  \item chips.process (module), \hyperpage{9}
-  \item chips.sinks (module), \hyperpage{18}
-  \item chips.streams (module), \hyperpage{12}
-  \item chips.VHDL\_plugin (module), \hyperpage{25}
-  \item chips.visual\_plugin (module), \hyperpage{25}
-  \item Console (class in chips), \hyperpage{20}
-  \item Continue (class in chips), \hyperpage{21}
-  \item Counter (class in chips), \hyperpage{14}
+  \item Chip (class in chips), \hyperpage{19}
+  \item chips.cpp\_plugin (module), \hyperpage{41}
+  \item chips.instruction (module), \hyperpage{35}
+  \item chips.ip (module), \hyperpage{41}
+  \item chips.process (module), \hyperpage{19}
+  \item chips.sinks (module), \hyperpage{33}
+  \item chips.streams (module), \hyperpage{23}
+  \item chips.VHDL\_plugin (module), \hyperpage{41}
+  \item chips.visual\_plugin (module), \hyperpage{41}
+  \item Console (class in chips), \hyperpage{34}
+  \item Continue (class in chips), \hyperpage{36}
+  \item Counter (class in chips), \hyperpage{25}
 
   \indexspace
   \bigletter D
-  \item Decoupler (class in chips), \hyperpage{14}
+  \item Decoupler (class in chips), \hyperpage{26}
+  \item DoUntil() (in module chips), \hyperpage{37}
+  \item DoWhile() (in module chips), \hyperpage{37}
 
   \indexspace
   \bigletter E
-  \item Evaluate (class in chips), \hyperpage{23}
+  \item Evaluate (class in chips), \hyperpage{37}
 
   \indexspace
   \bigletter F
-  \item Fifo (class in chips), \hyperpage{15}
+  \item Fifo (class in chips), \hyperpage{27}
 
   \indexspace
   \bigletter H
-  \item HexPrinter (class in chips), \hyperpage{18}
+  \item HexPrinter (class in chips), \hyperpage{27}
 
   \indexspace
   \bigletter I
-  \item If (class in chips), \hyperpage{21}
-  \item InPort (class in chips), \hyperpage{17}
+  \item If (class in chips), \hyperpage{37}
+  \item InPort (class in chips), \hyperpage{28}
 
   \indexspace
   \bigletter L
-  \item Lookup (class in chips), \hyperpage{15}
-  \item Loop (class in chips), \hyperpage{22}
+  \item Lookup (class in chips), \hyperpage{28}
+  \item Loop (class in chips), \hyperpage{38}
 
   \indexspace
   \bigletter O
-  \item OutPort (class in chips), \hyperpage{19}
-  \item Output (class in chips), \hyperpage{17}
+  \item OutPort (class in chips), \hyperpage{34}
+  \item Output (class in chips), \hyperpage{29}
 
   \indexspace
   \bigletter P
-  \item Print (class in chips), \hyperpage{23}
-  \item Printer (class in chips), \hyperpage{17}
-  \item Process (class in chips), \hyperpage{12}
+  \item Print (class in chips), \hyperpage{38}
+  \item Printer (class in chips), \hyperpage{30}
+  \item Process (class in chips), \hyperpage{22}
 
   \indexspace
   \bigletter R
-  \item Repeater (class in chips), \hyperpage{16}
-  \item Resizer (class in chips), \hyperpage{15}
-  \item Response (class in chips), \hyperpage{18}
+  \item Repeater (class in chips), \hyperpage{30}
+  \item Resizer (class in chips), \hyperpage{31}
+  \item Response (class in chips), \hyperpage{34}
 
   \indexspace
   \bigletter S
-  \item Scan (class in chips), \hyperpage{23}
-  \item Scanner (class in chips), \hyperpage{18}
-  \item Sequence (class in chips), \hyperpage{16}
-  \item SerialIn (class in chips), \hyperpage{17}
-  \item SerialOut (class in chips), \hyperpage{19}
-  \item Stimulus (class in chips), \hyperpage{16}
+  \item Scan (class in chips), \hyperpage{39}
+  \item Scanner() (in module chips), \hyperpage{32}
+  \item Sequence() (in module chips), \hyperpage{32}
+  \item SerialIn (class in chips), \hyperpage{33}
+  \item SerialOut (class in chips), \hyperpage{35}
+  \item Stimulus (class in chips), \hyperpage{33}
+
+  \indexspace
+  \bigletter U
+  \item Until() (in module chips), \hyperpage{39}
 
   \indexspace
   \bigletter V
-  \item Value (class in chips), \hyperpage{22}
-  \item Variable (class in chips), \hyperpage{12}
-  \item VariableArray (class in chips), \hyperpage{12}
+  \item Value (class in chips), \hyperpage{40}
+  \item Variable (class in chips), \hyperpage{22}
+  \item VariableArray (class in chips), \hyperpage{22}
 
   \indexspace
   \bigletter W
-  \item WaitUs (class in chips), \hyperpage{22}
-  \item While (class in chips), \hyperpage{23}
+  \item WaitUs (class in chips), \hyperpage{40}
+  \item While() (in module chips), \hyperpage{41}
 
 \end{theindex}

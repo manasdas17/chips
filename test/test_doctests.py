@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+import doctest
+import sys
+doctest.testfile("../docs/source/tutorial/index.rst", optionflags=doctest.ELLIPSIS)
+doctest.testfile("../docs/source/index.rst", optionflags=doctest.ELLIPSIS)
+import chips
+doctest.testmod(chips, optionflags=doctest.ELLIPSIS)
+doctest.testmod(chips.instruction, optionflags=doctest.ELLIPSIS)
+doctest.testmod(chips.process, optionflags=doctest.ELLIPSIS)
+doctest.testmod(chips.streams, optionflags=doctest.ELLIPSIS)
+doctest.testmod(chips.sinks, optionflags=doctest.ELLIPSIS)

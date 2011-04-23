@@ -63,6 +63,13 @@ A Quick Taster
         >>> device = Chip(Console(Printer(output_stream)))
         >>> device.reset()
         >>> device.execute(1000)
+        8
+        12
+        14
+        7
+        3
+        1
+        ...
 
 Download
 ========

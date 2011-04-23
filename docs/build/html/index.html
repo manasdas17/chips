@@ -70,30 +70,42 @@ provide a rich verification environment.</li>
 </div>
 <div class="section" id="a-quick-taster">
 <h2>A Quick Taster<a class="headerlink" href="#a-quick-taster" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot;4 bit linear feedback shift register&quot;&quot;&quot;</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c">#4 bit linear feedback shift register</span>
 
-<span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="n">new_bit</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">shift_register</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c">#initialise to anything but 0</span>
-<span class="n">output_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_bit</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shift_register</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c">#initialise to anything but 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
 
-<span class="n">Process</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">Loop</span><span class="p">(</span>
-        <span class="c">#tap off bit 2 and 3</span>
-        <span class="n">new_bit</span><span class="o">.</span><span class="n">set</span><span class="p">((</span><span class="n">shift_register</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">shift_register</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">^</span> <span class="n">new_bit</span><span class="p">),</span>
-        <span class="c">#implement shift register</span>
-        <span class="n">shift_register</span><span class="o">.</span><span class="n">set</span><span class="p">(((</span><span class="n">new_bit</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">shift_register</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)),</span>
-        <span class="c">#4 bit mask</span>
-        <span class="n">shift_register</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">shift_register</span> <span class="o">&amp;</span> <span class="mh">0xf</span><span class="p">),</span>
-        <span class="c">#write to stream</span>
-        <span class="n">output_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">shift_register</span><span class="p">)</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">...</span>
+<span class="gp">... </span>        <span class="c">#tap off bit 2 and 3</span>
+<span class="gp">... </span>        <span class="n">new_bit</span><span class="o">.</span><span class="n">set</span><span class="p">((</span><span class="n">shift_register</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">shift_register</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">^</span> <span class="n">new_bit</span><span class="p">),</span>
+<span class="gp">...</span>
+<span class="gp">... </span>        <span class="c">#implement shift register</span>
+<span class="gp">... </span>        <span class="n">shift_register</span><span class="o">.</span><span class="n">set</span><span class="p">(((</span><span class="n">new_bit</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">shift_register</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="gp">...</span>
+<span class="gp">... </span>        <span class="c">#4 bit mask</span>
+<span class="gp">... </span>        <span class="n">shift_register</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">shift_register</span> <span class="o">&amp;</span> <span class="mh">0xf</span><span class="p">),</span>
+<span class="gp">...</span>
+<span class="gp">... </span>        <span class="c">#write to stream</span>
+<span class="gp">... </span>        <span class="n">output_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">shift_register</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
 
-<span class="n">device</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">output_stream</span><span class="p">)))</span>
-<span class="n">device</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">device</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">device</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">output_stream</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">device</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">device</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">8</span>
+<span class="go">12</span>
+<span class="go">14</span>
+<span class="go">7</span>
+<span class="go">3</span>
+<span class="go">1</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 </div>

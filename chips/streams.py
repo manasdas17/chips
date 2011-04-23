@@ -21,7 +21,7 @@ with the following unary operators::
 
 and the folowing binary operators::
 
-	+, -, *, \/, %, &, |, ^, <<, >>, ==, !=, <, <=, >, >=
+	+, -, *, //, %, &, |, ^, <<, >>, ==, !=, <, <=, >, >=
 
 The function *Not* yields the logical negation of each data item equivalent to
 ``==0``. The function *abs* yields the magnitude of each data item.
@@ -44,6 +44,14 @@ constructs such as ``a = 47+InPort(12, 8)`` to be used as a shorthand for ``a =
 Repeater(47)+InPort("in", 8)`` or ``count = Counter(1, 10, 1)+3*2`` to be used as
 a shorthand for ``count = Counter(1, 10, 1)+Repeater(5)``.  Of course ``a=1+1``
 still yields the integer 2 rather than a stream.
+
+.. Note::
+    The divide ``//`` operator in *Chips* works differently then the divide
+    operator in Python.  While a floor division in Python rounds to -infinite,
+    in *Chips* division rounds to ``0``. Thus ``-3//2`` rounds to ``-2`` in
+    Python, it rounds to ``-1`` in *Chips*. This should be more familiar to
+    users of C, C++ and VHDL. The same also applies to the modulo ``%``
+    operator.
 
 The operators provided in the Python Streams library are summarised in the
 table below. The bit width field specifies how many bits are used for the
@@ -430,7 +438,7 @@ class Repeater(Stream, Unique):
         ... )
 
         >>> c.reset()
-        >>> c.execute(100) # doctest: +ELLIPSIS
+        >>> c.execute(100)
         5
         5
         5
@@ -445,7 +453,7 @@ class Repeater(Stream, Unique):
         ... )
 
         >>> c.reset()
-        >>> c.execute(100) # doctest: +ELLIPSIS
+        >>> c.execute(100)
         10
         10
         10
@@ -461,7 +469,7 @@ class Repeater(Stream, Unique):
         ... )
 
         >>> c.reset()
-        >>> c.execute(100) # doctest: +ELLIPSIS
+        >>> c.execute(100)
         10
         10
         10
@@ -518,7 +526,7 @@ class Counter(Stream, Unique):
         ... )
 
         >>> c.reset()
-        >>> c.execute(100) # doctest: +ELLIPSIS
+        >>> c.execute(100)
         0
         2
         4
@@ -537,7 +545,7 @@ class Counter(Stream, Unique):
         ... )
 
         >>> c.reset()
-        >>> c.execute(100) # doctest: +ELLIPSIS
+        >>> c.execute(100)
         10
         8
         6
@@ -615,7 +623,7 @@ class Stimulus(Stream, Unique):
 
         >>> stimulus.set_simulation_data(count())
         >>> c.reset()
-        >>> c.execute(100) # doctest: +ELLIPSIS
+        >>> c.execute(100)
         0
         1
         2
@@ -817,7 +825,7 @@ class Output(Stream, Unique):
         ... )
 
         >>> c.reset()
-        >>> c.execute(100) # doctest: +ELLIPSIS
+        >>> c.execute(100)
         1
         1
         2
@@ -1223,7 +1231,7 @@ class Lookup(Stream, Unique):
         ... )
 
         >>> c.reset()
-        >>> c.execute(100) # doctest: +ELLIPSIS
+        >>> c.execute(100)
         0
         1
         3
@@ -1634,10 +1642,18 @@ class Resizer(Stream, Unique):
 
     Example::
 
-        a = InPort(name="din", bits=8) a has a width of 8 bits
-        b = Inport + 1 #b has a width of 9 bits
-        c = Resizer(b, 8) #c is truncated to 8 bits
-        Chip(OutPort(name="dout"))
+        >>> from chips import *
+        >>> a = InPort(name="din", bits=8) #a has a width of 8 bits
+        >>> a.get_bits()
+        8
+        >>> b = a + 1 #b has a width of 9 bits
+        >>> b.get_bits()
+        9
+        >>> c = Resizer(b, 8) #c is truncated to 8 bits
+        >>> c.get_bits()
+        8
+        >>> Chip(OutPort(c, name="dout"))
+        Chip(...
 
     """
 
@@ -1694,14 +1710,25 @@ class Printer(Stream, Unique):
 
     Example::
 
-        #print the numbers 0-10 to the console repeatedly
-        Chip(
-            Console(
-                Printer(
-                    Counter(0, 10, 1),
-                ),
-            ),
-        )
+        >>> from chips import *
+
+        >>> #print the numbers 0-10 to the console repeatedly
+        >>> c=Chip(
+        ...    Console(
+        ...         Printer(
+        ...             Counter(0, 10, 1),
+        ...         ),
+        ...     ),
+        ... )
+
+        >>> c.reset()
+        >>> c.execute(100)
+        0
+        1
+        2
+        3
+        4
+        ...
 
     """
 
@@ -1764,14 +1791,32 @@ class HexPrinter(Stream, Unique):
 
     Example::
 
-        #print the numbers 0x0-0x10 to the console repeatedly
-        Chip(
-            Console(
-                Printer(
-                    Counter(0x0, 0x10, 1),
-                ),
-            ),
-        )
+        >>> from chips import *
+
+        >>> #print the numbers 0x0-0x10 to the console repeatedly
+        >>> c=Chip(
+        ...     Console(
+        ...         HexPrinter(
+        ...             Counter(0x0, 0x10, 1),
+        ...         ),
+        ...     ),
+        ... )
+
+        >>> c.reset()
+        >>> c.execute(1000)
+        0
+        1
+        2
+        3
+        4
+        5
+        6
+        7
+        8
+        9
+        a
+        b
+        ...
 
     """
 
@@ -1819,5 +1864,5 @@ class HexPrinter(Stream, Unique):
         else:
             val = self.a.get()
             if val is None: return None
-            self.string = deque(hex(val)[2:])
+            self.string = deque(hex(val)[2:]+"\n")
             return ord(self.string.popleft())

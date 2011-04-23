@@ -562,15 +562,32 @@ class Value(Statement):
 
     Example::
 
-        #provide a And expression similar to Pythons and expression
-        def LogicalAnd(a, b):
-            return Evaluate(
-                If(a,
-                    Value(b),
-                ).Else(
-                    0,
-                ),
-            )
+        >>> from chips import *
+
+        >>> #provide a And expression similar to Pythons and expression
+        >>> def LogicalAnd(a, b):
+        ...     return Evaluate(
+        ...         If(a,
+        ...             Value(b),
+        ...         ).Else(
+        ...             Value(0),
+        ...         )
+        ...     )
+
+        >>> check = Output()
+        >>> Process(8,
+        ...     If(LogicalAnd(1, 4),
+        ...         check.write(-1),#true
+        ...     ).Else(
+        ...         check.write(0),#false
+        ...     )
+        ... )
+        Process(...
+
+        >>> c = Chip(Asserter(check))
+        >>> c.reset()
+        >>> c.execute(100)
+
 
     """
     def __init__(self, expression):
@@ -625,22 +642,53 @@ class Loop(Statement):
 
     Example::
 
-        #filter filter values over 50 out of a stream
-        Loop(
-            in_stream.read(a),
-            If(a > 50, Continue()),
-            out_stream.write(a),
-        ),
+        >>> from chips import *
+
+        >>> #filter values over 50 out of a stream
+        >>> in_stream = Sequence(10, 20, 30, 40, 50, 60, 70, 80, 90)
+        >>> out_stream = Output()
+        >>> a = Variable(0)
+        >>> Process(8,
+        ...     Loop(
+        ...         in_stream.read(a),
+        ...         If(a > 50, Continue()),
+        ...         out_stream.write(a),
+        ...     )
+        ... )
+        Process(...
+
+        >>> c = Chip(
+        ...     Console(
+        ...         Printer(out_stream)
+        ...     )
+        ... )
+
+        >>> c.reset()
+        >>> c.execute(100)
+        10
+        20
+        30
+        40
+        50
+        10
+        ...
+
+
 
     Example::
 
-        #initialise an array
-        Loop(
-            If(index == 100,
-                Break(),
-            ),
-            myarray.write(index, 0),
-        ),
+        >>> from chips import *
+
+        >>> #initialise an array
+        >>> myarray = VariableArray(100)
+        >>> index = Variable(0)
+        >>> Loop(
+        ...     If(index == 100,
+        ...         Break(),
+        ...     ),
+        ...     myarray.write(index, 0),
+        ... )
+        Loop(...
 
     """
 
@@ -810,7 +858,7 @@ class Break(Statement):
 
         #equivalent to a While loop
         Loop(
-            If(condition == 0,
+            If(Not(condition),
                 Break(),
             ),
             #do stuff here
@@ -821,7 +869,7 @@ class Break(Statement):
         #equivalent to a DoWhile loop
         Loop(
             #do stuff here
-            If(condition == 0,
+            If(Not(condition),
                 Break(),
             ),
         ),
@@ -868,20 +916,24 @@ class WaitUs(Statement):
 
     Example::
 
-        seconds = Variable(0)
-        count = Variable(0)
-        Process(12,
-            seconds.set(0),
-            Loop(
-                count.set(1000),
-                While(count,
-                    WaitUs(),
-                    count.set(count-1),
-                ),
-                seconds.set(seconds + 1),
-                out_stream.write(seconds),
-            ),
-        )
+        >>> from chips import *
+
+        >>> seconds = Variable(0)
+        >>> count = Variable(0)
+        >>> out_stream = Output()
+        >>> Process(12,
+        ...     seconds.set(0),
+        ...     Loop(
+        ...         count.set(1000),
+        ...         While(count,
+        ...             WaitUs(),
+        ...             count.set(count-1),
+        ...         ),
+        ...         seconds.set(seconds + 1),
+        ...         out_stream.write(seconds),
+        ...     ),
+        ... )
+        Process(...
         
     """
     def __init__(self):
@@ -916,15 +968,32 @@ class Continue(Statement):
 
     Example::
 
-        Process(12,
-            Loop(
-                in_stream.read(a),
-                If(a&1,
-                    Continue(),
-                ),
-                out_stream.write(a),
-            ),
-        )
+        >>> from chips import *
+
+        >>> in_stream = Counter(0, 100, 1)
+        >>> out_stream = Output()
+        >>> a = Variable(0)
+        >>> #allow only even numbers
+        >>> Process(12,
+        ...     Loop(
+        ...         in_stream.read(a),
+        ...         If(a&1,
+        ...             Continue(),
+        ...         ),
+        ...         out_stream.write(a),
+        ...     ),
+        ... )
+        Process(...
+        
+        >>> c = Chip(Console(Printer(out_stream)))
+        >>> c.reset()
+        >>> c.execute(100)
+        0
+        2
+        4
+        6
+        8
+        ...
         
     """
 
@@ -986,16 +1055,23 @@ class Block(Statement):
 
     The *Block* statement allows instructions to be nested into a single
     statement. Using a *Block* allows a group of instructions to be stored as a
-    single object.
+    single object. A block accepts a single argument, *instructions*, a Python
+    Sequence of instructions
 
     Example::
 
-        Initialise = Block(a.set(0), b.set(0), c.set(0))
-        Process(8,
-            initialise,
-            a.set(a+1), b.set(b+1), c.set(c+1),
-            initialise,
-        )
+        >>> from chips import *
+
+        >>> a = Variable(0)
+        >>> b = Variable(1)
+        >>> c = Variable(2)
+
+        >>> initialise = Block((a.set(0), b.set(0), c.set(0)))
+        >>> Process(8,
+        ...     initialise,
+        ...     a.set(a+1), b.set(b+1), c.set(c+1),
+        ... )
+        Process(...
         
     """
 

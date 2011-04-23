@@ -20,28 +20,32 @@ design of concurrent systems.
 
 Example::
 
-    #sending process
-    theoutput = Output()
-    count = Variable(0)
-    Process(16,
-        #wait for 1 second
-        count.set(1000),
-        While(count, 
-            count.set(count-1),
-            WaitUs()
-        ),
-        #send some data
-        theoutput.write(123),
-    )
+    >>> from chips import *
 
-    #receiving process
-    target_variable = Variable(100)
-    Process(16,
-        #This instruction will stall the process until data is available
-        theoutput.read(target_variable),
-        #This instruction will not be run for 1 second
-        #..
-    )
+    >>> #sending process
+    >>> theoutput = Output()
+    >>> count = Variable(0)
+    >>> Process(16,
+    ...     #wait for 1 second
+    ...     count.set(1000),
+    ...     While(count, 
+    ...         count.set(count-1),
+    ...         WaitUs()
+    ...     ),
+    ...     #send some data
+    ...     theoutput.write(123),
+    ... )
+    Process(...
+
+    >>> #receiving process
+    >>> target_variable = Variable(100)
+    >>> Process(16,
+    ...     #This instruction will stall the process until data is available
+    ...     theoutput.read(target_variable),
+    ...     #This instruction will not be run for 1 second
+    ...     #..
+    ... )
+    Process(...
 
 Process Outputs
 ---------------
@@ -60,28 +64,30 @@ will stall the process until the receiver is ready to receive data.
 
 Example::
 
-    #sending process
-    theoutput = Output()
-    Process(16,
-        #This instruction will stall the process until data is available
-        theoutput.write(123),
-        #This instruction will not be run for 1 second
-        #..
-    )
+    >>> #sending process
+    >>> theoutput = Output()
+    >>> Process(16,
+    ...     #This instruction will stall the process until data is available
+    ...     theoutput.write(123),
+    ...     #This instruction will not be run for 1 second
+    ...     #..
+    ... )
+    Process(...
 
-    #receiving process
-    target_variable = Variable(0)
-    count = Variable(0)
-    Process(16,
-        #wait for 1 second
-        count.set(1000),
-        While(count, 
-            count.set(count-1),
-            WaitUs(),
-        ),
-        #get some data
-        theoutput.read(target_variable),
-    )
+    >>> #receiving process
+    >>> target_variable = Variable(0)
+    >>> count = Variable(0)
+    >>> Process(16,
+    ...     #wait for 1 second
+    ...     count.set(1000),
+    ...     While(count, 
+    ...         count.set(count-1),
+    ...         WaitUs(),
+    ...     ),
+    ...     #get some data
+    ...     theoutput.read(target_variable),
+    ... )
+    Process(...
 
 Variables
 ---------
@@ -96,7 +102,7 @@ It is important to understand that a *Variable* object created like this::
 
     a = Variable(12)
 
-is very different from a normal Python variable created like this::
+is different from a normal Python variable created like this::
 
     a = 12
 
@@ -117,7 +123,7 @@ other expressions using following unary operators::
 
 and the folowing binary operators::
 
-    +, -, *, \/, %, &, |, ^, <<, >>, ==, !=, <, <=, >, >=
+    +, -, *, //, %, &, |, ^, <<, >>, ==, !=, <, <=, >, >=
 
 The function *Not* evaluates to the logical negation of each data item
 equivalent to ``==0``. The function *abs* evaluates to the magnitude of each
@@ -131,6 +137,14 @@ allows constructs such as ``a = 47+Constant(10)`` to be used as a shorthand for
 ``a = Constant(47)+Constant(10)`` or ``count.set(Constant(15)+3*2`` to be used
 as a shorthand for ``count.set(Constant(15)+Constant(6)``.  Of course ``a=1+1``
 still yields the integer 2 rather than an expression.
+
+.. Note::
+    The divide ``//`` operator in *Chips* works differently then the divide
+    operator in Python.  While a floor division in Python rounds to -infinite,
+    in *Chips* division rounds to ``0``. Thus ``-3//2`` rounds to ``-2`` in
+    Python, it rounds to ``-1`` in *Chips*. This should be more familiar to
+    users of C, C++ and VHDL. The same also applies to the modulo ``%``
+    operator.
 
 An expression within a process will always inherit the data width in bits of
 the *Process* in which it is evaluated. A *Stream* expression such as

@@ -9,7 +9,7 @@ A sink is used to terminate a stream. A sink may act as:
 
 from math import log
 from inspect import currentframe, getsourcefile
-from sys import stdout
+import sys
 from collections import deque
 
 from process import Process
@@ -43,23 +43,24 @@ class Response(Unique):
 
     Example::
 
-        import PIL
+        >>> from streams import *
+        >>> import PIL.Image #You need the Python Imaging Library for this
 
-        def image_processor():
-            #some image processing algorithm
-            pass
+        >>> def image_processor():
+        ...    #black -> white
+        ...    return Counter(0, 63, 1)*4
 
-        response = Response(image_processor)
-        chip = Chip(response)
+        >>> response = Response(image_processor())
+        >>> chip = Chip(response)
 
-        chip.reset()
-        chip.execute(10000)
+        >>> chip.reset()
+        >>> chip.execute(100000)
 
-
-        image_data = list(response.get_simulation_data(plugin))
-        im = PIL.Image.new("L", (64, 64))
-        im.putdata(image_data)
-        im.show()
+        >>> image_data = list(response.get_simulation_data())
+        >>> image_data = image_data[:(64*64)-1]
+        >>> im = PIL.Image.new("L", (64, 64))
+        >>> im.putdata(image_data)
+        >>> im.show()
     
     """
 
@@ -126,9 +127,10 @@ class OutPort(Unique):
 
     Example::
 
-        dip_switches = Inport("dip_switches", 8) 
-        led_array = OutPort(dip_switched, "led_array")
-        s = Chip(led_array)
+        >>> from chips import *
+        >>> dip_switches = InPort("dip_switches", 8) 
+        >>> led_array = OutPort(dip_switches, "led_array")
+        >>> s = Chip(led_array)
 
     """
 
@@ -196,15 +198,16 @@ class SerialOut(Unique):
 
     Example::
 
-        #convert string into a sequence of characters
-        hello_world = tuple((ord(i) for i in \"hello world\\n\"))
+        >>> from chips import *
 
-        my_chip = Chip(
-            SerialOut(
-                Sequence(*hello_world),
-            )
-        )
+        >>> #convert string into a sequence of characters
+        >>> hello_world = map(ord, \"hello world\\n\")
 
+        >>> my_chip = Chip(
+        ...     SerialOut(
+        ...         Sequence(*hello_world),
+        ...     )
+        ... )
 
     """
 
@@ -238,7 +241,7 @@ class SerialOut(Unique):
         self.a.set_chip(chip)
 
     def get_bits(self): 
-        return a
+        return 8
 
     def write_code(self, plugin): 
         plugin.write_serial_out(self)
@@ -275,8 +278,9 @@ class Asserter(Unique):
 
     Example::
 
-        a = Sequence(1, 2, 3, 4)
-        Chip(Asserter((a+1) == Sequence(2, 3, 4, 5)))
+        >>> from chips import *
+        >>> a = Sequence(1, 2, 3, 4)
+        >>> c = Chip(Asserter((a+1) == Sequence(2, 3, 4, 5)))
 
     Look at the Chips test suite for more examples of the Asserter being used
     for automated testing.
@@ -347,15 +351,16 @@ class Console(Unique):
 
     Example::
 
-        #convert string into a sequence of characters
-        hello_world = tuple((ord(i) for i in \"hello world\\n\"))
+        >>> from chips import *
 
-        my_chip = Chip(
-            Console(
-                Sequence(*hello_world),
-            )
-        )
+        >>> #convert string into a sequence of characters
+        >>> hello_world = tuple((ord(i) for i in \"hello world\\n\"))
 
+        >>> my_chip = Chip(
+        ...     Console(
+        ...         Sequence(*hello_world),
+        ...     )
+        ... )
 
     """
 
@@ -397,8 +402,8 @@ class Console(Unique):
         val = self.a.get()
         if val is not None:
             if chr(val&0xff)=='\n':
-                stdout.write(''.join(self.string))
-                stdout.write("\n")
+                sys.stdout.write(''.join(self.string))
+                sys.stdout.write("\n")
                 self.string = []
             else:
                 self.string.append(chr(val&0xff))

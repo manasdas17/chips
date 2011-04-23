@@ -10,7 +10,7 @@
 
 
 \title{Chips Documentation}
-\date{April 19, 2011}
+\date{April 23, 2011}
 \release{0.1}
 \author{Jonathan P Dawson}
 \newcommand{\sphinxlogo}{\includegraphics{chips.png}\par}
@@ -108,18 +108,30 @@
 \hypertarget{--doc-index}{}
 
 
-Chips is a Python library for designing hardware devices. Some of its key features include:
+
+\chapter{What is Chips?}
+
+Chips is a Python library that provides a language for designing hardware
+devices.
+
+
+\chapter{Features}
+
+Some of the key features include:
 \begin{itemize}
 \item {} 
-High level device modeling language makes device design simpler and more
+High level modeling language makes device design simpler and more
 powerful.
+
+\item {} 
+An open source hardware design environment.
 
 \item {} 
 Provides fast native simulations that integrate with Python.
 
 \item {} 
-Python extension modules such as Scipy, Numpy, Matplotlib and PIL provide a
-rich verification environment.
+Exploit Python extension modules such as Scipy, Numpy, Matplotlib and PIL
+provide a rich verification environment.
 
 \item {} 
 Automatic generation of synthesizable VHDL.
@@ -135,12 +147,60 @@ Seamless co-simulation of C++ and VHDL outputs.
 
 \end{itemize}
 
-Documentation:
+
+\chapter{A Quick Taster}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#4 bit linear feedback shift register}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{new\PYGZus{}bit} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{shift\PYGZus{}register} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)} \PYG{c}{\#initialise to anything but 0}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{output\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{...}
+\PYG{g+gp}{... }        \PYG{c}{\#tap off bit 2 and 3}
+\PYG{g+gp}{... }        \PYG{n}{new\PYGZus{}bit}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{p}{(}\PYG{n}{shift\PYGZus{}register} \PYG{o}{\textgreater{}\textgreater{}} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{o}{\PYGZca{}} \PYG{p}{(}\PYG{n}{shift\PYGZus{}register} \PYG{o}{\textgreater{}\textgreater{}} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{\PYGZca{}} \PYG{n}{new\PYGZus{}bit}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{...}
+\PYG{g+gp}{... }        \PYG{c}{\#implement shift register}
+\PYG{g+gp}{... }        \PYG{n}{shift\PYGZus{}register}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{p}{(}\PYG{p}{(}\PYG{n}{new\PYGZus{}bit} \PYG{o}{\&} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{\textless{}\textless{}} \PYG{l+m+mi}{3}\PYG{p}{)} \PYG{o}{\textbar{}} \PYG{p}{(}\PYG{n}{shift\PYGZus{}register} \PYG{o}{\textgreater{}\textgreater{}} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{...}
+\PYG{g+gp}{... }        \PYG{c}{\#4 bit mask}
+\PYG{g+gp}{... }        \PYG{n}{shift\PYGZus{}register}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{shift\PYGZus{}register} \PYG{o}{\&} \PYG{l+m+mh}{0xf}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{...}
+\PYG{g+gp}{... }        \PYG{c}{\#write to stream}
+\PYG{g+gp}{... }        \PYG{n}{output\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{shift\PYGZus{}register}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{device} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Console}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{output\PYGZus{}stream}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{device}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{device}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}
+\PYG{g+go}{8}
+\PYG{g+go}{12}
+\PYG{g+go}{14}
+\PYG{g+go}{7}
+\PYG{g+go}{3}
+\PYG{g+go}{1}
+\PYG{g+gp}{...}
+\end{Verbatim}
+
+
+\chapter{Download}
+
+You can download a source distribution or a windows self installer from the \href{http://github.com/dawsonjon/chips/}{GitHub} homepage.
+
+
+\chapter{Documentation}
 
 \resetcurrentobjects
 \hypertarget{--doc-introduction/index}{}
 
-\chapter{Introduction}
+\section{Introduction}
 
 The Chips library gives Python the ability to design, simulate and realise
 digital devices such as FPGAs. Chips provides a simple yet powerful suite of
@@ -156,7 +216,7 @@ libraries already supported by Python, such as NumPy and SciPy, Python and
 Chips make the ideal design and verification environment.
 
 
-\section{A new approach to device design}
+\subsection{A new approach to device design}
 
 Traditionally, the tool of choice for digital devices is a Hardware
 Description Language (HDL), the most common being Verilog and VHDL. These
@@ -240,7 +300,7 @@ synthesizable division and multiplication.
 \end{enumerate}
 
 
-\section{A language within a language}
+\subsection{A language within a language}
 
 \emph{Python Chips} is a python library, just an add-on to Python which is no
 more or less than a programming language. The \emph{Python Chips} library
@@ -255,67 +315,80 @@ statements which are executed on the target device.
 \resetcurrentobjects
 \hypertarget{--doc-tutorial/index}{}
 
-\chapter{Tutorial}
+\section{Tutorial}
 
 
-\section{Learn Python}
+\subsection{Learn Python}
 
 In order to make any real use of the \emph{Chips} library you will need to be
-familiar with the basics of Python. The \href{http://docs.python.org/tut}{python tutorial} is a good place
+familiar with the basics of \emph{Python}. The \href{http://docs.python.org/tut}{Python tutorial} is a good place
 to start.
 
 
-\section{Install Chips}
+\subsection{Install Chips}
 
 
-\subsection{Windows}
+\subsubsection{Windows}
 \begin{enumerate}
 \item {} 
-First \href{http://python.org/download}{install python}. You need Python 2.6 or later, but not Python 3.
+First \href{http://python.org/download}{install Python}. You need \emph{Python} 2.6 or later, but not \emph{Python} 3.
 
 \item {} 
-Then install the chips library from the \href{http://github.com/dawsonjon/chips}{windows installer}.
+Then install the \emph{Chips} library from the \href{http://github.com/dawsonjon/chips}{windows installer}.
 
 \end{enumerate}
 
 
-\subsection{Linux}
+\subsubsection{Linux}
 \begin{enumerate}
 \item {} 
-First \href{http://python.org/download}{install python}. You need Python 2.6 or later, but not Python 3.
+First \href{http://python.org/download}{install Python}. You need \emph{Python} 2.6 or later, but not \emph{Python} 3.
 
 \item {} 
-Then install the chips library from the \href{http://github.com/dawsonjon/chips}{source distribution}:
+Then install the \emph{Chips} library from the \href{http://github.com/dawsonjon/chips}{source distribution}:
 
 \begin{Verbatim}[commandchars=@\[\]]
-desktop:@textasciitilde[]@$ tar -zxf Chips-0.1.tar.gz
-desktop:@textasciitilde[]@$ cd Chips-0.1
+desktop:@textasciitilde[]@$ tar -zxf chips-0.1.tar.gz
+desktop:@textasciitilde[]@$ cd chips-0.1
 desktop:@textasciitilde[]@$ python setup.py install @#run as root
 \end{Verbatim}
 
 \end{enumerate}
 
 
-\section{First Simulations}
+\subsection{First Simulations}
 
-Once you have python and chips all set up, you can start with some simple
+Once you have \emph{Python} and \emph{Chips} all set up, you can start with some simple
 examples. This one counts to 10 repeatedly:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{from} \PYG{n+nn}{streams} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
 
-\PYG{c}{\#create a chip model}
-\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
-  \PYG{n}{Console}\PYG{p}{(}
-    \PYG{n}{Printer}\PYG{p}{(}
-        \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}\PYG{p}{,}
-  \PYG{p}{)}\PYG{p}{,}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#create a chip model}
+\PYG{g+gp}{... }\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
 
-\PYG{c}{\#run a simulation}
-\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
-\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#run a simulation}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{0}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+go}{3}
+\PYG{g+go}{4}
+\PYG{g+go}{5}
+\PYG{g+go}{6}
+\PYG{g+go}{7}
+\PYG{g+go}{8}
+\PYG{g+go}{9}
+\PYG{g+go}{10}
+\PYG{g+go}{0}
+\PYG{g+gp}{...}
 \end{Verbatim}
 
 The example can be broken down as follows:
@@ -326,15 +399,15 @@ library to the local namespace.
 
 \item {} 
 A \emph{Chip} models a target device. You need to tell it what the outputs
-(\emph{sinks}) are, but it will work out what the inputs are by itself. In
-this case the only \emph{sink} is the \emph{Console}.
+(sinks) are, but it will work out what the inputs are by itself. In
+this case the only sink is the \emph{Console}.
 
 \item {} 
 A \emph{Console} is a sink that outputs a stream of data to the console.
 The only argument it needs is the data stream, \emph{Printer}.
 
 \item {} 
-A \emph{Printer} is a \emph{stream} object that represents a stream of data in
+A \emph{Printer} is a stream object that represents a stream of data in
 decimal format as a string of ASCII characters. A \emph{Printer} is not a
 source of data in itself, it transforms a stream of data that you
 supply, the \emph{Counter}.
@@ -347,81 +420,79 @@ data counting from \emph{start} to \emph{stop} in \emph{step} increments.
 \end{itemize}
 
 
-\section{Hello World}
+\subsection{Hello World}
 
 No language would be complete without a ``hello world'' example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
 
-\PYG{c}{\#convert string into a sequence of characters}
-\PYG{n}{hello\PYGZus{}world} \PYG{o}{=} \PYG{n+nb}{tuple}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)} \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
 
-\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
-    \PYG{n}{Console}\PYG{p}{(}
-        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n}{hello\PYGZus{}world}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}
-\PYG{p}{)}
-
-\PYG{c}{\#run a simulation}
-\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
-\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#run a simulation}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{hello world}
+\PYG{g+go}{hello world}
+\PYG{g+go}{hello world}
+\PYG{g+gp}{...}
 \end{Verbatim}
 
 In this example we have made only a few changes:
 \begin{itemize}
 \item {} 
-\code{hello\_world = tuple((ord(i) for i in "hello world\textbackslash{}n"))} creates a tuple
-containing the numeric values of the ascii characters in a string.
+\code{map(ord, "hello world\textbackslash{}n")} creates a list containing the numeric values of
+the ASCII characters in a string.
 
 \item {} 
-This example introduces a new stream, the \emph{Sequence}. The \emph{Sequence}
-stream outputs each of its arguments in turn, when the arguments are
-exhausted, the process repeats.
+This example introduces a new stream, the \emph{Sequence}. The \emph{Sequence} stream
+outputs each of its arguments in turn, when the arguments are exhausted, the
+\emph{Process} repeats.
 
 \item {} 
-A \emph{Printer} is  \emph{stream} is not needed in this example since the stream is
+A \emph{Printer} is stream is not needed in this example since the stream is
 already a sequence of ASCII values.
 
 \end{itemize}
 
 
-\section{Generating VHDL}
+\subsection{Generating VHDL}
 
 Now lets consider how the ``hello world'' example could be implemented in an
 actual device. A first step to implementing a device would be to generate a
 VHDL model:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
-\PYG{k+kn}{from} \PYG{n+nn}{chips.VHDL\PYGZus{}plugin} \PYG{k+kn}{import} \PYG{n}{Plugin}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips.VHDL\PYGZus{}plugin} \PYG{k+kn}{import} \PYG{n}{Plugin}
 
-\PYG{c}{\#convert string into a sequence of characters}
-\PYG{n}{hello\PYGZus{}world} \PYG{o}{=} \PYG{n+nb}{tuple}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)} \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{hello\PYGZus{}world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
 
-\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
-    \PYG{n}{Console}\PYG{p}{(}
-        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n}{hello\PYGZus{}world}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}
-\PYG{p}{)}
-
-\PYG{c}{\#generate a VHDL model}
-\PYG{n}{code\PYGZus{}generator} \PYG{o}{=} \PYG{n}{Plugin}\PYG{p}{(}\PYG{n}{project\PYGZus{}name}\PYG{o}{=}\PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s}{"}\PYG{p}{)}
-\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{write\PYGZus{}code}\PYG{p}{(}\PYG{n}{code\PYGZus{}generator}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#generate a VHDL model}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{code\PYGZus{}generator} \PYG{o}{=} \PYG{n}{Plugin}\PYG{p}{(}\PYG{n}{project\PYGZus{}name}\PYG{o}{=}\PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s}{"}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{write\PYGZus{}code}\PYG{p}{(}\PYG{n}{code\PYGZus{}generator}\PYG{p}{)}
 \end{Verbatim}
 
 The \emph{Chips} library uses plugins to generate output code from models. This
-means that new code generators can be added to Chips without having to
-change the way that hardware is designed and simulated. At present, chips
+means that new code generators can be added to \emph{Chips} without having to
+change the way that hardware is designed and simulated. At present, \emph{Chips}
 supports C++ and VHDL code generation, but it is VHDL code that allows
-{\color{red}\bfseries{}*}Chips'' to be synthesised.
+\emph{Chips} to be synthesised.
 
-The VHDL code generation plugin is found in \code{chips.VHDL\_plugin} If you run
+The VHDL code generation plugin is found in \code{chips.VHDL\_plugin} if you run
 this example you should find that a VHDL file called hello\_world.vhd has been
 generated.
 
-Take a look through this file. You may find that it is difficult to
-understand what is going on. The file isn't meant to be read by humans, \emph{Chips}
+Take a look through this file. you may find that it is difficult to
+understand what is going on. the file isn't meant to be read by humans, \emph{Chips}
 treats VHDL as a compatibility layer. \emph{VHDL} is pretty much universally
 supported by synthesis tools.  You can run this code in an external VHDL
 simulator, but you won't be able to synthesise it into a device because real
@@ -433,21 +504,18 @@ sink, this provides a simple way to direct the stream of characters to a
 serial port:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
-\PYG{k+kn}{from} \PYG{n+nn}{chips.VHDL\PYGZus{}plugin} \PYG{k+kn}{import} \PYG{n}{Plugin}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips.VHDL\PYGZus{}plugin} \PYG{k+kn}{import} \PYG{n}{Plugin}
 
-\PYG{c}{\#convert string into a sequence of characters}
-\PYG{n}{hello\PYGZus{}world} \PYG{o}{=} \PYG{n+nb}{tuple}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)} \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{SerialOut}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{hello\PYGZus{}world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
 
-\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
-    \PYG{n}{SerialOut}\PYG{p}{(}
-        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n}{hello\PYGZus{}world}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}
-\PYG{p}{)}
-
-\PYG{c}{\#generate a VHDL model}
-\PYG{n}{code\PYGZus{}generator} \PYG{o}{=} \PYG{n}{Plugin}\PYG{p}{(}\PYG{n}{project\PYGZus{}name}\PYG{o}{=}\PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s}{"}\PYG{p}{)}
-\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{write\PYGZus{}code}\PYG{p}{(}\PYG{n}{code\PYGZus{}generator}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#generate a vhdl model}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{code\PYGZus{}generator} \PYG{o}{=} \PYG{n}{Plugin}\PYG{p}{(}\PYG{n}{project\PYGZus{}name}\PYG{o}{=}\PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s}{"}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip}\PYG{o}{.}\PYG{n}{write\PYGZus{}code}\PYG{p}{(}\PYG{n}{code\PYGZus{}generator}\PYG{p}{)}
 \end{Verbatim}
 
 Now you should have a hello\_world.vhd file that you can synthesise in a real
@@ -456,49 +524,545 @@ and a baud rate of 115200. If you need something else you can use the
 clock\_rate and baud\_rate arguments to specify what you need.
 
 
-\section{More Streams}
+\subsection{More Streams and Sinks}
 
 So far we have seen three types of streams, \emph{Counter}, \emph{Sequence} and
-\emph{Printer}. Chips provides a few more basic streams which you can read about
-in the Language Reference Manual. It is also possible to combine streams
-using the arithmetic operators : \code{+, -, *, //, \%, \textless{}\textless{}, \textgreater{}\textgreater{}, \&, \textbar{}, \textasciicircum{}, ==, !=, \textless{},
-\textless{}=, \textgreater{}, \textgreater{}=} on the whole they have the same (or very similar) meaning as
-they do in Python except that they operate on streams of data.
+\emph{Printer}. \emph{Chips} provides a range of streams. The full documentation for
+streams is in the \href{http://dawsonjon.github.com/chips/language\_reference/}{reference manual} but a quick summary is included here:
+
+\begin{tabulary}{\textwidth}{|L|L|}
+\hline
+\textbf{
+Stream
+} & \textbf{
+Description
+}\\
+\hline
+
+Array()
+ & 
+An indexable memory with an independent read and write
+port.
+\\
+
+Counter()
+ & 
+A versatile counter with min, max and step parameters
+\\
+
+Decoupler()
+ & 
+A Decoupler removes stream handshaking.
+\\
+
+Resizer()
+ & 
+A Resizer changes the width, in bits, of the source
+stream.
+\\
+
+Lookup()
+ & 
+An indexable Read Only Memory with a single read port.
+\\
+
+Fifo()
+ & 
+Stores data items in a buffer.
+\\
+
+Repeater()
+ & 
+Yields the same data item repeatedly.
+\\
+
+InPort()
+ & 
+Yields the value of input port pins.
+\\
+
+SerialIn()
+ & 
+Yields values from a serial UART.
+\\
+
+Output()
+ & 
+A stream that is fed by a \emph{Process} (more on this later)
+\\
+
+Printer()
+ & 
+A decimal ASCII representation of the source stream.
+\\
+
+HexPrinter()
+ & 
+A hexadecimal ASCII representation of the source stream.
+\\
+
+Scanner()
+ & 
+yields the value of the decimal ASCII source stream.
+\\
+\hline
+\end{tabulary}
 
 
-\section{Introducing Processes}
+You can also combine streams using the operators : \code{abs, \textasciitilde{}, +, -, *, //, \%,
+\textless{}\textless{}, \textgreater{}\textgreater{}, \&, \textbar{}, \textasciicircum{}, ==, !=, \textless{}, \textless{}=, \textgreater{}, \textgreater{}=} on the whole they have the same (or
+very similar) meaning as they do in \emph{Python} except that they operate on streams
+of data. It is also possible to form an expression from regular integers and
+streams, \emph{Chips} will automatically transform an integer into an appropriate
+\emph{Repeater} stream. For example \code{Counter(0, 9, 1)*2} is a shorthand for
+\code{Counter(0, 9, 1)*Repeater(2).}
+
+The following table summarises the available sinks:
+
+\begin{tabulary}{\textwidth}{|L|L|}
+\hline
+\textbf{
+Sink
+} & \textbf{
+Description
+}\\
+\hline
+
+Response()
+ & 
+A Response sink allows data to be transfered into
+Python.
+\\
+
+OutPort()
+ & 
+An OutPort sink outputs a stream of data to I/O port
+pins.
+\\
+
+SerialOut()
+ & 
+A SerialOut outputs data to a serial UART port.
+\\
+
+Asserter()
+ & 
+An Asserter causes an exception if any data in the
+source stream is zero.
+\\
+
+Console()
+ & 
+A Console outputs data to the simulation console.
+\\
+\hline
+\end{tabulary}
+
+\begin{quote}
+\end{quote}
 
 
-\section{Hierarchical Design}
+\subsection{Types and Bit Width}
 
-You may be expecting Chips to provide some mechanism for hierarchical design.
-You might expect that Chips would provide a means too group items together to
-form re-usable components or modules. A really good design tool would allow you
-to parameterise components and modules using generics or templates. Chips does
-not provide any of these things. It doesn't have to.
+For convenience, the central numerical type in \emph{Chips} is a signed integer with
+a fixed number of bits.  This is in contrast to \emph{Python}, where integers have a
+potentially infinite width. \emph{Chips} tries to simplify some of the design issues
+involved with limited width numbers by doing a lot of the work for you, but it
+is not always possible to completely hide these details, so you need to how
+things are handled behind the scenes.
 
-The Python language itself already provides all these things and more. If you
-want to make a reusable component you can simply write a Python function:
+\emph{Chips} will automatically determine the width of a stream whenever possible.
+In a \emph{Repeater}, \emph{Counter} or \emph{Lookup}, \emph{Chips} will chose use the number of
+bits needed to hold the greatest possible value. This is not possible for
+\emph{InPort}, or \emph{Array} streams because the maximum possible value is not known at
+compile time. When it is not possible to determine the maximum value, the width
+must be specified using the bits parameter.
+
+When streams are combined using operators, the width of the resulting stream
+will usually be chosen to handle the maximum possible value in the resulting
+stream, though there are some exceptions. Adding two 8 bit streams will result
+in a 9 bit stream, multiplying two 8 bit streams will result in a 16 bit
+stream. The precise handling of bit widths is documented more  fully in the
+\href{http://dawsonjon.github.com/chips/language\_reference/}{reference manual}.
+
+You can manually change the width of a stream using the \emph{Resize} stream. Making
+a streams smaller in width will result in large values being truncated. Making
+a stream larger in width will result in sign extension.
+\begin{quote}
+\end{quote}
+
+
+\subsection{Introducing Processes}
+
+We have seen how the \emph{Chips} library provides quite a few ready made streams
+out of the box. Sometimes these streams won't suite our needs, sometimes we
+need to define new operations on streams. Suppose we wanted to double the value
+of every data item within in an existing stream, a Counter say. Thats easy,
+just use the multiply operator \code{Counter(0, 9, 1)*2}. Now suppose that we
+wanted to square each data item instead. Not so simple, there is no squaring
+operator, or even a power operator for that matter. Thats where the \emph{Process}
+comes in:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{def} \PYG{n+nf}{double}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{p}{)}\PYG{p}{:}
-    \PYG{l+s+sd}{"""If you use Python functions to build components you can take}
-\PYG{l+s+sd}{    advantage of docstrings to document your design."""}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
 
-    \PYG{k}{return} \PYG{n}{input\PYGZus{}stream} \PYG{o}{*} \PYG{l+m+mi}{2}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{counter} \PYG{o}{=} \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{9}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{c}{\#create a temporary variable and initialise it to 0.}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{counter\PYGZus{}squared\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{p}\PYG{o}{=}\PYG{n}{Process}\PYG{p}{(}\PYG{n}{counter}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{l+m+mi}{2}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{counter}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{counter\PYGZus{}squared\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{o}{*}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Console}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{counter\PYGZus{}squared\PYGZus{}stream}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}
+\PYG{g+go}{0}
+\PYG{g+go}{1}
+\PYG{g+go}{4}
+\PYG{g+go}{9}
+\PYG{g+go}{16}
+\PYG{g+go}{25}
+\PYG{g+go}{36}
+\PYG{g+gp}{...}
 \end{Verbatim}
+
+This example demonstrates some of the key features of the \emph{Process}:
+\begin{itemize}
+\item {} 
+Put it simply, a \emph{Process} is small computer program which can contain loops
+and if statements like any other language.
+
+\item {} 
+A \emph{Chip} can contain any number of Process objects, they will all run in
+parallel.
+
+\item {} 
+Within a \emph{Process}, you can use \emph{Variables} to store data. Each variable can
+only be used within one \emph{Process}, to communicate with another \emph{Process} you
+need to use streams.
+
+\item {} 
+A \emph{Process} can read from any type of stream, in this example the process is
+reading from a \emph{Counter} stream. Only \emph{Output} streams can be written to.
+
+\item {} 
+Streams can only be used for point to point communications. A stream cannot
+be read by more than one \emph{Process}. Likewise, an \emph{Output} stream can only be
+written to by one \emph{Process}.
+
+\end{itemize}
+
+
+\subsection{Process Instructions}
+
+\begin{tabulary}{\textwidth}{|L|L|}
+\hline
+\textbf{
+Instruction
+} & \textbf{
+Description
+}\\
+\hline
+
+Variable()
+ & 
+A Variable is used within a Process to store data.
+\\
+
+Value()
+ & 
+The Value statement gives a value to the surrounding
+Evaluate construct.
+\\
+
+Evaluate()
+ & 
+An Evaluate  expression allows a block of statements
+to be used as an expression.
+\\
+
+Loop()
+ & 
+The Loop statement executes instructions repeatedly.
+\\
+
+If()
+ & 
+The If statement conditionally executes
+instructions.
+\\
+
+Break()
+ & 
+The Break statement causes the flow of control to
+immediately exit the loop.
+\\
+
+WaitUs()
+ & 
+WaitUs causes execution to halt until the next tick
+of the microsecond timer.
+\\
+
+Continue()
+ & 
+The Continue statement causes the flow of control to
+immediately jump to the next iteration of the
+containing loop.
+\\
+
+Block()
+ & 
+The Block statement allows instructions to be nested
+into a single statement.
+\\
+
+Output.write()
+ & 
+This method returns a write instruction that writes a
+single data item to the Output stream.
+\\
+
+\textless{}stream\textgreater{}.read()
+ & 
+This method returns a read instruction that reads a
+single data item from a  stream.
+\\
+
+Variable.set()
+ & 
+This method returns a set instruction that assigns the
+value of an expression to a variable.
+\\
+\hline
+\end{tabulary}
+
+
+
+\subsection{Bit Width Within a Process}
+
+We have already seen how streams are usually sized automatically to handle the
+largest possible data value. Inside a \emph{Process} however things are handled
+differently. A \emph{Process} has a fixed bit width. The width is the first argument
+given to a \emph{Process}. Inside a \emph{Process}, the value of any expression will be
+resized the width of the \emph{Process}. When a \emph{Process} reads from a stream, the
+value will be truncated or sign extended to the width of the \emph{Process}. It is
+important to make sure that the width of a \emph{Process} is sufficiently large.
+
+
+\subsection{Hierarchical Design}
+
+You may be expecting \emph{Chips} to provide some mechanism for hierarchical design.
+You might expect that \emph{Chips} would provide a means too group items together to
+form re-usable components or modules. A really good design tool would allow you
+to parameterise components and modules using generics or templates. \emph{Chips} does
+not provide any of these things. It doesn't have to.
+
+The \emph{Python} language itself already provides all these things and more. If you
+want to make a reusable component you can simply write a \emph{Python} function:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{double}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }    \PYG{l+s+sd}{"""If you use Python functions to build components you can take}
+\PYG{g+gp}{... }\PYG{l+s+sd}{    advantage of docstrings to document your design."""}
+\PYG{g+gp}{...}
+\PYG{g+gp}{... }    \PYG{k}{return} \PYG{n}{input\PYGZus{}stream} \PYG{o}{*} \PYG{l+m+mi}{2}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{double}\PYG{p}{(}
+\PYG{g+gp}{... }                \PYG{n}{Sequence}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{)}
+\PYG{g+gp}{... }            \PYG{p}{)}
+\PYG{g+gp}{... }        \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{10}\PYG{p}{)}
+\PYG{g+go}{2}
+\PYG{g+go}{4}
+\PYG{g+go}{6}
+\PYG{g+go}{2}
+\PYG{g+gp}{...}
+\end{Verbatim}
+
+
+\subsection{Streams from Multiple Sources}
+
+Streams can only be have one source of data and one sink, but it is possible to
+combine data from more than one source into a single stream using a \emph{Process}.
+The simplest approach is to read a value from each source, and write it to the
+destination thus:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{simple\PYGZus{}arbiter}\PYG{p}{(}\PYG{n}{source\PYGZus{}0}\PYG{p}{,} \PYG{n}{source\PYGZus{}1}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }    \PYG{l+s+sd}{"""Combine data from two streams into a single stream"""}
+\PYG{g+gp}{... }    \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{dest} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{Process}\PYG{p}{(}\PYG{n+nb}{max}\PYG{p}{(}\PYG{p}{[}\PYG{n}{source\PYGZus{}0}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,} \PYG{n}{source\PYGZus{}1}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}\PYG{p}{]}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{source\PYGZus{}0}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{dest}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{source\PYGZus{}1}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{dest}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{k}{return} \PYG{n}{dest}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }   \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }       \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }           \PYG{n}{simple\PYGZus{}arbiter}\PYG{p}{(}
+\PYG{g+gp}{... }               \PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,} \PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{g+gp}{... }           \PYG{p}{)}
+\PYG{g+gp}{... }       \PYG{p}{)}
+\PYG{g+gp}{... }   \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+gp}{...}
+\end{Verbatim}
+
+This type of arbiter will always take an equal number of items from source\_0,
+and source\_1. This may be fine in some applications, but if data were not
+available on source\_0, data from source\_1 would also be blocked. One solution
+is to use the \emph{available} method of a stream to test whether data is available
+before committing to a blocking read:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{non\PYGZus{}blocking\PYGZus{}arbiter}\PYG{p}{(}\PYG{n}{source\PYGZus{}0}\PYG{p}{,} \PYG{n}{source\PYGZus{}1}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }   \PYG{l+s+sd}{"""Combine data from two streams into a single stream"""}
+\PYG{g+gp}{... }   \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }   \PYG{n}{dest} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }   \PYG{n}{Process}\PYG{p}{(}\PYG{n+nb}{max}\PYG{p}{(}\PYG{p}{[}\PYG{n}{source\PYGZus{}0}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,} \PYG{n}{source\PYGZus{}1}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}\PYG{p}{]}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }       \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }           \PYG{n}{If}\PYG{p}{(}\PYG{n}{source\PYGZus{}0}\PYG{o}{.}\PYG{n}{available}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }               \PYG{n}{source\PYGZus{}0}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }               \PYG{n}{dest}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }           \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }           \PYG{n}{If}\PYG{p}{(}\PYG{n}{source\PYGZus{}1}\PYG{o}{.}\PYG{n}{available}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }               \PYG{n}{source\PYGZus{}1}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }               \PYG{n}{dest}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }           \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }       \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }   \PYG{p}{)}
+\PYG{g+gp}{... }   \PYG{k}{return} \PYG{n}{dest}
+\PYG{g+gp}{...}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{blocked} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{p}\PYG{o}{=}\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{c}{\#outputs one value then blocks}
+\PYG{g+gp}{... }    \PYG{n}{blocked}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{non\PYGZus{}blocking\PYGZus{}arbiter}\PYG{p}{(}
+\PYG{g+gp}{... }                \PYG{n}{blocked}\PYG{p}{,} \PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{g+gp}{... }            \PYG{p}{)}
+\PYG{g+gp}{... }        \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{2}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+go}{2}
+\PYG{g+go}{2}
+\PYG{g+gp}{...}
+\end{Verbatim}
+
+
+\subsection{Streams with Multiple Sinks}
+
+Sometimes a stream will need to be used in more than one place. A simple
+solution is to make a splitter or tee using a \emph{Process}:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{tee}\PYG{p}{(}\PYG{n}{source}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }    \PYG{l+s+sd}{"""split data into two streams"""}
+\PYG{g+gp}{... }    \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{dest\PYGZus{}0} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{dest\PYGZus{}1} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{Process}\PYG{p}{(}\PYG{n}{source}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{source}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{dest\PYGZus{}0}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{dest\PYGZus{}1}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{k}{return} \PYG{n}{dest\PYGZus{}0}\PYG{p}{,} \PYG{n}{dest\PYGZus{}1}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{dest\PYGZus{}0}\PYG{p}{,} \PYG{n}{dest\PYGZus{}1} \PYG{o}{=} \PYG{n}{tee}\PYG{p}{(}\PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{9}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}\PYG{n}{dest\PYGZus{}0}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}\PYG{n}{dest\PYGZus{}1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{0}
+\PYG{g+go}{0}
+\PYG{g+go}{1}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+go}{2}
+\PYG{g+go}{3}
+\PYG{g+go}{3}
+\PYG{g+gp}{...}
+\end{Verbatim}
+
+
+\subsection{A Worked Example}
+
+TODO
+
+
+\subsection{Further Examples}
+
+The \href{http://github.com/dawsonjon/chips}{source distribution} contains a number of more involved examples so that
+you can see for yourself how more complex hardware designs can be formed from
+these simple components.
 
 \resetcurrentobjects
 \hypertarget{--doc-language\_reference/index}{}
 
-\chapter{Chips Language Reference Manual}
+\section{Chips Language Reference Manual}
 
 
-\section{Chip}
+\subsection{Chip}
 \index{Chip (class in chips)}
 
 \hypertarget{chips.Chip}{}\begin{classdesc}{Chip}{*args}
-A Chip device containing streams, sinks and processes.
+A Chip is device containing streams, sinks and processes.
 
 Typically a Chip is used to describe a single device. You need to provide
 the Chip object with a list of all the sinks (device outputs). You don't
@@ -509,26 +1073,30 @@ the device.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{switches} \PYG{o}{=} \PYG{n}{InPort}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{SWITCHES}\PYG{l+s}{"}\PYG{p}{,} \PYG{l+m+mi}{8}\PYG{p}{)}
-\PYG{n}{serial\PYGZus{}in} \PYG{o}{=} \PYG{n}{SerialIn}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{RX}\PYG{l+s}{"}\PYG{p}{)}
-\PYG{n}{leds} \PYG{o}{=} \PYG{n}{OutPort}\PYG{p}{(}\PYG{n}{switches}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{LEDS}\PYG{l+s}{"}\PYG{p}{)}
-\PYG{n}{serial\PYGZus{}out} \PYG{o}{=} \PYG{n}{SerialOut}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{TX}\PYG{l+s}{"}\PYG{p}{,} \PYG{n}{serial\PYGZus{}in}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips.VHDL\PYGZus{}plugin} \PYG{k+kn}{import} \PYG{n}{Plugin}
 
-\PYG{c}{\#We need to tell the *Chip* that *leds* and *serial\PYGZus{}out* are part of}
-\PYG{c}{\#the device. The *Chip* can work out for itself that *switches* and}
-\PYG{c}{\#*serial\PYGZus{}in* are part of the device.}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{switches} \PYG{o}{=} \PYG{n}{InPort}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{SWITCHES}\PYG{l+s}{"}\PYG{p}{,} \PYG{l+m+mi}{8}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{serial\PYGZus{}in} \PYG{o}{=} \PYG{n}{SerialIn}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{RX}\PYG{l+s}{"}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{leds} \PYG{o}{=} \PYG{n}{OutPort}\PYG{p}{(}\PYG{n}{switches}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{LEDS}\PYG{l+s}{"}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{serial\PYGZus{}out} \PYG{o}{=} \PYG{n}{SerialOut}\PYG{p}{(}\PYG{n}{serial\PYGZus{}in}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{TX}\PYG{l+s}{"}\PYG{p}{)}
 
-\PYG{n}{s} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
-    \PYG{n}{leds}\PYG{p}{,}
-    \PYG{n}{serial\PYGZus{}out}\PYG{p}{,}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#We need to tell the Chip that leds and serial\PYGZus{}out are part of}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#the device. The Chip can work out for itself that switches and}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#serial\PYGZus{}in are part of the device.}
 
-\PYG{n}{s}\PYG{o}{.}\PYG{n}{write\PYGZus{}code}\PYG{p}{(}\PYG{n}{plugin}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{s} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }   \PYG{n}{leds}\PYG{p}{,}
+\PYG{g+gp}{... }   \PYG{n}{serial\PYGZus{}out}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{plugin} \PYG{o}{=} \PYG{n}{Plugin}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{s}\PYG{o}{.}\PYG{n}{write\PYGZus{}code}\PYG{p}{(}\PYG{n}{plugin}\PYG{p}{)}
 \end{Verbatim}
 \end{classdesc}
 
 
-\section{Process}
+\subsection{Process}
 \index{chips.process (module)}
 \hypertarget{module-chips.process}{}
 \declaremodule[chips.process]{}{chips.process}
@@ -539,7 +1107,7 @@ a \emph{Chip} is simulated, or run in real hardware, the program within each pro
 will be run concurrently.
 
 
-\subsection{Process Inputs}
+\subsubsection{Process Inputs}
 
 Any \emph{Stream} may be used as the input to a \emph{Process}. Only one process may read
 from any particular stream.  A \emph{Process} may read from a \emph{Stream} using the
@@ -552,32 +1120,36 @@ design of concurrent systems.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\#sending process}
-\PYG{n}{theoutput} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
-\PYG{n}{count} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
-    \PYG{c}{\#wait for 1 second}
-    \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}\PYG{p}{,}
-    \PYG{n}{While}\PYG{p}{(}\PYG{n}{count}\PYG{p}{,} 
-        \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{count}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-        \PYG{n}{WaitUs}\PYG{p}{(}\PYG{p}{)}
-    \PYG{p}{)}\PYG{p}{,}
-    \PYG{c}{\#send some data}
-    \PYG{n}{theoutput}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{l+m+mi}{123}\PYG{p}{)}\PYG{p}{,}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
 
-\PYG{c}{\#receiving process}
-\PYG{n}{target\PYGZus{}variable} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
-\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
-    \PYG{c}{\#This instruction will stall the process until data is available}
-    \PYG{n}{theOutput}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{target\PYGZus{}variable}\PYG{p}{)}\PYG{p}{,}
-    \PYG{c}{\#This instruction will not be run for 1 second}
-    \PYG{c}{\#..}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#sending process}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{theoutput} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{count} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{c}{\#wait for 1 second}
+\PYG{g+gp}{... }    \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{While}\PYG{p}{(}\PYG{n}{count}\PYG{p}{,} 
+\PYG{g+gp}{... }        \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{count}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{WaitUs}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{c}{\#send some data}
+\PYG{g+gp}{... }    \PYG{n}{theoutput}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{l+m+mi}{123}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#receiving process}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{target\PYGZus{}variable} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{c}{\#This instruction will stall the process until data is available}
+\PYG{g+gp}{... }    \PYG{n}{theoutput}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{target\PYGZus{}variable}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{c}{\#This instruction will not be run for 1 second}
+\PYG{g+gp}{... }    \PYG{c}{\#..}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
 \end{Verbatim}
 
 
-\subsection{Process Outputs}
+\subsubsection{Process Outputs}
 
 An \emph{Output} is a special \emph{Stream} that can be written to by a \emph{Process}. Only one
 \emph{Process} may write to any particular stream. Like any other \emph{Stream}, an
@@ -601,38 +1173,40 @@ will stall the process until the receiver is ready to receive data.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\#sending process}
-\PYG{n}{theoutput} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
-\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
-    \PYG{c}{\#This instruction will stall the process until data is available}
-    \PYG{n}{theoutput}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{l+m+mi}{123}\PYG{p}{)}\PYG{p}{,}
-    \PYG{c}{\#This instruction will not be run for 1 second}
-    \PYG{c}{\#..}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#sending process}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{theoutput} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{c}{\#This instruction will stall the process until data is available}
+\PYG{g+gp}{... }    \PYG{n}{theoutput}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{l+m+mi}{123}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{c}{\#This instruction will not be run for 1 second}
+\PYG{g+gp}{... }    \PYG{c}{\#..}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
 
-\PYG{c}{\#receiving process}
-\PYG{n}{target\PYGZus{}variable} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-\PYG{n}{count} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
-    \PYG{c}{\#wait for 1 second}
-    \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}\PYG{p}{,}
-    \PYG{n}{While}\PYG{p}{(}\PYG{n}{count}\PYG{p}{,} 
-        \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{count}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-        \PYG{n}{WaitUs}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}\PYG{p}{,}
-    \PYG{c}{\#get some data}
-    \PYG{n}{theoutput}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{target\PYGZus{}variable}\PYG{p}{)}\PYG{p}{,}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#receiving process}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{target\PYGZus{}variable} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{count} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{c}{\#wait for 1 second}
+\PYG{g+gp}{... }    \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{While}\PYG{p}{(}\PYG{n}{count}\PYG{p}{,} 
+\PYG{g+gp}{... }        \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{count}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{WaitUs}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{c}{\#get some data}
+\PYG{g+gp}{... }    \PYG{n}{theoutput}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{target\PYGZus{}variable}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
 \end{Verbatim}
 
 
-\subsection{Variables}
+\subsubsection{Variables}
 
 Data is stored and manipulated within a process using \emph{Variables}. A \emph{Variable}
 may only be accessed by one process.  When a \emph{Variable} an initial value must
 be supplied. A variable will be reset to its initial value before any process
 instructions are executed.  A \emph{Variable} may be assigned a value using the
-\emph{set} method. The {\color{red}\bfseries{}*}set method accepts an expression as its argument.
+\emph{set} method. The \emph{set} method accepts an expression as its argument.
 
 It is important to understand that a \emph{Variable} object created like this:
 
@@ -640,7 +1214,7 @@ It is important to understand that a \emph{Variable} object created like this:
 \PYG{n}{a} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{12}\PYG{p}{)}
 \end{Verbatim}
 
-is very different from a normal Python variable created like this:
+is different from a normal Python variable created like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \PYG{n}{a} \PYG{o}{=} \PYG{l+m+mi}{12}
@@ -649,26 +1223,29 @@ is very different from a normal Python variable created like this:
 The key is to understand that a \emph{Variable} will exist in the target \emph{Chip}, and
 may be assigned and referenced as the \emph{Process} executes. A Python variable can
 exist only in the Python environment, and not in a \emph{Chip}. While a Python
-variable may be converted into a \emph{Constant} in the target \emph{Chip}, a \emph{Process}
+variable may be converted into a constant in the target \emph{Chip}, a \emph{Process}
 has no way to change its value when it executes.
 
 
-\subsection{Constants}
-
-Like a \emph{Variable}, a constant must be supplied with an initial value when it
-is created. Unlike a \emph{Variable}, the value of a \emph{Constant} can never be
-changed.
-
-
-\subsection{Expressions}
+\subsubsection{Expressions}
 
 \emph{Variables} and \emph{Constants} are the most basic form of expressions. More
 complex expressions can be formed by combining \emph{Constants}, \emph{Variables} and
-other expressions using following operators:
+other expressions using following unary operators:
 
 \begin{Verbatim}[commandchars=@\[\]]
-+, -, *, \/, @%, @&, @textbar[], @textasciicircum[], @textless[]@textless[], @textgreater[]@textgreater[], ==, !=, @textless[], @textless[]=, @textgreater[], @textgreater[]=
+@textasciitilde[]
 \end{Verbatim}
+
+and the folowing binary operators:
+
+\begin{Verbatim}[commandchars=@\[\]]
++, -, *, //, @%, @&, @textbar[], @textasciicircum[], @textless[]@textless[], @textgreater[]@textgreater[], ==, !=, @textless[], @textless[]=, @textgreater[], @textgreater[]=
+\end{Verbatim}
+
+The function \emph{Not} evaluates to the logical negation of each data item
+equivalent to \code{==0}. The function \emph{abs} evaluates to the magnitude of each
+data item.
 
 If one of the operands of a binary operator is not an expression, the Chips
 library will attempt to convert this operand into an integer. If the conversion
@@ -679,6 +1256,15 @@ allows constructs such as \code{a = 47+Constant(10)} to be used as a shorthand f
 as a shorthand for \code{count.set(Constant(15)+Constant(6)}.  Of course \code{a=1+1}
 still yields the integer 2 rather than an expression.
 
+\begin{notice}{note}{Note:}
+The divide \code{//} operator in \emph{Chips} works differently then the divide
+operator in Python.  While a floor division in Python rounds to -infinite,
+in \emph{Chips} division rounds to \code{0}. Thus \code{-3//2} rounds to \code{-2} in
+Python, it rounds to \code{-1} in \emph{Chips}. This should be more familiar to
+users of C, C++ and VHDL. The same also applies to the modulo \code{\%}
+operator.
+\end{notice}
+
 An expression within a process will always inherit the data width in bits of
 the \emph{Process} in which it is evaluated. A \emph{Stream} expression such as
 \code{Repeater(255) + 1} will automatically yield a 10-bit \emph{Stream} so that the
@@ -687,7 +1273,7 @@ value 256 can be represented. A similar expression Constant(255)+1 will give an
 is evaluated in a 10-bit process, the result will be 256.
 
 
-\subsection{Operator Precedence}
+\subsubsection{Operator Precedence}
 
 The operator precedence is inherited from the Python language. The following
 table summarizes the operator precedences, from lowest precedence (least
@@ -732,9 +1318,19 @@ Shifts
 Addition and subtraction
 \\
 
-{\color{red}\bfseries{}*}, //, \%
+*, //, \%
  & 
 multiplication, division and modulo
+\\
+
+\textasciitilde{}
+ & 
+bitwise NOT
+\\
+
+Not, abs
+ & 
+logical NOT, absolute
 \\
 \hline
 \end{tabulary}
@@ -744,13 +1340,83 @@ multiplication, division and modulo
 \hypertarget{chips.Process}{}\begin{classdesc}{Process}{bits, *instructions}\end{classdesc}
 \index{Variable (class in chips)}
 
-\hypertarget{chips.Variable}{}\begin{classdesc}{Variable}{initial}\end{classdesc}
+\hypertarget{chips.Variable}{}\begin{classdesc}{Variable}{initial}
+A \emph{Variable} is used within a \emph{Process} to store data. A \emph{Variable} can
+be used in only one \emph{Process}. If you need to communicate with another
+\emph{Process} you must use a stream.
+
+A \emph{Variable} accepts a single argument, the initial value. A \emph{Variable}
+will be reset to the initial value when a simulation, or actual device is
+reset.
+
+A \emph{Variable} can be assigned an expression using the \emph{set} method.
+\end{classdesc}
 \index{VariableArray (class in chips)}
 
-\hypertarget{chips.VariableArray}{}\begin{classdesc}{VariableArray}{size}\end{classdesc}
+\hypertarget{chips.VariableArray}{}\begin{classdesc}{VariableArray}{size}
+A \emph{VariableArray} is an array of variables that can be accessed from
+within a single \emph{Process}.
+
+When a \emph{VariableArray} is created, it accepts a single argument, the
+\emph{size}.
+
+A \emph{VariableArray} can be written to using the \emph{write} method, the \emph{write}
+method accepts two arguments, an expression indicating the \emph{address} to
+write to, and an expression indicating the \emph{data} to write.
+
+A \emph{VariableArray} can be read to using the \emph{read} method, the \emph{read} method
+accepts a single argument, an expression indicating the \emph{address} to read
+from. The \emph{read method returns an expression that evaluates to the value
+contained at *address}.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{reverse}\PYG{p}{(}\PYG{n}{stream}\PYG{p}{,} \PYG{n}{number\PYGZus{}of\PYGZus{}items}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }     \PYG{l+s+sd}{"""Read number\PYGZus{}of\PYGZus{}items from stream, and reverse them."""}
+\PYG{g+gp}{... }     \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }     \PYG{n}{index} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }     \PYG{n}{reversed\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }     \PYG{n}{data\PYGZus{}store} \PYG{o}{=} \PYG{n}{VariableArray}\PYG{p}{(}\PYG{n}{number\PYGZus{}of\PYGZus{}items}\PYG{p}{)}
+\PYG{g+gp}{... }     \PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
+\PYG{g+gp}{... }         \PYG{n}{index}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }         \PYG{n}{While}\PYG{p}{(}\PYG{n}{index} \PYG{o}{\textless{}} \PYG{n}{number\PYGZus{}of\PYGZus{}items}\PYG{p}{,}
+\PYG{g+gp}{... }             \PYG{n}{stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }             \PYG{n}{data\PYGZus{}store}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{index}\PYG{p}{,} \PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }             \PYG{n}{index}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{index}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }         \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }         \PYG{n}{index}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{number\PYGZus{}of\PYGZus{}items} \PYG{o}{-} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }         \PYG{n}{While}\PYG{p}{(}\PYG{n}{index} \PYG{o}{\textgreater{}}\PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{,}
+\PYG{g+gp}{... }             \PYG{n}{reversed\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{data\PYGZus{}store}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{index}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }             \PYG{n}{index}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{index}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }         \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }     \PYG{p}{)}
+\PYG{g+gp}{... }
+\PYG{g+gp}{... }     \PYG{k}{return} \PYG{n}{reversed\PYGZus{}stream}
+
+\PYG{g+go}{    }
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{reverse}\PYG{p}{(}\PYG{n}{Sequence}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{)}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{)}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }     \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}
+\PYG{g+go}{3}
+\PYG{g+go}{2}
+\PYG{g+go}{1}
+\PYG{g+go}{0}
+\end{Verbatim}
+\end{classdesc}
 
 
-\section{Streams}
+\subsection{Streams}
 \index{chips.streams (module)}
 \hypertarget{module-chips.streams}{}
 \declaremodule[chips.streams]{}{chips.streams}
@@ -776,14 +1442,23 @@ A means of transferring data from one process to another, an \emph{Output}.
 \end{description}
 
 
-\subsection{Stream Expressions}
+\subsubsection{Stream Expressions}
 
 A Stream Expression can be formed by combining Streams or Stream Expressions
-with the following operators:
+with the following unary operators:
 
 \begin{Verbatim}[commandchars=@\[\]]
-+, -, *, \/, @%, @&, @textbar[], @textasciicircum[], @textless[]@textless[], @textgreater[]@textgreater[], ==, !=, @textless[], @textless[]=, @textgreater[], @textgreater[]=
+@textasciitilde[]
 \end{Verbatim}
+
+and the folowing binary operators:
+
+\begin{Verbatim}[commandchars=@\[\]]
++, -, *, //, @%, @&, @textbar[], @textasciicircum[], @textless[]@textless[], @textgreater[]@textgreater[], ==, !=, @textless[], @textless[]=, @textgreater[], @textgreater[]=
+\end{Verbatim}
+
+The function \emph{Not} yields the logical negation of each data item equivalent to
+\code{==0}. The function \emph{abs} yields the magnitude of each data item.
 
 Each data item in the resulting Stream Expression will be evaluated by removing
 a data item from each of the operand streams, and applying the operator
@@ -804,6 +1479,15 @@ Repeater(47)+InPort("in", 8)} or \code{count = Counter(1, 10, 1)+3*2} to be used
 a shorthand for \code{count = Counter(1, 10, 1)+Repeater(5)}.  Of course \code{a=1+1}
 still yields the integer 2 rather than a stream.
 
+\begin{notice}{note}{Note:}
+The divide \code{//} operator in \emph{Chips} works differently then the divide
+operator in Python.  While a floor division in Python rounds to -infinite,
+in \emph{Chips} division rounds to \code{0}. Thus \code{-3//2} rounds to \code{-2} in
+Python, it rounds to \code{-1} in \emph{Chips}. This should be more familiar to
+users of C, C++ and VHDL. The same also applies to the modulo \code{\%}
+operator.
+\end{notice}
+
 The operators provided in the Python Streams library are summarised in the
 table below. The bit width field specifies how many bits are used for the
 result based on the number of bits in the left and right hand operands.
@@ -818,6 +1502,27 @@ Function
 Data Width (bits)
 }\\
 \hline
+
+abs
+ & 
+Logical Not
+ & 
+argument
+\\
+
+Not
+ & 
+Logical Not
+ & 
+1
+\\
+
+\textasciitilde{}
+ & 
+Bitwise not
+ & 
+right
+\\
 
 +
  & 
@@ -939,7 +1644,7 @@ Comparison
 
 
 
-\subsection{Operator Precedence}
+\subsubsection{Operator Precedence}
 
 The operator precedence is inherited from the python language. The following
 table summarizes the operator precedences, from lowest precedence (least
@@ -984,16 +1689,26 @@ Shifts
 Addition and subtraction
 \\
 
-{\color{red}\bfseries{}*}, //, \%
+*, //, \%
  & 
 multiplication, division and modulo
+\\
+
+\textasciitilde{}
+ & 
+bitwise NOT
+\\
+
+Not, abs
+ & 
+logical NOT, absolute
 \\
 \hline
 \end{tabulary}
 
 
 
-\subsection{Streams Reference}
+\subsubsection{Streams Reference}
 \index{Array (class in chips)}
 
 \hypertarget{chips.Array}{}\begin{classdesc}{Array}{address\_in, data\_in, address\_out, depth}
@@ -1011,34 +1726,27 @@ source streams. The \emph{depth} argument specifies the size of the lookup table
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{def} \PYG{n+nf}{video\PYGZus{}raster\PYGZus{}stream}\PYG{p}{(}\PYG{n}{width}\PYG{p}{,} \PYG{n}{height}\PYG{p}{,} \PYG{n}{row\PYGZus{}stream}\PYG{p}{,} \PYG{n}{col\PYGZus{}stream}\PYG{p}{,} 
-                        \PYG{n}{pixel\PYGZus{}intensity}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{video\PYGZus{}raster\PYGZus{}stream}\PYG{p}{(}\PYG{n}{width}\PYG{p}{,} \PYG{n}{height}\PYG{p}{,} \PYG{n}{row\PYGZus{}stream}\PYG{p}{,} \PYG{n}{col\PYGZus{}stream}\PYG{p}{,} 
+\PYG{g+gp}{... }                        \PYG{n}{intensity}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }
+\PYG{g+gp}{... }    \PYG{n}{pixel\PYGZus{}clock} \PYG{o}{=} \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{width}\PYG{o}{*}\PYG{n}{height}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{g+gp}{... }     
+\PYG{g+gp}{... }    \PYG{n}{pixstream} \PYG{o}{=} \PYG{n}{Array}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{address\PYGZus{}in} \PYG{o}{=} \PYG{p}{(}\PYG{n}{row\PYGZus{}stream} \PYG{o}{*} \PYG{n}{width}\PYG{p}{)} \PYG{o}{+} \PYG{n}{col\PYGZus{}stream}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{data\PYGZus{}in} \PYG{o}{=} \PYG{n}{intensity}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{address\PYGZus{}out} \PYG{o}{=} \PYG{n}{pixel\PYGZus{}clock}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{depth} \PYG{o}{=} \PYG{n}{width} \PYG{o}{*} \PYG{n}{height}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }
+\PYG{g+gp}{... }    \PYG{k}{return} \PYG{n}{pixstream}
 
-    \PYG{n}{pixel\PYGZus{}clock} \PYG{o}{=} \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{width}\PYG{o}{*}\PYG{n}{height}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}
-    \PYG{n}{red\PYGZus{}intensity}\PYG{p}{,} \PYG{n}{green\PYGZus{}intensity}\PYG{p}{,} \PYG{n}{blue\PYGZus{}intensity} \PYG{o}{=} \PYG{n}{pixel\PYGZus{}intensity}
-     
-    \PYG{n}{red} \PYG{o}{=} \PYG{n}{Array}\PYG{p}{(}
-        \PYG{n}{address\PYGZus{}in} \PYG{o}{=} \PYG{n}{row\PYGZus{}stream} \PYG{o}{*} \PYG{n}{width\PYGZus{}stream} \PYG{o}{+} \PYG{n}{col\PYGZus{}stream}\PYG{p}{,}
-        \PYG{n}{data\PYGZus{}in} \PYG{o}{=} \PYG{n}{red\PYGZus{}intensity}\PYG{p}{,}
-        \PYG{n}{address\PYGZus{}out} \PYG{o}{=} \PYG{n}{pixel\PYGZus{}clock}\PYG{p}{,}
-        \PYG{n}{depth} \PYG{o}{=} \PYG{n}{width} \PYG{o}{*} \PYG{n}{height}\PYG{p}{,}
-    \PYG{p}{)}
-
-    \PYG{n}{green} \PYG{o}{=} \PYG{n}{Array}\PYG{p}{(}
-        \PYG{n}{address\PYGZus{}in} \PYG{o}{=} \PYG{n}{row\PYGZus{}stream} \PYG{o}{*} \PYG{n}{width\PYGZus{}stream} \PYG{o}{+} \PYG{n}{col\PYGZus{}stream}\PYG{p}{,}
-        \PYG{n}{data\PYGZus{}in} \PYG{o}{=} \PYG{n}{green\PYGZus{}intensity}\PYG{p}{,}
-        \PYG{n}{address\PYGZus{}out} \PYG{o}{=} \PYG{n}{pixel\PYGZus{}clock}\PYG{p}{,}
-        \PYG{n}{depth} \PYG{o}{=} \PYG{n}{width} \PYG{o}{*} \PYG{n}{height}\PYG{p}{,}
-    \PYG{p}{)}
-
-    \PYG{n}{blue} \PYG{o}{=} \PYG{n}{Array}\PYG{p}{(}
-        \PYG{n}{address\PYGZus{}in} \PYG{o}{=} \PYG{n}{row\PYGZus{}stream} \PYG{o}{*} \PYG{n}{width\PYGZus{}stream} \PYG{o}{+} \PYG{n}{col\PYGZus{}stream}\PYG{p}{,}
-        \PYG{n}{data\PYGZus{}in} \PYG{o}{=} \PYG{n}{blue\PYGZus{}intensity}\PYG{p}{,}
-        \PYG{n}{address\PYGZus{}out} \PYG{o}{=} \PYG{n}{pixel\PYGZus{}clock}\PYG{p}{,}
-        \PYG{n}{depth} \PYG{o}{=} \PYG{n}{width} \PYG{o}{*} \PYG{n}{height}\PYG{p}{,}
-    \PYG{p}{)}
-
-    \PYG{k}{return} \PYG{n}{red}\PYG{p}{,} \PYG{n}{green}\PYG{p}{,} \PYG{n}{blue}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{pixstream} \PYG{o}{=} \PYG{n}{video\PYGZus{}raster\PYGZus{}stream}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{l+m+mi}{64}\PYG{p}{,} 
+\PYG{g+gp}{... }    \PYG{l+m+mi}{64}\PYG{p}{,} 
+\PYG{g+gp}{... }    \PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{32}\PYG{p}{)}\PYG{p}{,} 
+\PYG{g+gp}{... }    \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{63}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,} 
+\PYG{g+gp}{... }    \PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{255}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
 \end{Verbatim}
 \end{classdesc}
 \index{Counter (class in chips)}
@@ -1052,9 +1760,45 @@ they can be used to number samples, index memories and so on.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{)} \PYG{c}{\# --\textgreater{} 0 2 4 6 8 10 0 \PYGZbs{}..}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
 
-\PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{-}\PYG{l+m+mi}{2}\PYG{p}{)} \PYG{c}{\# --\textgreater{} 10 8 7 6 4 2 0 10 \PYGZbs{}..}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{=}\PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{)} \PYG{c}{\#creates a 4 bit stream}
+\PYG{g+gp}{... }        \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{0}
+\PYG{g+go}{2}
+\PYG{g+go}{4}
+\PYG{g+go}{6}
+\PYG{g+go}{8}
+\PYG{g+go}{10}
+\PYG{g+go}{0}
+\PYG{g+gp}{...}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{=}\PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{-}\PYG{l+m+mi}{2}\PYG{p}{)} \PYG{c}{\#creates a 4 bit stream}
+\PYG{g+gp}{... }        \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{10}
+\PYG{g+go}{8}
+\PYG{g+go}{6}
+\PYG{g+go}{4}
+\PYG{g+go}{2}
+\PYG{g+go}{0}
+\PYG{g+go}{10}
+\PYG{g+gp}{...}
 \end{Verbatim}
 \end{classdesc}
 \index{Decoupler (class in chips)}
@@ -1077,75 +1821,34 @@ A \emph{Decoupler} accepts only one argument, the source stream.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{def} \PYG{n+nf}{time\PYGZus{}stamp\PYGZus{}data}\PYG{p}{(}\PYG{n}{data\PYGZus{}stream}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
 
-    \PYG{n}{us\PYGZus{}time} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
-    \PYG{n}{time} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-    \PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
-        \PYG{n}{Loop}\PYG{p}{(}
-            \PYG{n}{WaitUs}\PYG{p}{,}
-            \PYG{n}{time}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{time} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-            \PYG{n}{us\PYGZus{}time}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{time}\PYG{p}{)}\PYG{p}{,}
-        \PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{time\PYGZus{}stamp\PYGZus{}data}\PYG{p}{(}\PYG{n}{data\PYGZus{}stream}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }
+\PYG{g+gp}{... }    \PYG{n}{us\PYGZus{}time} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{time} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{WaitUs}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{time}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{time} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{us\PYGZus{}time}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{time}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }
+\PYG{g+gp}{... }    \PYG{n}{output\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{data\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{output\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{us\PYGZus{}time}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{output\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }
+\PYG{g+gp}{... }    \PYG{k}{return} \PYG{n}{output\PYGZus{}stream}
 
-    \PYG{n}{output\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
-    \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-    \PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
-        \PYG{n}{Loop}\PYG{p}{(}
-            \PYG{n}{data\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-            \PYG{n}{output\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-            \PYG{n}{us\PYGZus{}time}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-            \PYG{n}{output\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-        \PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}
-
-    \PYG{k}{return} \PYG{n}{output\PYGZus{}stream}
-\end{Verbatim}
-\end{classdesc}
-\index{Resizer (class in chips)}
-
-\hypertarget{chips.Resizer}{}\begin{classdesc}{Resizer}{source, bits}
-A \emph{Resizer} changes the width, in bits, of the source stream.
-
-The \emph{Resizer} takes two arguments, the source stream, and the \emph{width} in
-bits. The \emph{Resizer} will truncate data if it is reducing the width, ans
-sign extend if it is increasing the width.
-
-Example:
-
-\begin{Verbatim}[commandchars=@\[\]]
-a = InPort(name="din", bits=8) a has a width of 8 bits
-b = Inport + 1 @#b has a width of 9 bits
-c = Resizer(b, 8) @#c is truncated to 8 bits
-Chip(OutPort(name="dout"))
-\end{Verbatim}
-\end{classdesc}
-\index{Lookup (class in chips)}
-
-\hypertarget{chips.Lookup}{}\begin{classdesc}{Lookup}{source, *args}
-A \emph{Lookup} is a stream yields values from a read-only look up table.
-
-For each data item in the source stream, a \emph{Lookup} will yield the
-addressed value in the lookup table. A \emph{Lookup} is basically a Read Only
-Memory(ROM) with the source stream forming the address, and the \emph{Lookup}
-itself forming the data output.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{def} \PYG{n+nf}{binary\PYGZus{}2\PYGZus{}gray}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{p}{)}\PYG{p}{:} 
-    \PYG{k}{return} \PYG{n}{Lookup}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{6}\PYG{p}{,} \PYG{l+m+mi}{7}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{)}
-\end{Verbatim}
-
-The first argument to a \emph{Lookup} is the source stream, all additional
-arguments form the lookup table. If you want to use a Python sequence
-object such as a tuple or a list to form the lookup table use the following
-syntax:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{my\PYGZus{}list} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{6}\PYG{p}{,} \PYG{l+m+mi}{7}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{]} 
-\PYG{n}{my\PYGZus{}sequence} \PYG{o}{=} \PYG{n}{Sequence}\PYG{p}{(}\PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{7}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,} \PYG{o}{*}\PYG{n}{my\PYGZus{}list}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{time\PYGZus{}stamped\PYGZus{}stream} \PYG{o}{=} \PYG{n}{time\PYGZus{}stamp\PYGZus{}data}\PYG{p}{(}\PYG{n}{SerialIn}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
 \end{Verbatim}
 \end{classdesc}
 \index{Fifo (class in chips)}
@@ -1163,78 +1866,83 @@ determines the size of the Fifo buffer.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{def} \PYG{n+nf}{digital\PYGZus{}oscilloscope}\PYG{p}{(}\PYG{n}{ADC\PYGZus{}stream}\PYG{p}{,} \PYG{n}{trigger\PYGZus{}level}\PYG{p}{)}\PYG{p}{:} 
-    \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-    \PYG{n}{count} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
 
-    \PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
-        \PYG{n}{Loop}\PYG{p}{(}
-            \PYG{n}{ADC\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-            \PYG{n}{If}\PYG{p}{(}\PYG{n}{temp} \PYG{o}{\textgreater{}} \PYG{n}{trigger\PYGZus{}level}\PYG{p}{,}
-                \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{buffer\PYGZus{}depth}\PYG{p}{)}\PYG{p}{,}
-                \PYG{n}{While}\PYG{p}{(}\PYG{n}{count}\PYG{p}{,}
-                    \PYG{n}{ADC\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-                    \PYG{n+nb}{buffer}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-                    \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{count}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-                \PYG{p}{)}\PYG{p}{,}
-            \PYG{p}{)}\PYG{p}{,}
-        \PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}
-            
-    \PYG{k}{return} \PYG{n}{SerialOut}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{Fifo}\PYG{p}{(}\PYG{n+nb}{buffer}\PYG{p}{,} \PYG{n}{buffer\PYGZus{}depth}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{scope}\PYG{p}{(}\PYG{n}{ADC\PYGZus{}stream}\PYG{p}{,} \PYG{n}{trigger\PYGZus{}level}\PYG{p}{,} \PYG{n}{buffer\PYGZus{}depth}\PYG{p}{)}\PYG{p}{:} 
+\PYG{g+gp}{... }    \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{count} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n+nb}{buffer} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }
+\PYG{g+gp}{... }    \PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{ADC\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{If}\PYG{p}{(}\PYG{n}{temp} \PYG{o}{\textgreater{}} \PYG{n}{trigger\PYGZus{}level}\PYG{p}{,}
+\PYG{g+gp}{... }                \PYG{n+nb}{buffer}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }                \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{buffer\PYGZus{}depth} \PYG{o}{-} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }                \PYG{n}{While}\PYG{p}{(}\PYG{n}{count}\PYG{p}{,}
+\PYG{g+gp}{... }                    \PYG{n}{ADC\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }                    \PYG{n+nb}{buffer}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }                    \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{count}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }                \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }            
+\PYG{g+gp}{... }    \PYG{k}{return} \PYG{n}{Printer}\PYG{p}{(}\PYG{n}{Fifo}\PYG{p}{(}\PYG{n+nb}{buffer}\PYG{p}{,} \PYG{n}{buffer\PYGZus{}depth}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{... }
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{test\PYGZus{}signal} \PYG{o}{=} \PYG{n}{Sequence}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Console}\PYG{p}{(}\PYG{n}{scope}\PYG{p}{(}\PYG{n}{test\PYGZus{}signal}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+go}{3}
+\PYG{g+go}{4}
+\PYG{g+go}{5}
 \end{Verbatim}
 \end{classdesc}
-\index{Repeater (class in chips)}
+\index{HexPrinter (class in chips)}
 
-\hypertarget{chips.Repeater}{}\begin{classdesc}{Repeater}{value}
-A stream which repeatedly yields the specified \emph{value}.
+\hypertarget{chips.HexPrinter}{}\begin{classdesc}{HexPrinter}{source}
+A \emph{HexPrinter} turns data into hexadecimal ASCII characters.
 
-The \emph{Repeater} stream is one of the most fundamental streams available.
+Each each data item is turned into the ASCII representation of its
+hexadecimal value, terminated with a newline character. Each character then
+forms a data item in the \emph{HexPrinter} stream.
 
-The width of the stream in bits is calculated automatically. The smallest
-number of bits that can represent \emph{value} in twos-complement format will be
-used.
-
-Examples:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{)} \PYG{c}{\#--\textgreater{} 5 5 5 5 \PYGZbs{}..}
-\PYG{c}{\#creates a 4 bit stream.}
-
-\PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{10}\PYG{p}{)} \PYG{c}{\#--\textgreater{} 10 10 10 10 \PYGZbs{}..}
-\PYG{c}{\#creates a 5 bit stream.}
-
-\PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{o}{*}\PYG{l+m+mi}{2} \PYG{c}{\#--\textgreater{} 10 10 10 10 \PYGZbs{}..}
-\PYG{c}{\#This is shorthand for: Repeater(5)*Repeater(2)}
-\end{Verbatim}
-\end{classdesc}
-\index{Sequence (class in chips)}
-
-\hypertarget{chips.Sequence}{}\begin{classdesc}{Sequence}{}\end{classdesc}
-\index{Stimulus (class in chips)}
-
-\hypertarget{chips.Stimulus}{}\begin{classdesc}{Stimulus}{bits}
-A Stream that allows a Python iterable to be used as a stream.
-
-A Stimulus stream allows a transparent method to pass data from the Python
-environment into the simulation environment. The sequence object is set at
-run time using the set\_simulation\_data() method. The sequence object can be
-any iterable Python sequence such as a list, tuple, or even a generator.
+A \emph{HexPrinter} accepts a single argument, the source stream. A \emph{HexPrinter}
+stream is always 8 bits wide.
 
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{import} \PYG{n+nn}{PIL}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
 
-\PYG{n}{picture} \PYG{o}{=} \PYG{n}{Stimulus}\PYG{p}{(}\PYG{p}{)}
-\PYG{n}{s} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Console}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{picture}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#print the numbers 0x0-0x10 to the console repeatedly}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{=}\PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{HexPrinter}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mh}{0x0}\PYG{p}{,} \PYG{l+m+mh}{0x10}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
 
-\PYG{n}{im} \PYG{o}{=} \PYG{n}{PIL}\PYG{o}{.}\PYG{n}{open}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{test.bmp}\PYG{l+s}{"}\PYG{p}{)}
-\PYG{n}{image\PYGZus{}data} \PYG{o}{=} \PYG{n+nb}{list}\PYG{p}{(}\PYG{n}{im}\PYG{o}{.}\PYG{n}{getdata}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
-\PYG{n}{picture}\PYG{o}{.}\PYG{n}{set\PYGZus{}simulation\PYGZus{}data}\PYG{p}{(}\PYG{n}{image\PYGZus{}data}\PYG{p}{)}
-
-\PYG{n}{picture}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
-\PYG{n}{picture}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}
+\PYG{g+go}{0}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+go}{3}
+\PYG{g+go}{4}
+\PYG{g+go}{5}
+\PYG{g+go}{6}
+\PYG{g+go}{7}
+\PYG{g+go}{8}
+\PYG{g+go}{9}
+\PYG{g+go}{a}
+\PYG{g+go}{b}
+\PYG{g+gp}{...}
 \end{Verbatim}
 \end{classdesc}
 \index{InPort (class in chips)}
@@ -1258,28 +1966,57 @@ top level entity.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{dip\PYGZus{}switches} \PYG{o}{=} \PYG{n}{Inport}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{dip\PYGZus{}switches}\PYG{l+s}{"}\PYG{p}{,} \PYG{l+m+mi}{8}\PYG{p}{)} 
-\PYG{n}{s} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{SerialOut}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{dip\PYGZus{}switches}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{dip\PYGZus{}switches} \PYG{o}{=} \PYG{n}{InPort}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{dip\PYGZus{}switches}\PYG{l+s}{"}\PYG{p}{,} \PYG{l+m+mi}{8}\PYG{p}{)} 
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{s} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{SerialOut}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{dip\PYGZus{}switches}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
 \end{Verbatim}
 \end{classdesc}
-\index{SerialIn (class in chips)}
+\index{Lookup (class in chips)}
 
-\hypertarget{chips.SerialIn}{}\begin{classdesc}{SerialIn}{name='RX', clock\_rate=50000000, baud\_rate=115200}
-A \emph{SerialIn} yields data from a serial UART port.
+\hypertarget{chips.Lookup}{}\begin{classdesc}{Lookup}{source, *args}
+A \emph{Lookup} is a stream yields values from a read-only look up table.
 
-\emph{SerialIn} yields one data item from the serial input port for each
-character read from the source stream.  The stream is always 8 bits wide.
-
-A \emph{SerialIn} accepts an optional \emph{name} argument which is used as the name
-for the serial RX line in generated VHDL. The clock rate of the target
-device in MHz can be specified using the \emph{clock\_rate} argument. The baud
-rate of the serial input can be specified using the \emph{baud\_rate} argument.
+For each data item in the source stream, a \emph{Lookup} will yield the
+addressed value in the lookup table. A \emph{Lookup} is basically a Read Only
+Memory(ROM) with the source stream forming the address, and the \emph{Lookup}
+itself forming the data output.
 
 Example:
 
-\begin{Verbatim}[commandchars=@\[\]]
-@#echo typed characters
-my@_chip = Chip(SerialOut(SerialIn())
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{binary\PYGZus{}2\PYGZus{}gray}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{p}{)}\PYG{p}{:} 
+\PYG{g+gp}{... }    \PYG{k}{return} \PYG{n}{Lookup}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{6}\PYG{p}{,} \PYG{l+m+mi}{7}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}\PYG{n}{binary\PYGZus{}2\PYGZus{}gray}\PYG{p}{(}\PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{7}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{0}
+\PYG{g+go}{1}
+\PYG{g+go}{3}
+\PYG{g+go}{2}
+\PYG{g+go}{6}
+\PYG{g+go}{7}
+\PYG{g+go}{5}
+\PYG{g+go}{4}
+\PYG{g+go}{0}
+\PYG{g+gp}{...}
+\end{Verbatim}
+
+The first argument to a \emph{Lookup} is the source stream, all additional
+arguments form the lookup table. If you want to use a Python sequence
+object such as a tuple or a list to form the lookup table use the following
+syntax:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}list} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{6}\PYG{p}{,} \PYG{l+m+mi}{7}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{]} 
+\PYG{g+gp}{... }\PYG{n}{my\PYGZus{}sequence} \PYG{o}{=} \PYG{n}{Lookup}\PYG{p}{(}\PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{7}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,} \PYG{o}{*}\PYG{n}{my\PYGZus{}list}\PYG{p}{)}
 \end{Verbatim}
 \end{classdesc}
 \index{Output (class in chips)}
@@ -1294,18 +2031,41 @@ method. The read method accepts one argument, an expression to write.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{def} \PYG{n+nf}{tee}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{p}{)}\PYG{p}{:}
-    \PYG{n}{output\PYGZus{}stream\PYGZus{}1} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
-    \PYG{n}{output\PYGZus{}stream\PYGZus{}2} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
-    \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-    \PYG{n}{Process}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{,}
-        \PYG{n}{Loop}\PYG{p}{(}
-            \PYG{n}{input\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-            \PYG{n}{output\PYGZus{}stream\PYGZus{}1}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-            \PYG{n}{output\PYGZus{}stream\PYGZus{}2}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-        \PYG{p}{)}
-    \PYG{p}{)}
-    \PYG{k}{return} \PYG{n}{input\PYGZus{}stream\PYGZus{}1}\PYG{p}{,} \PYG{n}{input\PYGZus{}stream\PYGZus{}2}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{tee}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }    \PYG{n}{output\PYGZus{}stream\PYGZus{}1} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{output\PYGZus{}stream\PYGZus{}2} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{n}{Process}\PYG{p}{(}\PYG{n}{input\PYGZus{}stream}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{input\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{output\PYGZus{}stream\PYGZus{}1}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{output\PYGZus{}stream\PYGZus{}2}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{k}{return} \PYG{n}{output\PYGZus{}stream\PYGZus{}1}\PYG{p}{,} \PYG{n}{output\PYGZus{}stream\PYGZus{}2}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{os\PYGZus{}1}\PYG{p}{,} \PYG{n}{os\PYGZus{}2} \PYG{o}{=} \PYG{n}{tee}\PYG{p}{(}\PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}\PYG{n}{os\PYGZus{}1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}\PYG{n}{os\PYGZus{}2}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{1}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+go}{2}
+\PYG{g+go}{3}
+\PYG{g+go}{3}
+\PYG{g+gp}{...}
 \end{Verbatim}
 \end{classdesc}
 \index{Printer (class in chips)}
@@ -1323,47 +2083,240 @@ stream is always 8 bits wide.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\#print the numbers 0-10 to the console repeatedly}
-\PYG{n}{Chip}\PYG{p}{(}
-    \PYG{n}{Console}\PYG{p}{(}
-        \PYG{n}{Printer}\PYG{p}{(}
-            \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-        \PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}\PYG{p}{,}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#print the numbers 0-10 to the console repeatedly}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{=}\PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }   \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{0}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+go}{3}
+\PYG{g+go}{4}
+\PYG{g+gp}{...}
 \end{Verbatim}
 \end{classdesc}
-\index{HexPrinter (class in chips)}
+\index{Repeater (class in chips)}
 
-\hypertarget{chips.HexPrinter}{}\begin{classdesc}{HexPrinter}{source}
-A \emph{HexPrinter} turns data into hexadecimal ASCII characters.
+\hypertarget{chips.Repeater}{}\begin{classdesc}{Repeater}{value}
+A stream which repeatedly yields the specified \emph{value}.
 
-Each each data item is turned into the ASCII representation of its
-hexadecimal value, terminated with a newline character. Each character then
-forms a data item in the \emph{HexPrinter} stream.
+The \emph{Repeater} stream is one of the most fundamental streams available.
 
-A \emph{HexPrinter} accepts a single argument, the source stream. A \emph{HexPrinter}
-stream is always 8 bits wide.
+The width of the stream in bits is calculated automatically. The smallest
+number of bits that can represent \emph{value} in twos-complement format will be
+used.
+
+Examples:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{=}\PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{)} \PYG{c}{\#creates a 4 bit stream}
+\PYG{g+gp}{... }        \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{5}
+\PYG{g+go}{5}
+\PYG{g+go}{5}
+\PYG{g+gp}{...}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{=}\PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{10}\PYG{p}{)} \PYG{c}{\#creates a 5 bit stream}
+\PYG{g+gp}{... }        \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{10}
+\PYG{g+go}{10}
+\PYG{g+go}{10}
+\PYG{g+gp}{...}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{=}\PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{c}{\#This is shorthand for: Repeater(5)*Repeater(2)}
+\PYG{g+gp}{... }            \PYG{n}{Repeater}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{o}{*}\PYG{l+m+mi}{2}
+\PYG{g+gp}{... }        \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{10}
+\PYG{g+go}{10}
+\PYG{g+go}{10}
+\PYG{g+gp}{...}
+\end{Verbatim}
+\end{classdesc}
+\index{Resizer (class in chips)}
+
+\hypertarget{chips.Resizer}{}\begin{classdesc}{Resizer}{source, bits}
+A \emph{Resizer} changes the width, in bits, of the source stream.
+
+The \emph{Resizer} takes two arguments, the source stream, and the \emph{width} in
+bits. The \emph{Resizer} will truncate data if it is reducing the width, ans
+sign extend if it is increasing the width.
 
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\#print the numbers 0x0-0x10 to the console repeatedly}
-\PYG{n}{Chip}\PYG{p}{(}
-    \PYG{n}{Console}\PYG{p}{(}
-        \PYG{n}{Printer}\PYG{p}{(}
-            \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mh}{0x0}\PYG{p}{,} \PYG{l+m+mh}{0x10}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-        \PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}\PYG{p}{,}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{a} \PYG{o}{=} \PYG{n}{InPort}\PYG{p}{(}\PYG{n}{name}\PYG{o}{=}\PYG{l+s}{"}\PYG{l+s}{din}\PYG{l+s}{"}\PYG{p}{,} \PYG{n}{bits}\PYG{o}{=}\PYG{l+m+mi}{8}\PYG{p}{)} \PYG{c}{\#a has a width of 8 bits}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{a}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+go}{8}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{b} \PYG{o}{=} \PYG{n}{a} \PYG{o}{+} \PYG{l+m+mi}{1} \PYG{c}{\#b has a width of 9 bits}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{b}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+go}{9}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Resizer}\PYG{p}{(}\PYG{n}{b}\PYG{p}{,} \PYG{l+m+mi}{8}\PYG{p}{)} \PYG{c}{\#c is truncated to 8 bits}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{get\PYGZus{}bits}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+go}{8}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Chip}\PYG{p}{(}\PYG{n}{OutPort}\PYG{p}{(}\PYG{n}{c}\PYG{p}{,} \PYG{n}{name}\PYG{o}{=}\PYG{l+s}{"}\PYG{l+s}{dout}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+go}{Chip(...}
 \end{Verbatim}
 \end{classdesc}
-\index{Scanner (class in chips)}
+\index{Scanner() (in module chips)}
 
-\hypertarget{chips.Scanner}{}\begin{classdesc}{Scanner}{}\end{classdesc}
+\hypertarget{chips.Scanner}{}\begin{funcdesc}{Scanner}{stream, bits}
+A \emph{Scanner} converts a stream of decimal ASCII into their integer value.
+
+Numeric characters separated by non-numeric characters are interpreted as
+numbers.  As it is not possible to determine the maximum value of a
+\emph{Scanner} stream at compile time, the width of the stream must be specified
+using the bits parameter.
+
+The \emph{Scanner} stream accepts two inputs, the source stream and the number
+of bits.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#multiply by two and echo}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{Scanner}\PYG{p}{(}\PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{10 20 30 }\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,} \PYG{l+m+mi}{8}\PYG{p}{)}\PYG{o}{*}\PYG{l+m+mi}{2}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)} \PYG{c}{\# doctest: +ELLIPSIS}
+\PYG{g+go}{20}
+\PYG{g+go}{40}
+\PYG{g+go}{60}
+\PYG{g+go}{20}
+\PYG{g+gp}{...}
+\end{Verbatim}
+\end{funcdesc}
+\index{Sequence() (in module chips)}
+
+\hypertarget{chips.Sequence}{}\begin{funcdesc}{Sequence}{*args}
+A \emph{Sequence} stream yields each of its arguments in turn repeatedly.
+
+A \emph{Sequence} accepts any number of arguments. The bit width of a sequence
+is determined automatically, using the number of bits necessary to
+represent the argument with the largest magnitude. A \emph{Sequence} allows
+Python sequences to be used within a Chips simulation using the
+\code{Sequence(*python\_sequence)} syntax.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{)}
+\PYG{g+go}{hello world}
+\PYG{g+go}{hello world}
+\PYG{g+go}{hello world}
+\PYG{g+gp}{...}
+\end{Verbatim}
+\end{funcdesc}
+\index{SerialIn (class in chips)}
+
+\hypertarget{chips.SerialIn}{}\begin{classdesc}{SerialIn}{name='RX', clock\_rate=50000000, baud\_rate=115200}
+A \emph{SerialIn} yields data from a serial UART port.
+
+\emph{SerialIn} yields one data item from the serial input port for each
+character read from the source stream.  The stream is always 8 bits wide.
+
+A \emph{SerialIn} accepts an optional \emph{name} argument which is used as the name
+for the serial RX line in generated VHDL. The clock rate of the target
+device in MHz can be specified using the \emph{clock\_rate} argument. The baud
+rate of the serial input can be specified using the \emph{baud\_rate} argument.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#echo typed characters}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{SerialOut}\PYG{p}{(}\PYG{n}{SerialIn}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\end{Verbatim}
+\end{classdesc}
+\index{Stimulus (class in chips)}
+
+\hypertarget{chips.Stimulus}{}\begin{classdesc}{Stimulus}{bits}
+A Stream that allows a Python iterable to be used as a stream.
+
+A Stimulus stream allows a transparent method to pass data from the Python
+environment into the simulation environment. The sequence object is set at
+run time using the set\_simulation\_data() method. The sequence object can be
+any iterable Python sequence such as a list, tuple, or even a generator.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{stimulus} \PYG{o}{=} \PYG{n}{Stimulus}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Console}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{stimulus}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{count}\PYG{p}{(}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }    \PYG{n}{i}\PYG{o}{=}\PYG{l+m+mi}{0}
+\PYG{g+gp}{... }    \PYG{k}{while} \PYG{n+nb+bp}{True}\PYG{p}{:}
+\PYG{g+gp}{... }        \PYG{k}{yield} \PYG{n}{i}
+\PYG{g+gp}{... }        \PYG{n}{i}\PYG{o}{+}\PYG{o}{=}\PYG{l+m+mi}{1}
+\PYG{g+gp}{... }
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{stimulus}\PYG{o}{.}\PYG{n}{set\PYGZus{}simulation\PYGZus{}data}\PYG{p}{(}\PYG{n}{count}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{0}
+\PYG{g+go}{1}
+\PYG{g+go}{2}
+\PYG{g+gp}{...}
+\end{Verbatim}
+\end{classdesc}
 
 
-\section{Sinks}
+\subsection{Sinks}
 \index{chips.sinks (module)}
 \hypertarget{module-chips.sinks}{}
 \declaremodule[chips.sinks]{}{chips.sinks}
@@ -1382,94 +2335,7 @@ A consumer of data in its own right such as an \emph{Asserter}.
 \end{description}
 
 
-\subsection{Sinks Reference}
-\index{Response (class in chips)}
-
-\hypertarget{chips.Response}{}\begin{classdesc}{Response}{a}
-A \emph{Response} sink allows data to be transfered into Python.
-
-As a simulation is run, the \emph{Response} sink accumulates data. After a
-simulation is run, you can retrieve a python iterable using the
-get\_simulation\_data method. Using a \emph{Response} sink allows you to
-seamlessly integrate your \emph{Chips} simulation into a wider Python
-simulation. This works for simulations using an external simulator as well,
-in this case you also need to pass the code generation plugin to
-get\_simulation\_data.
-
-A \emph{Response} sink accepts a single stream argument as its source.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{import} \PYG{n+nn}{PIL}
-
-\PYG{k}{def} \PYG{n+nf}{image\PYGZus{}processor}\PYG{p}{(}\PYG{p}{)}\PYG{p}{:}
-    \PYG{c}{\#some image processing algorithm}
-    \PYG{k}{pass}
-
-\PYG{n}{response} \PYG{o}{=} \PYG{n}{Response}\PYG{p}{(}\PYG{n}{image\PYGZus{}processor}\PYG{p}{)}
-\PYG{n}{chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{response}\PYG{p}{)}
-
-\PYG{n}{chip}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
-\PYG{n}{chip}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{10000}\PYG{p}{)}
-
-
-\PYG{n}{image\PYGZus{}data} \PYG{o}{=} \PYG{n+nb}{list}\PYG{p}{(}\PYG{n}{response}\PYG{o}{.}\PYG{n}{get\PYGZus{}simulation\PYGZus{}data}\PYG{p}{(}\PYG{n}{plugin}\PYG{p}{)}\PYG{p}{)}
-\PYG{n}{im} \PYG{o}{=} \PYG{n}{PIL}\PYG{o}{.}\PYG{n}{Image}\PYG{o}{.}\PYG{n}{new}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{L}\PYG{l+s}{"}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{64}\PYG{p}{,} \PYG{l+m+mi}{64}\PYG{p}{)}\PYG{p}{)}
-\PYG{n}{im}\PYG{o}{.}\PYG{n}{putdata}\PYG{p}{(}\PYG{n}{image\PYGZus{}data}\PYG{p}{)}
-\PYG{n}{im}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
-\end{Verbatim}
-\end{classdesc}
-\index{OutPort (class in chips)}
-
-\hypertarget{chips.OutPort}{}\begin{classdesc}{OutPort}{a, name}
-An \emph{OutPort} sink outputs a stream of data to I/O port pins.
-
-No handshaking is performed on the output port, data will appear at the
-time when the source stream transfers data.
-
-An output port take two arguments, the source stream \emph{a} and a string
-\emph{name}. Name is used as the port name in generated VHDL.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{dip\PYGZus{}switches} \PYG{o}{=} \PYG{n}{Inport}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{dip\PYGZus{}switches}\PYG{l+s}{"}\PYG{p}{,} \PYG{l+m+mi}{8}\PYG{p}{)} 
-\PYG{n}{led\PYGZus{}array} \PYG{o}{=} \PYG{n}{OutPort}\PYG{p}{(}\PYG{n}{dip\PYGZus{}switched}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{led\PYGZus{}array}\PYG{l+s}{"}\PYG{p}{)}
-\PYG{n}{s} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{led\PYGZus{}array}\PYG{p}{)}
-\end{Verbatim}
-\end{classdesc}
-\index{SerialOut (class in chips)}
-
-\hypertarget{chips.SerialOut}{}\begin{classdesc}{SerialOut}{a, name='TX', clock\_rate=50000000, baud\_rate=115200}
-A \emph{SerialOut} outputs data to a serial UART port.
-
-\emph{SerialOut} outputs one character to the serial output port for each item
-of data in the source stream. At present only 8 data bits are supported, so
-the source stream must be 8 bits wide. The source stream could be truncated
-to 8 bits using a \emph{Resizer}, but it is usually more convenient to use a
-\emph{Printer} as the source stream. The will allow a stream of any width to be
-represented as a decimal string.
-
-A SerialOut accepts a source stream argument \emph{a}. An optional \emph{name}
-argument is used as the name for the serial TX line in generated VHDL. The
-clock rate of the target device in MHz can be specified using the
-\emph{clock\_rate} argument. The baud rate of the serial output can be specified
-using the \emph{baud\_rate} argument.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\#convert string into a sequence of characters}
-\PYG{n}{hello\PYGZus{}world} \PYG{o}{=} \PYG{n+nb}{tuple}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)} \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
-
-\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
-    \PYG{n}{SerialOut}\PYG{p}{(}
-        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n}{hello\PYGZus{}world}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}
-\PYG{p}{)}
-\end{Verbatim}
-\end{classdesc}
+\subsubsection{Sinks Reference}
 \index{Asserter (class in chips)}
 
 \hypertarget{chips.Asserter}{}\begin{classdesc}{Asserter}{a}
@@ -1486,8 +2352,9 @@ The \emph{Asserter} sink accepts a source stream argument, \emph{a}.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{a} \PYG{o}{=} \PYG{n}{Sequence}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{)}
-\PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Asserter}\PYG{p}{(}\PYG{p}{(}\PYG{n}{a}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{==} \PYG{n}{Sequence}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{a} \PYG{o}{=} \PYG{n}{Sequence}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Asserter}\PYG{p}{(}\PYG{p}{(}\PYG{n}{a}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{==} \PYG{n}{Sequence}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
 \end{Verbatim}
 
 Look at the Chips test suite for more examples of the Asserter being used
@@ -1511,19 +2378,112 @@ A \emph{Console} accepts a source stream argument \emph{a}.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\#convert string into a sequence of characters}
-\PYG{n}{hello\PYGZus{}world} \PYG{o}{=} \PYG{n+nb}{tuple}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)} \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
 
-\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
-    \PYG{n}{Console}\PYG{p}{(}
-        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n}{hello\PYGZus{}world}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#convert string into a sequence of characters}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{hello\PYGZus{}world} \PYG{o}{=} \PYG{n+nb}{tuple}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)} \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n}{hello\PYGZus{}world}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+\end{Verbatim}
+\end{classdesc}
+\index{OutPort (class in chips)}
+
+\hypertarget{chips.OutPort}{}\begin{classdesc}{OutPort}{a, name}
+An \emph{OutPort} sink outputs a stream of data to I/O port pins.
+
+No handshaking is performed on the output port, data will appear at the
+time when the source stream transfers data.
+
+An output port take two arguments, the source stream \emph{a} and a string
+\emph{name}. Name is used as the port name in generated VHDL.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{dip\PYGZus{}switches} \PYG{o}{=} \PYG{n}{InPort}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{dip\PYGZus{}switches}\PYG{l+s}{"}\PYG{p}{,} \PYG{l+m+mi}{8}\PYG{p}{)} 
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{led\PYGZus{}array} \PYG{o}{=} \PYG{n}{OutPort}\PYG{p}{(}\PYG{n}{dip\PYGZus{}switches}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{led\PYGZus{}array}\PYG{l+s}{"}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{s} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{led\PYGZus{}array}\PYG{p}{)}
+\end{Verbatim}
+\end{classdesc}
+\index{Response (class in chips)}
+
+\hypertarget{chips.Response}{}\begin{classdesc}{Response}{a}
+A \emph{Response} sink allows data to be transfered into Python.
+
+As a simulation is run, the \emph{Response} sink accumulates data. After a
+simulation is run, you can retrieve a python iterable using the
+get\_simulation\_data method. Using a \emph{Response} sink allows you to
+seamlessly integrate your \emph{Chips} simulation into a wider Python
+simulation. This works for simulations using an external simulator as well,
+in this case you also need to pass the code generation plugin to
+get\_simulation\_data.
+
+A \emph{Response} sink accepts a single stream argument as its source.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{streams} \PYG{k+kn}{import} \PYG{o}{*}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{import} \PYG{n+nn}{PIL.Image} \PYG{c}{\#You need the Python Imaging Library for this}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{image\PYGZus{}processor}\PYG{p}{(}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }   \PYG{c}{\#black -\textgreater{} white}
+\PYG{g+gp}{... }   \PYG{k}{return} \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{63}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{*}\PYG{l+m+mi}{4}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{response} \PYG{o}{=} \PYG{n}{Response}\PYG{p}{(}\PYG{n}{image\PYGZus{}processor}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{response}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{chip}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{chip}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100000}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{image\PYGZus{}data} \PYG{o}{=} \PYG{n+nb}{list}\PYG{p}{(}\PYG{n}{response}\PYG{o}{.}\PYG{n}{get\PYGZus{}simulation\PYGZus{}data}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{image\PYGZus{}data} \PYG{o}{=} \PYG{n}{image\PYGZus{}data}\PYG{p}{[}\PYG{p}{:}\PYG{p}{(}\PYG{l+m+mi}{64}\PYG{o}{*}\PYG{l+m+mi}{64}\PYG{p}{)}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{]}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{im} \PYG{o}{=} \PYG{n}{PIL}\PYG{o}{.}\PYG{n}{Image}\PYG{o}{.}\PYG{n}{new}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{L}\PYG{l+s}{"}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{64}\PYG{p}{,} \PYG{l+m+mi}{64}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{im}\PYG{o}{.}\PYG{n}{putdata}\PYG{p}{(}\PYG{n}{image\PYGZus{}data}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{im}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+\end{classdesc}
+\index{SerialOut (class in chips)}
+
+\hypertarget{chips.SerialOut}{}\begin{classdesc}{SerialOut}{a, name='TX', clock\_rate=50000000, baud\_rate=115200}
+A \emph{SerialOut} outputs data to a serial UART port.
+
+\emph{SerialOut} outputs one character to the serial output port for each item
+of data in the source stream. At present only 8 data bits are supported, so
+the source stream must be 8 bits wide. The source stream could be truncated
+to 8 bits using a \emph{Resizer}, but it is usually more convenient to use a
+\emph{Printer} as the source stream. The will allow a stream of any width to be
+represented as a decimal string.
+
+A SerialOut accepts a source stream argument \emph{a}. An optional \emph{name}
+argument is used as the name for the serial TX line in generated VHDL. The
+clock rate of the target device in MHz can be specified using the
+\emph{clock\_rate} argument. The baud rate of the serial output can be specified
+using the \emph{baud\_rate} argument.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#convert string into a sequence of characters}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{hello\PYGZus{}world} \PYG{o}{=} \PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{hello world}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{"}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{my\PYGZus{}chip} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{SerialOut}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n}{hello\PYGZus{}world}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
 \end{Verbatim}
 \end{classdesc}
 
 
-\section{Instructions}
+\subsection{Instructions}
 \index{chips.instruction (module)}
 \hypertarget{module-chips.instruction}{}
 \declaremodule[chips.instruction]{}{chips.instruction}
@@ -1531,23 +2491,30 @@ Example:
 The instructions provided here form the basis of the software that can be run inside \emph{Processes}.
 
 
-\subsection{Instructions Reference}
+\subsubsection{Instructions Reference}
 \index{Block (class in chips)}
 
 \hypertarget{chips.Block}{}\begin{classdesc}{Block}{instructions}
 The \emph{Block} statement allows instructions to be nested into a single
 statement. Using a \emph{Block} allows a group of instructions to be stored as a
-single object.
+single object. A block accepts a single argument, \emph{instructions}, a Python
+Sequence of instructions
 
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{Initialise} \PYG{o}{=} \PYG{n}{Block}\PYG{p}{(}\PYG{n}{a}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,} \PYG{n}{b}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,} \PYG{n}{c}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{)}
-\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
-    \PYG{n}{initialise}\PYG{p}{,}
-    \PYG{n}{a}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{a}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,} \PYG{n}{b}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{b}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,} \PYG{n}{c}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{c}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-    \PYG{n}{initialise}\PYG{p}{,}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{a} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{b} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{initialise} \PYG{o}{=} \PYG{n}{Block}\PYG{p}{(}\PYG{p}{(}\PYG{n}{a}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,} \PYG{n}{b}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,} \PYG{n}{c}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{initialise}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{a}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{a}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,} \PYG{n}{b}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{b}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,} \PYG{n}{c}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{c}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
 \end{Verbatim}
 \end{classdesc}
 \index{Break (class in chips)}
@@ -1560,7 +2527,7 @@ Example:
 \begin{Verbatim}[commandchars=\\\{\}]
 \PYG{c}{\#equivalent to a While loop}
 \PYG{n}{Loop}\PYG{p}{(}
-    \PYG{n}{If}\PYG{p}{(}\PYG{n}{condition} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{,}
+    \PYG{n}{If}\PYG{p}{(}\PYG{n}{Not}\PYG{p}{(}\PYG{n}{condition}\PYG{p}{)}\PYG{p}{,}
         \PYG{n}{Break}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
     \PYG{p}{)}\PYG{p}{,}
     \PYG{c}{\#do stuff here}
@@ -1573,7 +2540,7 @@ Example:
 \PYG{c}{\#equivalent to a DoWhile loop}
 \PYG{n}{Loop}\PYG{p}{(}
     \PYG{c}{\#do stuff here}
-    \PYG{n}{If}\PYG{p}{(}\PYG{n}{condition} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{,}
+    \PYG{n}{If}\PYG{p}{(}\PYG{n}{Not}\PYG{p}{(}\PYG{n}{condition}\PYG{p}{)}\PYG{p}{,}
         \PYG{n}{Break}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
     \PYG{p}{)}\PYG{p}{,}
 \PYG{p}{)}\PYG{p}{,}
@@ -1588,17 +2555,67 @@ the next iteration of the containing loop.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{12}\PYG{p}{,}
-    \PYG{n}{Loop}\PYG{p}{(}
-        \PYG{n}{in\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{a}\PYG{p}{)}\PYG{p}{,}
-        \PYG{n}{If}\PYG{p}{(}\PYG{n}{a}\PYG{o}{\&}\PYG{l+m+mi}{1}\PYG{p}{,}
-            \PYG{n}{Continue}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
-        \PYG{p}{)}\PYG{p}{,}
-        \PYG{n}{out\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{a}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}\PYG{p}{,}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{in\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Counter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{100}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{out\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{a} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#allow only even numbers}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{12}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{in\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{a}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{If}\PYG{p}{(}\PYG{n}{a}\PYG{o}{\&}\PYG{l+m+mi}{1}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{Continue}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{out\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{a}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Console}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{out\PYGZus{}stream}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{0}
+\PYG{g+go}{2}
+\PYG{g+go}{4}
+\PYG{g+go}{6}
+\PYG{g+go}{8}
+\PYG{g+gp}{...}
 \end{Verbatim}
 \end{classdesc}
+\index{DoUntil() (in module chips)}
+
+\hypertarget{chips.DoUntil}{}\begin{funcdesc}{DoUntil}{condition, *instructions}
+A loop in which one iteration will be executed each time the condition
+is false. The condition is tested after each loop iteration.
+
+Equivalent to:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{Loop}\PYG{p}{(} 
+     \PYG{n}{instructions}\PYG{p}{,}
+     \PYG{n}{If}\PYG{p}{(}\PYG{n}{condition}\PYG{p}{,} \PYG{n}{Break}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+ \PYG{p}{)}
+\end{Verbatim}
+\end{funcdesc}
+\index{DoWhile() (in module chips)}
+
+\hypertarget{chips.DoWhile}{}\begin{funcdesc}{DoWhile}{condition, *instructions}
+A loop in which one iteration will be executed each time the condition
+is true. The condition is tested after each loop iteration.
+
+Equivalent to:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{Loop}\PYG{p}{(} 
+     \PYG{n}{instructions}\PYG{p}{,}
+     \PYG{n}{If}\PYG{p}{(}\PYG{n}{Not}\PYG{p}{(}\PYG{n}{condition}\PYG{p}{)}\PYG{p}{,} \PYG{n}{Break}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+ \PYG{p}{)}
+\end{Verbatim}
+\end{funcdesc}
+\index{Evaluate (class in chips)}
+
+\hypertarget{chips.Evaluate}{}\begin{classdesc}{Evaluate}{*instructions}\end{classdesc}
 \index{If (class in chips)}
 
 \hypertarget{chips.If}{}\begin{classdesc}{If}{condition, *instructions}
@@ -1634,26 +2651,143 @@ Execution then repeats from the beginning of the \emph{Loop}.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\#filter filter values over 50 out of a stream}
-\PYG{n}{Loop}\PYG{p}{(}
-    \PYG{n}{in\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{a}\PYG{p}{)}\PYG{p}{,}
-    \PYG{n}{If}\PYG{p}{(}\PYG{n}{a} \PYG{o}{\textgreater{}} \PYG{l+m+mi}{50}\PYG{p}{,} \PYG{n}{Continue}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
-    \PYG{n}{out\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{a}\PYG{p}{)}\PYG{p}{,}
-\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#filter values over 50 out of a stream}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{in\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Sequence}\PYG{p}{(}\PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{20}\PYG{p}{,} \PYG{l+m+mi}{30}\PYG{p}{,} \PYG{l+m+mi}{40}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{60}\PYG{p}{,} \PYG{l+m+mi}{70}\PYG{p}{,} \PYG{l+m+mi}{80}\PYG{p}{,} \PYG{l+m+mi}{90}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{out\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{a} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{in\PYGZus{}stream}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{n}{a}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{If}\PYG{p}{(}\PYG{n}{a} \PYG{o}{\textgreater{}} \PYG{l+m+mi}{50}\PYG{p}{,} \PYG{n}{Continue}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{out\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{a}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{Console}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Printer}\PYG{p}{(}\PYG{n}{out\PYGZus{}stream}\PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+go}{10}
+\PYG{g+go}{20}
+\PYG{g+go}{30}
+\PYG{g+go}{40}
+\PYG{g+go}{50}
+\PYG{g+go}{10}
+\PYG{g+gp}{...}
 \end{Verbatim}
 
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\#initialise an array}
-\PYG{n}{Loop}\PYG{p}{(}
-    \PYG{n}{If}\PYG{p}{(}\PYG{n}{index} \PYG{o}{==} \PYG{l+m+mi}{100}\PYG{p}{,}
-        \PYG{n}{Break}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}\PYG{p}{,}
-    \PYG{n}{myarray}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{index}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,}
-\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#initialise an array}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{myarray} \PYG{o}{=} \PYG{n}{VariableArray}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{index} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }    \PYG{n}{If}\PYG{p}{(}\PYG{n}{index} \PYG{o}{==} \PYG{l+m+mi}{100}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{Break}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{myarray}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{index}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Loop(...}
 \end{Verbatim}
 \end{classdesc}
+\index{Print (class in chips)}
+
+\hypertarget{chips.Print}{}\begin{classdesc}{Print}{stream, exp, minimum\_number\_of\_digits=None}
+The \emph{Print} instruction write an integer to a stream in decimal ASCII
+format.
+
+Print will not add any white space or line ends (in contrast to the
+\emph{Printer}) The \emph{Print} instruction accepts two arguments, the destination
+\emph{stream}, which must be an \emph{Output} stream, and a numeric expression,
+\emph{exp}. An optional third argument specifies the minimum number of digits to
+print (leading 0 characters are added).
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#multiply by 2 and echo}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{inp} \PYG{o}{=} \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{1 2 3 }\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{out\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{p}\PYG{o}{=}\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Scan}\PYG{p}{(}\PYG{n}{inp}\PYG{p}{,} \PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{out\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{o}{*}\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Console}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{out\PYGZus{}stream}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}
+\PYG{g+go}{2}
+\PYG{g+go}{4}
+\PYG{g+go}{6}
+\PYG{g+go}{2}
+\PYG{g+gp}{...}
+\end{Verbatim}
+\end{classdesc}
+\index{Scan (class in chips)}
+
+\hypertarget{chips.Scan}{}\begin{classdesc}{Scan}{stream, variable}
+The \emph{Scan} instruction reads an integer value from a stream of decimal
+ASCII characters.
+
+Numeric characters separated by non-numeric characters are interpreted as
+numbers. If \emph{Scan} encounters a number that is too large to represent in a
+process, the result is undefined.
+
+The \emph{Scan} accepts two arguments, the source stream and a destination variable.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#multiply by 2 and echo}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{inp} \PYG{o}{=} \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{1 2 3 }\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{out} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{p}\PYG{o}{=}\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{Scan}\PYG{p}{(}\PYG{n}{inp}\PYG{p}{,} \PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{out}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{o}{*}\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Console}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{out}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)} \PYG{c}{\# doctest: +ELLIPSIS}
+\PYG{g+go}{2}
+\PYG{g+go}{4}
+\PYG{g+go}{6}
+\PYG{g+gp}{...}
+\end{Verbatim}
+\end{classdesc}
+\index{Until() (in module chips)}
+
+\hypertarget{chips.Until}{}\begin{funcdesc}{Until}{condition, *instructions}
+A loop in which one iteration will be executed each time the condition
+is false. The condition is tested before each loop iteration.
+
+Equivalent to:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{Loop}\PYG{p}{(} 
+    \PYG{n}{If}\PYG{p}{(}\PYG{n}{condition}\PYG{p}{,} \PYG{n}{Break}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+   \PYG{n}{instructions}\PYG{p}{,}
+\PYG{p}{)}
+\end{Verbatim}
+\end{funcdesc}
 \index{Value (class in chips)}
 
 \hypertarget{chips.Value}{}\begin{classdesc}{Value}{expression}
@@ -1667,15 +2801,31 @@ the value of the whole evaluate statement.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\#provide a And expression similar to Pythons and expression}
-\PYG{k}{def} \PYG{n+nf}{LogicalAnd}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{)}\PYG{p}{:}
-    \PYG{k}{return} \PYG{n}{Evaluate}\PYG{p}{(}
-        \PYG{n}{If}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,}
-            \PYG{n}{Value}\PYG{p}{(}\PYG{n}{b}\PYG{p}{)}\PYG{p}{,}
-        \PYG{p}{)}\PYG{o}{.}\PYG{n}{Else}\PYG{p}{(}
-            \PYG{l+m+mi}{0}\PYG{p}{,}
-        \PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\#provide a And expression similar to Pythons and expression}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k}{def} \PYG{n+nf}{LogicalAnd}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{)}\PYG{p}{:}
+\PYG{g+gp}{... }    \PYG{k}{return} \PYG{n}{Evaluate}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{If}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{Value}\PYG{p}{(}\PYG{n}{b}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{o}{.}\PYG{n}{Else}\PYG{p}{(}
+\PYG{g+gp}{... }            \PYG{n}{Value}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}
+\PYG{g+gp}{... }    \PYG{p}{)}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{check} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{If}\PYG{p}{(}\PYG{n}{LogicalAnd}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{check}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}\PYG{c}{\#true}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{o}{.}\PYG{n}{Else}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{check}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,}\PYG{c}{\#false}
+\PYG{g+gp}{... }    \PYG{p}{)}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Asserter}\PYG{p}{(}\PYG{n}{check}\PYG{p}{)}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{p}{)}
 \end{Verbatim}
 \end{classdesc}
 \index{WaitUs (class in chips)}
@@ -1693,42 +2843,49 @@ more than 1 microsecond to execute of course!).
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{seconds} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-\PYG{n}{count} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{12}\PYG{p}{,}
-    \PYG{n}{seconds}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,}
-    \PYG{n}{Loop}\PYG{p}{(}
-        \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}\PYG{p}{,}
-        \PYG{n}{While}\PYG{p}{(}\PYG{n}{count}\PYG{p}{,}
-            \PYG{n}{WaitUs}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
-            \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{count}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-        \PYG{p}{)}\PYG{p}{,}
-        \PYG{n}{seconds}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{seconds} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
-        \PYG{n}{out\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{seconds}\PYG{p}{)}\PYG{p}{,}
-    \PYG{p}{)}\PYG{p}{,}
-\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{k+kn}{from} \PYG{n+nn}{chips} \PYG{k+kn}{import} \PYG{o}{*}
+
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{seconds} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{count} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{out\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{12}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{seconds}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{n}{Loop}\PYG{p}{(}
+\PYG{g+gp}{... }        \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{While}\PYG{p}{(}\PYG{n}{count}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{WaitUs}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }            \PYG{n}{count}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{count}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{seconds}\PYG{o}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{seconds} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }        \PYG{n}{out\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{seconds}\PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }    \PYG{p}{)}\PYG{p}{,}
+\PYG{g+gp}{... }\PYG{p}{)}
+\PYG{g+go}{Process(...}
 \end{Verbatim}
 \end{classdesc}
-\index{While (class in chips)}
+\index{While() (in module chips)}
 
-\hypertarget{chips.While}{}\begin{classdesc}{While}{}\end{classdesc}
-\index{Scan (class in chips)}
+\hypertarget{chips.While}{}\begin{funcdesc}{While}{condition, *instructions}
+A loop in which one iteration will be executed each time the condition
+is true. The condition is tested before each loop iteration.
 
-\hypertarget{chips.Scan}{}\begin{classdesc}{Scan}{stream, variable}\end{classdesc}
-\index{Print (class in chips)}
+Equivalent to:
 
-\hypertarget{chips.Print}{}\begin{classdesc}{Print}{stream, exp, minimum\_number\_of\_digits=None}\end{classdesc}
-\index{Evaluate (class in chips)}
-
-\hypertarget{chips.Evaluate}{}\begin{classdesc}{Evaluate}{*instructions}\end{classdesc}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{Loop}\PYG{p}{(} 
+    \PYG{n}{If}\PYG{p}{(}\PYG{n}{Not}\PYG{p}{(}\PYG{n}{condition}\PYG{p}{)}\PYG{p}{,} \PYG{n}{Break}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+    \PYG{n}{instructions}\PYG{p}{,}
+\PYG{p}{)}
+\end{Verbatim}
+\end{funcdesc}
 
 \resetcurrentobjects
 \hypertarget{--doc-automatic\_code\_generation/index}{}
 
-\chapter{Automatic Code Generation}
+\section{Automatic Code Generation}
 
 
-\section{VHDL Code Generation}
+\subsection{VHDL Code Generation}
 \index{chips.VHDL\_plugin (module)}
 \hypertarget{module-chips.VHDL\_plugin}{}
 \declaremodule[chips.VHDLplugin]{}{chips.VHDL\_plugin}
@@ -1736,7 +2893,7 @@ Example:
 VHDL Code Generation for streams library
 
 
-\section{C++ Code Generation}
+\subsection{C++ Code Generation}
 \index{chips.cpp\_plugin (module)}
 \hypertarget{module-chips.cpp\_plugin}{}
 \declaremodule[chips.cppplugin]{}{chips.cpp\_plugin}
@@ -1744,7 +2901,7 @@ VHDL Code Generation for streams library
 C++ code generator for streams library
 
 
-\section{Visualisation Code Generation}
+\subsection{Visualisation Code Generation}
 \index{chips.visual\_plugin (module)}
 \hypertarget{module-chips.visual\_plugin}{}
 \declaremodule[chips.visualplugin]{}{chips.visual\_plugin}
@@ -1754,7 +2911,7 @@ Visualisation for streams library
 \resetcurrentobjects
 \hypertarget{--doc-ip\_library/index}{}
 
-\chapter{IP library}
+\section{IP library}
 \index{chips.ip (module)}
 \hypertarget{module-chips.ip}{}
 \declaremodule[chips.ip]{}{chips.ip}
@@ -1762,7 +2919,32 @@ Visualisation for streams library
 \resetcurrentobjects
 \hypertarget{--doc-extending\_chips/index}{}
 
-\chapter{Extending the Chips Library}
+\section{Extending the Chips Library}
+
+
+\chapter{News}
+\begin{itemize}
+\item {} 
+2011-04-09 Chips Library Published on GitHub.
+
+\end{itemize}
+
+
+\chapter{Links}
+\begin{itemize}
+\item {} 
+\href{http://scipy.org}{SciPy} Scientific Tools for Python.
+
+\item {} 
+\href{http://matplotlib.sourceforge.net}{matplotlib} 2D plotting library for Python.
+
+\item {} 
+\href{http://www.pythonware.com/products/pil/}{Python Imaging Library (PIL)} Python Imaging Library adds image processing capabilities to Python.
+
+\item {} 
+\href{http://www.myhdl.org}{MyHDL} A Hardware description language based on Python.
+
+\end{itemize}
 
 
 \chapter{Indices and tables}

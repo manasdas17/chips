@@ -4,7 +4,7 @@ Tutorial
 Learn Python
 ------------
 In order to make any real use of the *Chips* library you will need to be
-familiar with the basics of Python. The `Python tutorial`_ is a good place
+familiar with the basics of *Python*. The `Python tutorial`_ is a good place
 to start.
 
 .. _`Python tutorial` : http://docs.python.org/tut
@@ -15,13 +15,13 @@ Install Chips
 Windows
 ~~~~~~~
 
-1. First `install Python`_. You need Python 2.6 or later, but not Python 3.
+1. First `install Python`_. You need *Python* 2.6 or later, but not *Python* 3.
 2. Then install the *Chips* library from the `windows installer`_.
 
 Linux
 ~~~~~
 
-1. First `install Python`_. You need Python 2.6 or later, but not Python 3.
+1. First `install Python`_. You need *Python* 2.6 or later, but not *Python* 3.
 2. Then install the *Chips* library from the `source distribution`_::
 
         desktop:~$ tar -zxf chips-0.1.tar.gz
@@ -29,13 +29,15 @@ Linux
         desktop:~$ python setup.py install #run as root
 
 .. _`install Python` : http://python.org/download
-.. _`source distribution` : http://github.com/dawsonjon/chips
-.. _`windows installer` : http://github.com/dawsonjon/chips
+
+.. _`source distribution` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.tar.gz
+
+.. _`windows installer` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.win32.exe
 
 First Simulations
 -----------------
 
-Once you have Python and *Chips* all set up, you can start with some simple
+Once you have *Python* and *Chips* all set up, you can start with some simple
 examples. This one counts to 10 repeatedly::
 
         >>> from chips import *
@@ -141,10 +143,10 @@ VHDL model::
         >>> my_chip.write_code(code_generator)
 
 The *Chips* library uses plugins to generate output code from models. This
-means that new code generators can be added to Chips without having to
-change the way that hardware is designed and simulated. At present, Chips
+means that new code generators can be added to *Chips* without having to
+change the way that hardware is designed and simulated. At present, *Chips*
 supports C++ and VHDL code generation, but it is VHDL code that allows
-*Chips" to be synthesised. 
+*Chips* to be synthesised. 
 
 The VHDL code generation plugin is found in ``chips.VHDL_plugin`` if you run
 this example you should find that a VHDL file called hello_world.vhd has been
@@ -184,7 +186,7 @@ More Streams and Sinks
 ----------------------
 
 So far we have seen three types of streams, *Counter*, *Sequence* and
-*Printer*. Chips provides a range of streams. The full documentation for
+*Printer*. *Chips* provides a range of streams. The full documentation for
 streams is in the `reference manual`_ but a quick summary is included here:
         
 +----------------+-----------------------------------------------------------+
@@ -230,15 +232,34 @@ streams is in the `reference manual`_ but a quick summary is included here:
 |                |                                                           |
 +----------------+-----------------------------------------------------------+
 
-TODO: Add a similar table of sinks
-
 You can also combine streams using the operators : ``abs, ~, +, -, *, //, %,
 <<, >>, &, |, ^, ==, !=, <, <=, >, >=`` on the whole they have the same (or
-very similar) meaning as they do in Python except that they operate on streams
+very similar) meaning as they do in *Python* except that they operate on streams
 of data. It is also possible to form an expression from regular integers and
-streams, Chips will automatically transform an integer into an appropriate
+streams, *Chips* will automatically transform an integer into an appropriate
 *Repeater* stream. For example ``Counter(0, 9, 1)*2`` is a shorthand for
 ``Counter(0, 9, 1)*Repeater(2).``
+
+The following table summarises the available sinks:
+
++----------------+-----------------------------------------------------------+
+| Sink           | Description                                               |
++================+===========================================================+
+| Response()     | A Response sink allows data to be transfered into         |
+|                | Python.                                                   |
++----------------+-----------------------------------------------------------+
+| OutPort()      | An OutPort sink outputs a stream of data to I/O port      |
+|                | pins.                                                     |
++----------------+-----------------------------------------------------------+
+| SerialOut()    | A SerialOut outputs data to a serial UART port.           |
+|                |                                                           |
++----------------+-----------------------------------------------------------+
+| Asserter()     | An Asserter causes an exception if any data in the        |
+|                | source stream is zero.                                    |
++----------------+-----------------------------------------------------------+
+| Console()      | A Console outputs data to the simulation console.         |
+|                |                                                           |
++----------------+-----------------------------------------------------------+
 
         .. _`reference manual`: http://dawsonjon.github.com/chips/language_reference/
 
@@ -246,8 +267,8 @@ Types and Bit Width
 -------------------
 
 For convenience, the central numerical type in *Chips* is a signed integer with
-a fixed number of bits.  This is in contrast to Python, where integers have a
-potentially infinite width. Chips tries to simplify some of the design issues
+a fixed number of bits.  This is in contrast to *Python*, where integers have a
+potentially infinite width. *Chips* tries to simplify some of the design issues
 involved with limited width numbers by doing a lot of the work for you, but it
 is not always possible to completely hide these details, so you need to how
 things are handled behind the scenes.  
@@ -333,7 +354,44 @@ This example demonstrates some of the key features of the *Process*:
 Process Instructions
 --------------------
 
-TODO : Add a list of instructions
++-----------------+--------------------------------------------------------+
+| Instruction     | Description                                            |
++=================+========================================================+
+| Variable()      | A Variable is used within a Process to store data.     |
++-----------------+--------------------------------------------------------+
+| Value()         | The Value statement gives a value to the surrounding   |
+|                 | Evaluate construct.                                    |
++-----------------+--------------------------------------------------------+
+| Evaluate()      | An Evaluate  expression allows a block of statements   |
+|                 | to be used as an expression.                           |
++-----------------+--------------------------------------------------------+
+| Loop()          | The Loop statement executes instructions repeatedly.   |
++-----------------+--------------------------------------------------------+
+| If()            | The If statement conditionally executes                |
+|                 | instructions.                                          |
++-----------------+--------------------------------------------------------+
+| Break()         | The Break statement causes the flow of control to      |
+|                 | immediately exit the loop.                             |
++-----------------+--------------------------------------------------------+
+| WaitUs()        | WaitUs causes execution to halt until the next tick    |
+|                 | of the microsecond timer.                              |
++-----------------+--------------------------------------------------------+
+| Continue()      | The Continue statement causes the flow of control to   |
+|                 | immediately jump to the next iteration of the          |
+|                 | containing loop.                                       |
++-----------------+--------------------------------------------------------+
+| Block()         | The Block statement allows instructions to be nested   |
+|                 | into a single statement.                               |
++-----------------+--------------------------------------------------------+
+| Output.write()  | This method returns a write instruction that writes a  |
+|                 | single data item to the Output stream.                 |
++-----------------+--------------------------------------------------------+
+| <stream>.read() | This method returns a read instruction that reads a    |
+|                 | single data item from a  stream.                       |
++-----------------+--------------------------------------------------------+
+| Variable.set()  | This method returns a set instruction that assigns the |
+|                 | value of an expression to a variable.                  |
++-----------------+--------------------------------------------------------+
 
 Bit Width Within a Process
 --------------------------
@@ -355,8 +413,8 @@ form re-usable components or modules. A really good design tool would allow you
 to parameterise components and modules using generics or templates. *Chips* does
 not provide any of these things. It doesn't have to.
 
-The Python language itself already provides all these things and more. If you
-want to make a reusable component you can simply write a Python function:: 
+The *Python* language itself already provides all these things and more. If you
+want to make a reusable component you can simply write a *Python* function:: 
 
         >>> from chips import *
 
@@ -538,4 +596,33 @@ The `source distribution`_ contains a number of more involved examples so that
 you can see for yourself how more complex hardware designs can be formed from
 these simple components.
 
-.. _`source distribution` : http://github.com/dawsonjon/chips
+.. _`source distribution` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.tar.gz
+
+    A *Variable* is used within a *Process* to store data.
+
+    The *Value* statement gives a value to the surrounding *Evaluate*
+    construct.
+    
+    An *Evaluate*  expression allows a block of statements to be used as an
+    expression. 
+
+    The *Loop* statement executes instructions repeatedly.
+
+    The *If* statement conditionally executes instructions.
+
+    The *Break* statement causes the flow of control to immediately exit the loop.
+
+    *WaitUs* causes execution to halt until the next tick of the microsecond
+    timer. 
+
+    The *Continue* statement causes the flow of control to immediately jump to
+    the next iteration of the containing loop.
+
+    The *Block* statement allows instructions to be nested into a single
+    statement.
+
+    This method returns a write instruction that writes a single data item to the Ouput stream.
+
+    This method returns a read instruction that reads a single data item from a  stream.
+
+    This method returns a set instruction that assigns the value of an expression to a variable.

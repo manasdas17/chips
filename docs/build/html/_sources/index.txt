@@ -34,30 +34,42 @@ A Quick Taster
 
 ::
 
-        """4 bit linear feedback shift register"""
+        >>> #4 bit linear feedback shift register
 
-        from chips import *
+        >>> from chips import *
 
-        new_bit = Variable(0)
-        shift_register = Variable(1) #initialise to anything but 0
-        output_stream = Output()
+        >>> new_bit = Variable(0)
+        >>> shift_register = Variable(1) #initialise to anything but 0
+        >>> output_stream = Output()
 
-        Process(5,
-            Loop(
-                #tap off bit 2 and 3 
-                new_bit.set((shift_register >> 0) ^ (shift_register >> 1) ^ new_bit),
-                #implement shift register
-                shift_register.set(((new_bit & 1) << 3) | (shift_register >> 1)),
-                #4 bit mask
-                shift_register.set(shift_register & 0xf),
-                #write to stream
-                output_stream.write(shift_register)
-            )
-        )
+        >>> Process(5,
+        ...     Loop(
+        ... 
+        ...         #tap off bit 2 and 3 
+        ...         new_bit.set((shift_register >> 0) ^ (shift_register >> 1) ^ new_bit),
+        ... 
+        ...         #implement shift register
+        ...         shift_register.set(((new_bit & 1) << 3) | (shift_register >> 1)),
+        ... 
+        ...         #4 bit mask
+        ...         shift_register.set(shift_register & 0xf),
+        ... 
+        ...         #write to stream
+        ...         output_stream.write(shift_register)
+        ...     )
+        ... )
+        Process(...
 
-        device = Chip(Console(Printer(output_stream)))
-        device.reset()
-        device.execute(1000)
+        >>> device = Chip(Console(Printer(output_stream)))
+        >>> device.reset()
+        >>> device.execute(1000)
+        8
+        12
+        14
+        7
+        3
+        1
+        ...
 
 Download
 ========

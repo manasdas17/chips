@@ -1,8 +1,8 @@
-\indexentry {chips.process@{\texttt  {chips.process}}|hyperpage}{9}
-\indexentry {chips.streams@{\texttt  {chips.streams}}|hyperpage}{12}
-\indexentry {chips.sinks@{\texttt  {chips.sinks}}|hyperpage}{18}
-\indexentry {chips.instruction@{\texttt  {chips.instruction}}|hyperpage}{20}
-\indexentry {chips.VHDL\_plugin@{\texttt  {chips.VHDL\_plugin}}|hyperpage}{25}
-\indexentry {chips.cpp\_plugin@{\texttt  {chips.cpp\_plugin}}|hyperpage}{25}
-\indexentry {chips.visual\_plugin@{\texttt  {chips.visual\_plugin}}|hyperpage}{25}
-\indexentry {chips.ip@{\texttt  {chips.ip}}|hyperpage}{27}
+\indexentry {chips.process@{\texttt  {chips.process}}|hyperpage}{19}
+\indexentry {chips.streams@{\texttt  {chips.streams}}|hyperpage}{23}
+\indexentry {chips.sinks@{\texttt  {chips.sinks}}|hyperpage}{33}
+\indexentry {chips.instruction@{\texttt  {chips.instruction}}|hyperpage}{35}
+\indexentry {chips.VHDL\_plugin@{\texttt  {chips.VHDL\_plugin}}|hyperpage}{41}
+\indexentry {chips.cpp\_plugin@{\texttt  {chips.cpp\_plugin}}|hyperpage}{41}
+\indexentry {chips.visual\_plugin@{\texttt  {chips.visual\_plugin}}|hyperpage}{41}
+\indexentry {chips.ip@{\texttt  {chips.ip}}|hyperpage}{41}
