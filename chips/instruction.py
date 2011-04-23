@@ -3,7 +3,7 @@
 """ The instructions provided here form the basis of the software that can be run inside *Processes*."""
 
 from inspect import currentframe, getsourcefile
-from exceptions import ChipsProcessError
+from chips_exceptions import ChipsSyntaxError
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -13,7 +13,58 @@ __maintainer__ = "Jon Dawson"
 __email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
 
-class Read:
+class Statement:
+    def __iter__(self):
+        """Enable an statement to act as a list of machine instructions"""
+        rmap = RegisterMap()
+        rmap.tos += 1 #reserve location 0 for evaluate blocks
+        instructions = self.initialise(rmap) + self.comp(rmap)
+        instructions.append(Instruction("LABEL", label="END"))
+        instructions.append(Instruction("OP_JMP", immediate="END"))
+        instructions.append(Instruction("OP_JMP", immediate=0))
+        instructions = calculate_jumps(instructions)
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+        return instructions.__iter__()
+
+    def is_loop(self):
+        return False
+
+    def is_process(self):
+        return False
+
+    def is_eval(self):
+        return False
+
+    def is_statement(self):
+        return True
+
+    def get_enclosing_loop(self):
+        if self.parent.is_loop():
+            return self.parent
+        elif hasattr(self.parent, 'parent'):
+            return self.parent.get_enclosing_loop()
+        else:
+            raise ChipsSyntaxError(
+                "Break() must be within a loop", 
+                self.filename, 
+                self.lineno
+            )
+
+    def get_enclosing_eval(self):
+        if self.parent.is_eval():
+            return self.parent
+        elif hasattr(self.parent, 'parent'):
+            return self.parent.get_enclosing_eval()
+        else:
+            raise ChipsSyntaxError(
+                "Value() must be within a evaluate block",
+                self.filename, 
+                self.lineno
+            )
+
+
+class Read(Statement):
     def __init__(self, stream, variable):
         """Do not directly call this method, it is called automatically
          Use stream.read(variable)"""
@@ -21,6 +72,9 @@ class Read:
         self.stream = stream
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
+
+        _test_variable(variable, self)
+        _test_stream(stream, self)
 
     def set_process(self, process):
         #have to explicitly test for identity because we have overridden __eq__
@@ -47,7 +101,7 @@ class Read:
         ]
         return instructions
 
-class Write:
+class Write(Statement):
     def __init__(self, stream, expression):
         """Do not directly call this method, it is called automatically
          Use stream.write(expression)"""
@@ -55,6 +109,9 @@ class Write:
         self.stream = stream
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
+
+        _test_expression(self.expression, self)
+        _test_stream(self.stream, self)
 
     def set_process(self, process):
         self.process=process
@@ -190,6 +247,8 @@ class Expression:
         return Binary(constantize(other), self, 'OP_GT')
     def __rle__(other, self): 
         return Binary(constantize(other), self, 'OP_GE')
+    def is_expression(self):
+        return True
 
 class UserDefinedExpression(Expression):
     
@@ -225,6 +284,7 @@ class Available(Expression):
         self.stream = stream
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
+        _test_stream(stream, self)
 
     def set_process(self, process):
         self.process = process
@@ -254,6 +314,7 @@ class Evaluate(Expression):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         for child in instructions:
+            _test_instruction(child, self)
             child.parent = self
 
     def set_process(self, process):
@@ -291,6 +352,8 @@ class Binary(Expression):
         self.operation = operation
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
+        _test_expression(self.left, self)
+        _test_expression(self.right, self)
 
     def set_process(self, process):
         self.process=process
@@ -322,26 +385,27 @@ class Binary(Expression):
 
 class Unary(Expression):
 
-    def __init__(self, left, operation, constant=0):
+    def __init__(self, right, operation, constant=0):
         """Do not directly instantiate this class
         It is created automatically by operators ~, abs() ..."""
-        self.left = left
+        self.right = right
         self.operation = operation
         self.constant = constant
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
+        _test_expression(self.right, self)
 
     def set_process(self, process):
         self.process=process
-        self.left.set_process(process)
+        self.right.set_process(process)
 
     def initialise(self, rmap):
         """Do not directly call this method, it is called automatically"""
-        return self.left.initialise(rmap)
+        return self.right.initialise(rmap)
 
     def comp(self, rmap):
         """compile an expression into a list of machine instructions"""
-        instructions = self.left.comp(rmap)
+        instructions = self.right.comp(rmap)
         instructions.extend(
             [
                 Instruction(
@@ -355,6 +419,17 @@ class Unary(Expression):
         return instructions
 
 class Variable(Expression):
+    """A *Variable* is used within a *Process* to store data. A *Variable* can
+    be used in only one *Process*. If you need to communicate with another
+    *Process* you must use a stream. 
+
+    A *Variable* accepts a single argument, the initial value. A *Variable*
+    will be reset to the initial value when a simulation, or actual device is
+    reset.
+
+    A *Variable* can be assigned an expression using the *set* method.
+    
+    """
 
     def __init__(self, initial):
         """Create a variable
@@ -365,7 +440,7 @@ class Variable(Expression):
         To assign an expression to a variable use the .set() method"""
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
-        self.initial = initial
+        self.initial = int(initial)
 
     def set(self, value):
         """Assign a value to this variable
@@ -412,6 +487,9 @@ class Variable(Expression):
         else:
             return []
 
+    def is_variable(self):
+        return True
+
     def comp(self, rmap):
         """Do not directly call this method, it is called automatically"""
         return [
@@ -428,7 +506,7 @@ class Constant(Expression):
 
     def __init__(self, constant):
         """Do not directly call this method, it is called automatically"""
-        self.constant = constant
+        self.constant = int(constant)
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
 
@@ -472,53 +550,6 @@ def calculate_jumps(instructions):
 
     return new_instructions
 
-class Statement:
-    def __iter__(self):
-        """Enable an statement to act as a list of machine instructions"""
-        rmap = RegisterMap()
-        rmap.tos += 1 #reserve location 0 for evaluate blocks
-        instructions = self.initialise(rmap) + self.comp(rmap)
-        instructions.append(Instruction("LABEL", label="END"))
-        instructions.append(Instruction("OP_JMP", immediate="END"))
-        instructions.append(Instruction("OP_JMP", immediate=0))
-        instructions = calculate_jumps(instructions)
-        self.filename = getsourcefile(currentframe().f_back)
-        self.lineno = currentframe().f_back.f_lineno
-        return instructions.__iter__()
-
-    def is_loop(self):
-        return False
-
-    def is_process(self):
-        return False
-
-    def is_eval(self):
-        return False
-
-    def get_enclosing_loop(self):
-        if self.parent.is_loop():
-            return self.parent
-        elif hasattr(self.parent, 'parent'):
-            return self.parent.get_enclosing_loop()
-        else:
-            raise ChipsProcessError(
-                "Break() must be within a loop", 
-                self.filename, 
-                self.lineno
-            )
-
-    def get_enclosing_eval(self):
-        if self.parent.is_eval():
-            return self.parent
-        elif hasattr(self.parent, 'parent'):
-            return self.parent.get_enclosing_eval()
-        else:
-            raise ChipsProcessError(
-                "Value() must be within a evaluate block",
-                self.filename, 
-                self.lineno
-            )
-
 class Value(Statement):
     """
 
@@ -547,6 +578,7 @@ class Value(Statement):
         self.expression = constantize(expression)
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
+        _test_expression(self.expression, self)
 
     def __repr__(self):
         return "Value()"
@@ -613,11 +645,12 @@ class Loop(Statement):
     """
 
     def __init__(self, *instructions):
-        for child in instructions:
-            child.parent = self
         self.instructions = instructions
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
+        for child in self.instructions:
+            child.parent = self
+            _test_instruction(child, self)
 
     def is_loop(self):
         return True
@@ -695,15 +728,21 @@ class If(Statement):
         
 
     def __init__(self, condition, *instructions):
-        for child in instructions:
-            child.parent = self
-        self.conditionals = [(constantize(condition), instructions)]
+        condition = constantize(condition)
+        self.conditionals = [(condition, instructions)]
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
+        _test_expression(condition, self)
+
+        for child in instructions:
+            child.parent = self
+            _test_instruction(child, self)
 
     def Elif(self, condition, *instructions):
         for child in instructions:
+            _test_instruction(child, self)
             child.parent = self
+
         self.conditionals.append((constantize(condition), instructions))
         return self
 
@@ -965,8 +1004,13 @@ class Block(Statement):
 
         Accepts an arbitrary number of statements as arguments, and executes
         each one in sequence"""
+
+        self.filename = getsourcefile(currentframe().f_back)
+        self.lineno = currentframe().f_back.f_lineno
+
         for child in instructions:
             child.parent = self
+            _test_instruction(child, self)
 
         for this_ins, next_ins in zip(instructions, instructions[1:]):
             this_ins.next_instruction = next_ins
@@ -1007,6 +1051,9 @@ class Set(Statement):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
 
+        _test_expression(self.expression, self)
+        _test_variable(self.variable, self)
+
     def __repr__(self):
         return "Set({0}, {1})".format(self.variable, self.expression)
 
@@ -1032,4 +1079,63 @@ class Set(Statement):
             )
         )
         return instructions
+
+def _test_variable(variable, self):
+
+    if ((not hasattr(variable, "is_variable")) or
+            (not variable.is_variable())):
+
+            raise ChipsSyntaxError(
+                (
+                    "Expected a variable."+
+                    repr(expression)+
+                    " is not a variable."
+                ),
+                self.filename,
+                self.lineno
+            )
+
+def _test_expression(expression, self):
+
+    if ((not hasattr(expression, "is_expression")) or
+            (not expression.is_expression())):
+
+            raise ChipsSyntaxError(
+                (
+                    "Expected a expression."+
+                    repr(expression)+
+                    " is not a expression."
+                ),
+                self.filename,
+                self.lineno
+            )
+
+def _test_instruction(statement, self):
+
+    if ((not hasattr(statement, "is_statement")) or
+            (not statement.is_statement())):
+
+            raise ChipsSyntaxError(
+                (
+                    "Expected a statement."+
+                    repr(statement)+
+                    " is not a statement."
+                ),
+                self.filename,
+                self.lineno
+            )
+
+def _test_stream(stream, self):
+
+    if not hasattr(stream, "get"):
+
+            raise ChipsSyntaxError(
+                (
+                    "Expected a stream."+
+                    repr(stream)+
+                    " is not a stream."
+                ),
+                self.filename,
+                self.lineno
+            )
 

@@ -15,9 +15,16 @@ Stream Expressions
 ------------------
 
 A Stream Expression can be formed by combining Streams or Stream Expressions
-with the following operators::
+with the following unary operators::
+
+	~
+
+and the folowing binary operators::
 
 	+, -, *, \/, %, &, |, ^, <<, >>, ==, !=, <, <=, >, >=
+
+The function *Not* yields the logical negation of each data item equivalent to
+``==0``. The function *abs* yields the magnitude of each data item.
 
 Each data item in the resulting Stream Expression will be evaluated by removing
 a data item from each of the operand streams, and applying the operator
@@ -45,6 +52,12 @@ result based on the number of bits in the left and right hand operands.
 +----------+-----------------------------------+-----------------------+
 | Operator | Function                          | Data Width (bits)     |
 +==========+===================================+=======================+
+|   abs    | Logical Not                       | argument              |
++----------+-----------------------------------+-----------------------+
+|   Not    | Logical Not                       | 1                     |
++----------+-----------------------------------+-----------------------+
+|    ~     | Bitwise not                       | right                 |
++----------+-----------------------------------+-----------------------+
 |   \+     | Signed Add                        | max(left, right) \+ 1 |
 +----------+-----------------------------------+-----------------------+
 |   \-     | Signed Subtract                   | max(left, right) \+ 1 |
@@ -105,7 +118,11 @@ the same precedence.
 +----------------------+-------------------------------------+
 | +, -                 | Addition and subtraction            | 
 +----------------------+-------------------------------------+
-| *, //, %             | multiplication, division and modulo |
+| \*, //, %            | multiplication, division and modulo |
++----------------------+-------------------------------------+
+| ~                    | bitwise NOT                         |
++----------------------+-------------------------------------+
+| Not, abs             | logical NOT, absolute               |
 +----------------------+-------------------------------------+
 
 """
@@ -119,7 +136,7 @@ from process import Process
 from common import how_many_bits, Unique, resize, c_style_modulo,\
     c_style_division
 from instruction import Write, Read, Available
-from exceptions import ChipsSyntaxError, ChipsSimulationError
+from chips_exceptions import ChipsSyntaxError, ChipsSimulationError
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -131,7 +148,7 @@ __status__ = "Prototype"
 
 class Chip:
     """
-    A Chip device containing streams, sinks and processes.
+    A Chip is device containing streams, sinks and processes.
 
     Typically a Chip is used to describe a single device. You need to provide
     the Chip object with a list of all the sinks (device outputs). You don't
@@ -141,21 +158,25 @@ class Chip:
     
     Example::
 
-        switches = InPort("SWITCHES", 8)
-        serial_in = SerialIn("RX")
-        leds = OutPort(switches, "LEDS")
-        serial_out = SerialOut("TX", serial_in)
+        >>> from chips import *
+        >>> from chips.VHDL_plugin import Plugin
 
-        #We need to tell the *Chip* that *leds* and *serial_out* are part of
-        #the device. The *Chip* can work out for itself that *switches* and
-        #*serial_in* are part of the device.
+        >>> switches = InPort("SWITCHES", 8)
+        >>> serial_in = SerialIn("RX")
+        >>> leds = OutPort(switches, "LEDS")
+        >>> serial_out = SerialOut(serial_in, "TX")
 
-        s = Chip(
-            leds,
-            serial_out,
-        )
+        >>> #We need to tell the Chip that leds and serial_out are part of
+        >>> #the device. The Chip can work out for itself that switches and
+        >>> #serial_in are part of the device.
 
-        s.write_code(plugin)
+        >>> s = Chip(
+        ...    leds,
+        ...    serial_out,
+        ... )
+
+        >>> plugin = Plugin()
+        >>> s.write_code(plugin)
         
     """
 
@@ -174,6 +195,19 @@ class Chip:
        self.processes = []
        self.executables = []
        for i in self.sinks:
+           if (
+                hasattr(i, "get") or 
+                hasattr(i, "is_process") or
+                (not hasattr(i, "set_chip"))): 
+               raise ChipsSyntaxError(
+                    (
+                        "Only sinks can be added to chips. " +
+                        repr(i) + 
+                        " is not a sink."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
            i.set_chip(self)
 
     def write_code(self, plugin):
@@ -384,15 +418,55 @@ class Repeater(Stream, Unique):
     used.
 
     Examples::
+
+        >>> from chips import *
         
-        Repeater(5) #--> 5 5 5 5 \..
-        #creates a 4 bit stream.
+        >>> c=Chip(
+        ...     Console(
+        ...         Printer(
+        ...             Repeater(5) #creates a 4 bit stream
+        ...         )
+        ...     )
+        ... )
 
-        Repeater(10) #--> 10 10 10 10 \..
-        #creates a 5 bit stream.
+        >>> c.reset()
+        >>> c.execute(100) # doctest: +ELLIPSIS
+        5
+        5
+        5
+        ...
 
-        Repeater(5)*2 #--> 10 10 10 10 \..
-        #This is shorthand for: Repeater(5)*Repeater(2)
+        >>> c=Chip(
+        ...     Console(
+        ...         Printer(
+        ...             Repeater(10) #creates a 5 bit stream
+        ...         )
+        ...     )
+        ... )
+
+        >>> c.reset()
+        >>> c.execute(100) # doctest: +ELLIPSIS
+        10
+        10
+        10
+        ...
+
+        >>> c=Chip(
+        ...     Console(
+        ...         Printer(
+        ...             #This is shorthand for: Repeater(5)*Repeater(2)
+        ...             Repeater(5)*2
+        ...         )
+        ...     )
+        ... )
+
+        >>> c.reset()
+        >>> c.execute(100) # doctest: +ELLIPSIS
+        10
+        10
+        10
+        ...
+
 
     """
 
@@ -433,10 +507,45 @@ class Counter(Stream, Unique):
 
     Example::
 
-        Counter(0, 10, 2) # --> 0 2 4 6 8 10 0 \..
+        >>> from chips import *
+        
+        >>> c=Chip(
+        ...     Console(
+        ...         Printer(
+        ...             Counter(0, 10, 2) #creates a 4 bit stream
+        ...         )
+        ...     )
+        ... )
 
-        Counter(10, 0, -2) # --> 10 8 7 6 4 2 0 10 \..
-    
+        >>> c.reset()
+        >>> c.execute(100) # doctest: +ELLIPSIS
+        0
+        2
+        4
+        6
+        8
+        10
+        0
+        ...
+
+        >>> c=Chip(
+        ...     Console(
+        ...         Printer(
+        ...             Counter(10, 0, -2) #creates a 4 bit stream
+        ...         )
+        ...     )
+        ... )
+
+        >>> c.reset()
+        >>> c.execute(100) # doctest: +ELLIPSIS
+        10
+        8
+        6
+        4
+        2
+        0
+        10
+        ...
     
     """
 
@@ -449,9 +558,9 @@ class Counter(Stream, Unique):
                   round to zero
           step  - the count step size"""
 
-        self.start = start
-        self.stop = stop 
-        self.step = step 
+        self.start = int(start)
+        self.stop = int(stop) 
+        self.step = int(step) 
         self.bits = max((how_many_bits(start), how_many_bits(stop)))
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
@@ -492,17 +601,25 @@ class Stimulus(Stream, Unique):
 
     Example:: 
 
-        import PIL
+        >>> from chips import *
 
-        picture = Stimulus()
-        s = Chip(Console(Printer(picture)))
+        >>> stimulus = Stimulus(8)
+        >>> c = Chip(Console(Printer(stimulus)))
 
-        im = PIL.open("test.bmp")
-        image_data = list(im.getdata())
-        picture.set_simulation_data(image_data)
+        >>> def count():
+        ...     i=0
+        ...     while True:
+        ...         yield i
+        ...         i+=1
+        ... 
 
-        picture.reset()
-        picture.execute(1000)
+        >>> stimulus.set_simulation_data(count())
+        >>> c.reset()
+        >>> c.execute(100) # doctest: +ELLIPSIS
+        0
+        1
+        2
+        ...
     
     """
 
@@ -529,11 +646,11 @@ class Stimulus(Stream, Unique):
         pass
 
     def get(self):
-        return resize(self.queue.popleft(), self.bits)
+        return resize(next(self.queue), self.bits)
 
     def set_simulation_data(self, iterator, plugin=None):
         if plugin is None:
-            self.queue = deque(iterator)
+            self.queue = iter(iterator)
         else:
             plugin.set_simulation_data(self, iterator)
 
@@ -560,8 +677,9 @@ class InPort(Stream, Unique):
 
     Example::
 
-        dip_switches = Inport("dip_switches", 8) 
-        s = Chip(SerialOut(Printer(dip_switches)))
+        >>> from chips import *
+        >>> dip_switches = InPort("dip_switches", 8) 
+        >>> s = Chip(SerialOut(Printer(dip_switches)))
     
     """
 
@@ -577,7 +695,7 @@ class InPort(Stream, Unique):
                      entity.
               bits - The resolution in bits of the stream"""
 
-        self.name, self.bits = name, bits
+        self.name, self.bits = str(name), int(bits)
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
@@ -611,8 +729,9 @@ class SerialIn(Stream, Unique):
 
     Example::
 
-        #echo typed characters
-        my_chip = Chip(SerialOut(SerialIn())
+        >>> from chips import *
+        >>> #echo typed characters
+        >>> c = Chip(SerialOut(SerialIn()))
 
 
     """
@@ -629,9 +748,9 @@ class SerialIn(Stream, Unique):
                      entity.
               bits - The resolution in bits of the stream"""
 
-        self.name = name
-        self.clock_rate = clock_rate
-        self.baud_rate = baud_rate
+        self.name = str(name)
+        self.clock_rate = int(clock_rate)
+        self.baud_rate = int(baud_rate)
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
@@ -671,19 +790,41 @@ class Output(Stream, Unique):
 
     Example::
 
-        def tee(input_stream):
-            output_stream_1 = Output()
-            output_stream_2 = Output()
-            temp = Variable(0)
-            Process(input_stream.get_bits,
-                Loop(
-                    input_stream.read(temp),
-                    output_stream_1.write(temp),
-                    output_stream_2.write(temp),
-                )
-            )
-            return input_stream_1, input_stream_2
+        >>> from chips import *
 
+        >>> def tee(input_stream):
+        ...     output_stream_1 = Output()
+        ...     output_stream_2 = Output()
+        ...     temp = Variable(0)
+        ...     Process(input_stream.get_bits(),
+        ...         Loop(
+        ...             input_stream.read(temp),
+        ...             output_stream_1.write(temp),
+        ...             output_stream_2.write(temp),
+        ...         )
+        ...     )
+        ...     return output_stream_1, output_stream_2
+
+        >>> os_1, os_2 = tee(Counter(1, 3, 1))
+
+        >>> c = Chip(
+        ...     Console(
+        ...         Printer(os_1),
+        ...     ),
+        ...     Console(
+        ...         Printer(os_2),
+        ...     ),
+        ... )
+
+        >>> c.reset()
+        >>> c.execute(100) # doctest: +ELLIPSIS
+        1
+        1
+        2
+        2
+        3
+        3
+        ...
 
     """
 
@@ -921,6 +1062,16 @@ class  Binary(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.a, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.a.receiver = self
 
         if hasattr(self.b, "receiver"):
@@ -930,6 +1081,16 @@ class  Binary(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.b, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.b.receiver = self
 
     def get_bits(self):
@@ -1001,6 +1162,16 @@ class  Unary(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.a, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.a.receiver = self
 
     def get_bits(self):
@@ -1040,16 +1211,38 @@ class Lookup(Stream, Unique):
 
     Example::
 
-        def binary_2_gray(input_stream): 
-            return Lookup(input_stream, 0, 1, 3, 2, 6, 7, 5, 4)
+        >>> from chips import *
+
+        >>> def binary_2_gray(input_stream): 
+        ...     return Lookup(input_stream, 0, 1, 3, 2, 6, 7, 5, 4)
+
+        >>> c = Chip(
+        ...     Console(
+        ...         Printer(binary_2_gray(Counter(0, 7, 1)))
+        ...     )
+        ... )
+
+        >>> c.reset()
+        >>> c.execute(100) # doctest: +ELLIPSIS
+        0
+        1
+        3
+        2
+        6
+        7
+        5
+        4
+        0
+        ...
+
 
     The first argument to a *Lookup* is the source stream, all additional
     arguments form the lookup table. If you want to use a Python sequence
     object such as a tuple or a list to form the lookup table use the following
     syntax::
 
-        my_list = [0, 1, 3, 2, 6, 7, 5, 4] 
-        my_sequence = Sequence(Counter(0, 7, 1), *my_list)
+        >>> my_list = [0, 1, 3, 2, 6, 7, 5, 4] 
+        ... my_sequence = Lookup(Counter(0, 7, 1), *my_list)
 
     """
 
@@ -1067,6 +1260,16 @@ class Lookup(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.a, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.a.receiver = self
 
     def get_bits(self): 
@@ -1114,25 +1317,41 @@ class Fifo(Stream, Unique):
 
     Example::
 
-        def digital_oscilloscope(ADC_stream, trigger_level): 
-            temp = Variable(0)
-            count = Variable(0)
+        >>> from chips import *
 
-            Process(16,
-                Loop(
-                    ADC_stream.read(temp),
-                    If(temp > trigger_level,
-                        count.set(buffer_depth),
-                        While(count,
-                            ADC_stream.read(temp),
-                            buffer.write(temp),
-                            count.set(count-1),
-                        ),
-                    ),
-                ),
-            )
-                    
-            return SerialOut(Printer(Fifo(buffer, buffer_depth)))
+        >>> def scope(ADC_stream, trigger_level, buffer_depth): 
+        ...     temp = Variable(0)
+        ...     count = Variable(0)
+        ...     buffer = Output()
+        ... 
+        ...     Process(16,
+        ...         Loop(
+        ...             ADC_stream.read(temp),
+        ...             If(temp > trigger_level,
+        ...                 buffer.write(temp),
+        ...                 count.set(buffer_depth - 1),
+        ...                 While(count,
+        ...                     ADC_stream.read(temp),
+        ...                     buffer.write(temp),
+        ...                     count.set(count-1),
+        ...                 ),
+        ...             ),
+        ...         ),
+        ...     )
+        ...             
+        ...     return Printer(Fifo(buffer, buffer_depth))
+        ... 
+
+        >>> test_signal = Sequence(0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 5, 5, 5, 5)
+        >>> c = Chip(Console(scope(test_signal, 0, 5)))
+        >>> c.reset()
+        >>> c.execute(100)
+        1
+        2
+        3
+        4
+        5
+
 
     """
 
@@ -1149,6 +1368,16 @@ class Fifo(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.a, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.a.receiver = self
 
     def set_chip(self, chip):
@@ -1182,34 +1411,27 @@ class Array(Stream, Unique):
 
     Example::
 
-        def video_raster_stream(width, height, row_stream, col_stream, 
-                                pixel_intensity):
+        >>> def video_raster_stream(width, height, row_stream, col_stream, 
+        ...                         intensity):
+        ... 
+        ...     pixel_clock = Counter(0, width*height, 1)
+        ...      
+        ...     pixstream = Array(
+        ...         address_in = (row_stream * width) + col_stream,
+        ...         data_in = intensity,
+        ...         address_out = pixel_clock,
+        ...         depth = width * height,
+        ...     )
+        ... 
+        ...     return pixstream
 
-            pixel_clock = Counter(0, width*height, 1)
-            red_intensity, green_intensity, blue_intensity = pixel_intensity
-             
-            red = Array(
-                address_in = row_stream * width_stream + col_stream,
-                data_in = red_intensity,
-                address_out = pixel_clock,
-                depth = width * height,
-            )
-
-            green = Array(
-                address_in = row_stream * width_stream + col_stream,
-                data_in = green_intensity,
-                address_out = pixel_clock,
-                depth = width * height,
-            )
-
-            blue = Array(
-                address_in = row_stream * width_stream + col_stream,
-                data_in = blue_intensity,
-                address_out = pixel_clock,
-                depth = width * height,
-            )
-
-            return red, green, blue
+        >>> pixstream = video_raster_stream(
+        ...     64, 
+        ...     64, 
+        ...     Repeater(32), 
+        ...     Counter(0, 63, 1), 
+        ...     Repeater(255),
+        ... )
 
     """
 
@@ -1231,7 +1453,18 @@ class Array(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.a, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.a.receiver = self
+
         if hasattr(self.b, "receiver"):
             raise ChipsSyntaxError(
                 "data_in already has receiver", 
@@ -1239,7 +1472,18 @@ class Array(Stream, Unique):
                 self.lineno
             )
         else:
-            self.a.receiver = self
+            if not hasattr(self.b, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
+            self.b.receiver = self
+
         if hasattr(self.c, "receiver"):
             raise ChipsSyntaxError(
                 "address_out already has receiver", 
@@ -1247,7 +1491,17 @@ class Array(Stream, Unique):
                 self.lineno
             )
         else:
-            self.a.receiver = self
+            if not hasattr(self.c, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
+            self.c.receiver = self
 
     def set_chip(self, chip): # a RAM behaves a sink for data and address in
         chip.executables.append(self)
@@ -1302,31 +1556,34 @@ class Decoupler(Stream, Unique):
 
     Example::
 
-        def time_stamp_data(data_stream):
-        
-            us_time = Output()
-            time = Variable(0)
-            Process(8,
-                Loop(
-                    WaitUs,
-                    time.set(time + 1),
-                    us_time.write(time),
-                ),
-            )
+        >>> from chips import *
 
-            output_stream = Output()
-            temp = Variable(0)
-            Process(8,
-                Loop(
-                    data_stream.read(temp),
-                    output_stream.write(temp),
-                    us_time.read(temp),
-                    output_stream.write(temp),
-                ),
-            )
+        >>> def time_stamp_data(data_stream):
+        ... 
+        ...     us_time = Output()
+        ...     time = Variable(0)
+        ...     Process(8,
+        ...         Loop(
+        ...             WaitUs(),
+        ...             time.set(time + 1),
+        ...             us_time.write(time),
+        ...         ),
+        ...     )
+        ... 
+        ...     output_stream = Output()
+        ...     temp = Variable(0)
+        ...     Process(8,
+        ...         Loop(
+        ...             data_stream.read(temp),
+        ...             output_stream.write(temp),
+        ...             us_time.read(temp),
+        ...             output_stream.write(temp),
+        ...         ),
+        ...     )
+        ... 
+        ...     return output_stream
 
-            return output_stream
-        
+        >>> time_stamped_stream = time_stamp_data(SerialIn())
 
     """
 
@@ -1342,6 +1599,16 @@ class Decoupler(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.a, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.a.receiver = self
 
     def get_bits(self): 
@@ -1387,6 +1654,16 @@ class Resizer(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.a, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.a.receiver = self
 
     def get_bits(self): 
@@ -1440,6 +1717,16 @@ class Printer(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.a, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.a.receiver = self
 
     def get_bits(self): 
@@ -1500,6 +1787,16 @@ class HexPrinter(Stream, Unique):
                 self.lineno
             )
         else:
+            if not hasattr(self.a, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream. " +
+                        repr(self.a) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             self.a.receiver = self
 
     def get_bits(self): 

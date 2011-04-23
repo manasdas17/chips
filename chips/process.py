@@ -38,7 +38,7 @@ Example::
     target_variable = Variable(100)
     Process(16,
         #This instruction will stall the process until data is available
-        theOutput.read(target_variable),
+        theoutput.read(target_variable),
         #This instruction will not be run for 1 second
         #..
     )
@@ -90,7 +90,7 @@ Data is stored and manipulated within a process using *Variables*. A *Variable*
 may only be accessed by one process.  When a *Variable* an initial value must
 be supplied. A variable will be reset to its initial value before any process
 instructions are executed.  A *Variable* may be assigned a value using the
-*set* method. The *set method accepts an expression as its argument.
+*set* method. The *set* method accepts an expression as its argument.
 
 It is important to understand that a *Variable* object created like this::
 
@@ -103,25 +103,25 @@ is very different from a normal Python variable created like this::
 The key is to understand that a *Variable* will exist in the target *Chip*, and
 may be assigned and referenced as the *Process* executes. A Python variable can
 exist only in the Python environment, and not in a *Chip*. While a Python
-variable may be converted into a *Constant* in the target *Chip*, a *Process*
+variable may be converted into a constant in the target *Chip*, a *Process*
 has no way to change its value when it executes.
-
-Constants
----------
-
-Like a *Variable*, a constant must be supplied with an initial value when it
-is created. Unlike a *Variable*, the value of a *Constant* can never be
-changed.
 
 Expressions
 -----------
 
 *Variables* and *Constants* are the most basic form of expressions. More
 complex expressions can be formed by combining *Constants*, *Variables* and
-other expressions using following operators::
+other expressions using following unary operators::
 
-	+, -, *, \/, %, &, |, ^, <<, >>, ==, !=, <, <=, >, >=
+	~
 
+and the folowing binary operators::
+
+    +, -, *, \/, %, &, |, ^, <<, >>, ==, !=, <, <=, >, >=
+
+The function *Not* evaluates to the logical negation of each data item
+equivalent to ``==0``. The function *abs* evaluates to the magnitude of each
+data item.
 
 If one of the operands of a binary operator is not an expression, the Chips
 library will attempt to convert this operand into an integer. If the conversion
@@ -162,7 +162,11 @@ the same precedence.
 +----------------------+-------------------------------------+
 | +, -                 | Addition and subtraction            | 
 +----------------------+-------------------------------------+
-| *, //, %             | multiplication, division and modulo |
+| \*, //, %            | multiplication, division and modulo |
++----------------------+-------------------------------------+
+| ~                    | bitwise NOT                         |
++----------------------+-------------------------------------+
+| Not, abs             | logical NOT, absolute               |
 +----------------------+-------------------------------------+
 
 """
@@ -170,7 +174,7 @@ the same precedence.
 from common import Unique, resize
 from instruction import Write, Block
 from inspect import currentframe, getsourcefile
-from exceptions import ChipsSyntaxError
+from chips_exceptions import ChipsSyntaxError
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -204,12 +208,32 @@ class Process(Unique):
         self.timeouts = {}
         self.timer_number = 0
         for i in instructions:
+            if not hasattr(i, "set_process"): 
+               raise ChipsSyntaxError(
+                    (
+                        "expecting an instruction " +
+                        repr(i) + 
+                        " is not an instruction."
+                    ),
+                    self.filename,
+                    self.lineno
+                )
             i.set_process(self)
         for i in self.inputs:
             if hasattr(i, "receiver"):
                 raise ChipsSyntaxError(
                     "stream already has a receiver", 
                     self.filename, 
+                    self.lineno
+                )
+            if not hasattr(i, "get"): 
+               raise ChipsSyntaxError(
+                    (
+                        "Source must be a stream " +
+                        repr(i) + 
+                        " is not a stream."
+                    ),
+                    self.filename,
                     self.lineno
                 )
             i.receiver = self

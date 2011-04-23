@@ -16,7 +16,7 @@ from process import Process
 from common import how_many_bits, Unique, resize, c_style_modulo,\
     c_style_division
 from instruction import Write, Read
-from exceptions import ChipsSyntaxError, ChipsSimulationError
+from chips_exceptions import ChipsSyntaxError, ChipsSimulationError
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"

@@ -56,30 +56,129 @@ ExternalIPInstance = streams.ExternalIPInstance
 
 #synthesised streams
 def Sequence(*args):
+    """A *Sequence* stream yields each of its arguments in turn repeatedly.
+
+    A *Sequence* accepts any number of arguments. The bit width of a sequence
+    is determined automatically, using the number of bits necessary to
+    represent the argument with the largest magnitude. A *Sequence* allows
+    Python sequences to be used within a Chips simulation using the
+    ``Sequence(*python_sequence)`` syntax.
+    
+    Example::
+
+        >>> print "blah"
+        
+        >>> from chips import *
+
+        >>> c = Chip(
+        ...     Console(
+        ...         Sequence(*map(ord, "hello world\\n")),
+        ...     )
+        ... )
+
+        >>> c.reset()
+        >>> c.execute(50)
+        hello world
+        hello world
+        hello world
+        hello world
+    
+    """
     return Lookup(Counter(0, len(args)-1, 1), *args)
 
 #synthesised instructions
 def While(condition, *instructions):
-    loop_instructions = (If(condition==0, Break()),)+instructions
+#    """A loop in which one iteration will be executed each time the condition
+#    is true. The condition is tested before each loop iteration.
+#    
+#    Equivalent to::
+#
+#        Loop( 
+#            If(Not(condition), Break()),
+#            instructions,
+#        ) 
+#    
+#    """
+    loop_instructions = (If(Not(condition), Break()),)+instructions
     return Loop(*loop_instructions)
 
 def DoWhile(condition, *instructions):
-    loop_instructions = instructions+(If(condition==0, Break()),)
+#    """A loop in which one iteration will be executed each time the condition
+#    is true. The condition is tested after each loop iteration.
+#    
+#    Equivalent to::
+#
+#        Loop( 
+#            instructions,
+#            If(Not(condition), Break()),
+#        ) 
+#    
+#    """
+    loop_instructions = instructions+(If(Not(condition), Break()),)
     return Loop(*loop_instructions)
 
 def Until(condition, *instructions):
-    loop_instructions = (If(condition!=0, Break()),)+instructions
+#    """A loop in which one iteration will be executed each time the condition
+#    is false. The condition is tested before each loop iteration.
+#    
+#    Equivalent to::
+#
+#        Loop( 
+#            If(condition, Break()),
+#            instructions,
+#        ) 
+#    
+#    """
+    loop_instructions = (If(condition, Break()),)+instructions
     return Loop(*loop_instructions)
 
 def DoUntil(condition, *instructions):
-    loop_instructions = instructions+(If(condition!=0, Break()),)
+#    """A loop in which one iteration will be executed each time the condition
+#    is false. The condition is tested after each loop iteration.
+#    
+#    Equivalent to::
+#
+#        Loop( 
+#            instructions,
+#            If(condition, Break()),
+#        ) 
+#    
+#    """
+    loop_instructions = instructions+(If(condition, Break()),)
     return Loop(*loop_instructions)
 
 def Not(thing):
-    """Not(thing) is a nicer way of saying thing.Not()"""
+#    """Not(thing) is a nicer way of saying thing.Not()"""
     return thing.Not()
 
 class Print(instruction.UserDefinedStatement):
+#    """The *Print* instruction write an integer to a stream in decimal ASCII
+#    format.
+#
+#    Print will not add any white space or line ends (in contrast to the
+#    *Printer*) The *Print* instruction accepts two arguments, the destination
+#    *stream*, which must be an *Output* stream, and a numeric expression,
+#    *exp*. An optional third argument specifies the minimum number of digits to
+#    print (leading 0 characters are added).
+#
+#    Example:: 
+#    
+#        >>> #multiply by 2 and echo
+#        >>> temp = Variable(0)
+#        >>> inp = Sequence(*map(ord, "1 2 3 "))
+#        >>> out_stream = Output()
+#        >>> p=Process(8,
+#        ...     Loop(
+#        ...         Scan(inp, temp),
+#        ...         out_stream.write(temp*2),
+#        ...     )
+#        ... )
+#
+#        >>> c = Chip(Console(Printer(out_stream)))
+#        >>> c.reset()
+#        >>> c.execute(1000)
+#        
+#    """
 
     variables={}
 
@@ -107,7 +206,7 @@ class Print(instruction.UserDefinedStatement):
         num_digits = len(str(2**(bits-1)))
         initial_decade = 10**(num_digits-1)
 
-        #decade of minumum number of digits
+        #decade of minimum number of digits
         if self.minimum_number_of_digits is not None:
             minimum_decade = 10**(self.minimum_number_of_digits-1)
         else:
@@ -136,6 +235,39 @@ class Print(instruction.UserDefinedStatement):
         )
 
 class Scan(instruction.UserDefinedStatement):
+#    """The *Scan* instruction reads an integer value from a stream of decimal
+#    ASCII characters.
+#
+#    Numeric characters separated by non-numeric characters are interpreted as
+#    numbers. If *Scan* encounters a number that is too large to represent in a
+#    process, the result is undefined.
+#    
+#    The *Scan* accepts two arguments, the source stream and a destination variable.
+#
+#    Example:: 
+#
+#        >>> from chips import *
+#
+#        >>> #multiply by 2 and echo
+#        >>> temp = Variable(0)
+#        >>> inp = Sequence(*map(ord, "1 2 3 "))
+#        >>> out = Output()
+#        >>> p=Process(8,
+#        ...     Loop(
+#        ...         Scan(inp, temp),
+#        ...         out.write(temp*2),
+#        ...     )
+#        ... )
+#
+#        >>> c = Chip(Console(Printer(out)))
+#        >>> c.reset()
+#        >>> c.execute(1000) # doctest: +ELLIPSIS
+#        2
+#        4
+#        6
+#        ...
+#        
+#    """
 
     variables={}
 
@@ -174,6 +306,39 @@ class Scan(instruction.UserDefinedStatement):
         )
 
 def Scanner(stream, bits):
+#    """A *Scanner* converts a stream of decimal ASCII into their integer value.
+#
+#    Numeric characters separated by non-numeric characters are interpreted as
+#    numbers.  As it is not possible to determine the maximum value of a
+#    *Scanner* stream at compile time, the width of the stream must be specified
+#    using the bits parameter.
+#    
+#    The *Scanner* stream accepts two inputs, the source stream and the number
+#    of bits.
+#
+#    Example:: 
+#    
+#        >>> from chips import *
+#
+#        >>> #multiply by two and echo
+#        >>> c = Chip(
+#        ...     Console(
+#        ...         Printer(
+#        ...             Scanner(Sequence(*map(ord, "10 20 30 ")), 8)*2,
+#        ...         ),
+#        ...     ),
+#        ... )
+#
+#        >>> c.reset()
+#        >>> c.execute(1000) # doctest: +ELLIPSIS
+#        20
+#        40
+#        60
+#        20
+#        ...
+#        
+#    """
+
     i=Variable(0)
     out=Output()
     Process(bits,
@@ -182,9 +347,69 @@ def Scanner(stream, bits):
             out.write(i),
         )
     )
+
     return out
 
 class VariableArray:
+#    """A *VariableArray* is an array of variables that can be accessed from
+#    within a single *Process*.
+#
+#    When a *VariableArray* is created, it accepts a single argument, the
+#    *size*.
+#    
+#    A *VariableArray* can be written to using the *write* method, the *write*
+#    method accepts two arguments, an expression indicating the *address* to
+#    write to, and an expression indicating the *data* to write. 
+#
+#    A *VariableArray* can be read to using the *read* method, the *read* method
+#    accepts a single argument, an expression indicating the *address* to read
+#    from. The *read method returns an expression that evaluates to the value
+#    contained at *address*.
+#
+#    Example:: 
+#
+#        >>> from chips import *
+#
+#        >>> def reverse(stream, number_of_items):
+#        ...      \"\"\"Read number_of_items from stream, and reverse them.\"\"\"
+#        ...      temp = Variable(0)
+#        ...      index = Variable(0)
+#        ...      reversed_stream = Output()
+#        ...      data_store = VariableArray(number_of_items)
+#        ...      Process(8,
+#        ...          index.set(0),
+#        ...          While(index < number_of_items,
+#        ...              stream.read(temp),
+#        ...              data_store.write(index, temp),
+#        ...              index.set(index+1),
+#        ...          ),
+#        ...          index.set(number_of_items - 1),
+#        ...          While(index >= 0,
+#        ...              reversed_stream.write(data_store.read(index)),
+#        ...              index.set(index-1),
+#        ...          ),
+#        ...      )
+#        ... 
+#        ...      return reversed_stream
+#
+#            
+#        >>> c = Chip(
+#        ...     Console(
+#        ...         Printer(
+#        ...             reverse(Sequence(0, 1, 2, 3), 4)
+#        ...         ),
+#        ...      ),
+#        ... )
+#
+#        >>> c.reset()
+#
+#        >>> c.execute(1000)
+#        3
+#        2
+#        1
+#        0
+#        
+#    """
     def __init__(self, size):
         self.size = size
         self.address_in = Output()
