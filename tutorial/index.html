@@ -54,7 +54,7 @@
 <div class="section" id="learn-python">
 <h2>Learn Python<a class="headerlink" href="#learn-python" title="Permalink to this headline">¶</a></h2>
 <p>In order to make any real use of the <em>Chips</em> library you will need to be
-familiar with the basics of Python. The <a class="reference external" href="http://docs.python.org/tut">python tutorial</a> is a good place
+familiar with the basics of <em>Python</em>. The <a class="reference external" href="http://docs.python.org/tut">Python tutorial</a> is a good place
 to start.</p>
 </div>
 <div class="section" id="install-chips">
@@ -62,18 +62,18 @@ to start.</p>
 <div class="section" id="windows">
 <h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>First <a class="reference external" href="http://python.org/download">install python</a>. You need Python 2.6 or later, but not Python 3.</li>
-<li>Then install the chips library from the <a class="reference external" href="http://github.com/dawsonjon/chips">windows installer</a>.</li>
+<li>First <a class="reference external" href="http://python.org/download">install Python</a>. You need <em>Python</em> 2.6 or later, but not <em>Python</em> 3.</li>
+<li>Then install the <em>Chips</em> library from the <a class="reference external" href="https://github.com/downloads/dawsonjon/chips/Chips-0.1.win32.exe">windows installer</a>.</li>
 </ol>
 </div>
 <div class="section" id="linux">
 <h3>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
-<li><p class="first">First <a class="reference external" href="http://python.org/download">install python</a>. You need Python 2.6 or later, but not Python 3.</p>
+<li><p class="first">First <a class="reference external" href="http://python.org/download">install Python</a>. You need <em>Python</em> 2.6 or later, but not <em>Python</em> 3.</p>
 </li>
-<li><p class="first">Then install the chips library from the <a class="reference external" href="http://github.com/dawsonjon/chips">source distribution</a>:</p>
-<div class="highlight-python"><pre>desktop:~$ tar -zxf Chips-0.1.tar.gz
-desktop:~$ cd Chips-0.1
+<li><p class="first">Then install the <em>Chips</em> library from the <a class="reference external" href="https://github.com/downloads/dawsonjon/chips/Chips-0.1.tar.gz">source distribution</a>:</p>
+<div class="highlight-python"><pre>desktop:~$ tar -zxf chips-0.1.tar.gz
+desktop:~$ cd chips-0.1
 desktop:~$ python setup.py install #run as root</pre>
 </div>
 </li>
@@ -82,22 +82,35 @@ desktop:~$ python setup.py install #run as root</pre>
 </div>
 <div class="section" id="first-simulations">
 <h2>First Simulations<a class="headerlink" href="#first-simulations" title="Permalink to this headline">¶</a></h2>
-<p>Once you have python and chips all set up, you can start with some simple
+<p>Once you have <em>Python</em> and <em>Chips</em> all set up, you can start with some simple
 examples. This one counts to 10 repeatedly:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">streams</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="c">#create a chip model</span>
-<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
-  <span class="n">Console</span><span class="p">(</span>
-    <span class="n">Printer</span><span class="p">(</span>
-        <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="p">),</span>
-  <span class="p">),</span>
-<span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#create a chip model</span>
+<span class="gp">... </span><span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
 
-<span class="c">#run a simulation</span>
-<span class="n">my_chip</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">my_chip</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#run a simulation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">3</span>
+<span class="go">4</span>
+<span class="go">5</span>
+<span class="go">6</span>
+<span class="go">7</span>
+<span class="go">8</span>
+<span class="go">9</span>
+<span class="go">10</span>
+<span class="go">0</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 <p>The example can be broken down as follows:</p>
@@ -105,11 +118,11 @@ examples. This one counts to 10 repeatedly:</p>
 <li><tt class="docutils literal"><span class="pre">from</span> <span class="pre">stream</span> <span class="pre">import</span> <span class="pre">*</span></tt> adds the basic features of the streams
 library to the local namespace.</li>
 <li>A <em>Chip</em> models a target device. You need to tell it what the outputs
-(<em>sinks</em>) are, but it will work out what the inputs are by itself. In
-this case the only <em>sink</em> is the <em>Console</em>.</li>
+(sinks) are, but it will work out what the inputs are by itself. In
+this case the only sink is the <em>Console</em>.</li>
 <li>A <em>Console</em> is a sink that outputs a stream of data to the console.
 The only argument it needs is the data stream, <em>Printer</em>.</li>
-<li>A <em>Printer</em> is a <em>stream</em> object that represents a stream of data in
+<li>A <em>Printer</em> is a stream object that represents a stream of data in
 decimal format as a string of ASCII characters. A <em>Printer</em> is not a
 source of data in itself, it transforms a stream of data that you
 supply, the <em>Counter</em>.</li>
@@ -121,30 +134,31 @@ data counting from <em>start</em> to <em>stop</em> in <em>step</em> increments.<
 <div class="section" id="hello-world">
 <h2>Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
 <p>No language would be complete without a &#8220;hello world&#8221; example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="c">#convert string into a sequence of characters</span>
-<span class="n">hello_world</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
 
-<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
-    <span class="n">Console</span><span class="p">(</span>
-        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-
-<span class="c">#run a simulation</span>
-<span class="n">my_chip</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">my_chip</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#run a simulation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">hello world</span>
+<span class="go">hello world</span>
+<span class="go">hello world</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 <p>In this example we have made only a few changes:</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">hello_world</span> <span class="pre">=</span> <span class="pre">tuple((ord(i)</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">&quot;hello</span> <span class="pre">world\n&quot;))</span></tt> creates a tuple
-containing the numeric values of the ascii characters in a string.</li>
-<li>This example introduces a new stream, the <em>Sequence</em>. The <em>Sequence</em>
-stream outputs each of its arguments in turn, when the arguments are
-exhausted, the process repeats.</li>
-<li>A <em>Printer</em> is  <em>stream</em> is not needed in this example since the stream is
+<li><tt class="docutils literal"><span class="pre">map(ord,</span> <span class="pre">&quot;hello</span> <span class="pre">world\n&quot;)</span></tt> creates a list containing the numeric values of
+the ASCII characters in a string.</li>
+<li>This example introduces a new stream, the <em>Sequence</em>. The <em>Sequence</em> stream
+outputs each of its arguments in turn, when the arguments are exhausted, the
+<em>Process</em> repeats.</li>
+<li>A <em>Printer</em> is stream is not needed in this example since the stream is
 already a sequence of ASCII values.</li>
 </ul>
 </div>
@@ -153,33 +167,30 @@ already a sequence of ASCII values.</li>
 <p>Now lets consider how the &#8220;hello world&#8221; example could be implemented in an
 actual device. A first step to implementing a device would be to generate a
 VHDL model:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">chips.VHDL_plugin</span> <span class="kn">import</span> <span class="n">Plugin</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips.VHDL_plugin</span> <span class="kn">import</span> <span class="n">Plugin</span>
 
-<span class="c">#convert string into a sequence of characters</span>
-<span class="n">hello_world</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;hello_world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
 
-<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
-    <span class="n">Console</span><span class="p">(</span>
-        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-
-<span class="c">#generate a VHDL model</span>
-<span class="n">code_generator</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="n">project_name</span><span class="o">=</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
-<span class="n">my_chip</span><span class="o">.</span><span class="n">write_code</span><span class="p">(</span><span class="n">code_generator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#generate a VHDL model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">code_generator</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="n">project_name</span><span class="o">=</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span><span class="o">.</span><span class="n">write_code</span><span class="p">(</span><span class="n">code_generator</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The <em>Chips</em> library uses plugins to generate output code from models. This
-means that new code generators can be added to Chips without having to
-change the way that hardware is designed and simulated. At present, chips
+means that new code generators can be added to <em>Chips</em> without having to
+change the way that hardware is designed and simulated. At present, <em>Chips</em>
 supports C++ and VHDL code generation, but it is VHDL code that allows
-<a href="#id1"><span class="problematic" id="id2">*</span></a>Chips&#8221; to be synthesised.</p>
-<p>The VHDL code generation plugin is found in <tt class="docutils literal"><span class="pre">chips.VHDL_plugin</span></tt> If you run
+<em>Chips</em> to be synthesised.</p>
+<p>The VHDL code generation plugin is found in <tt class="docutils literal"><span class="pre">chips.VHDL_plugin</span></tt> if you run
 this example you should find that a VHDL file called hello_world.vhd has been
 generated.</p>
-<p>Take a look through this file. You may find that it is difficult to
-understand what is going on. The file isn&#8217;t meant to be read by humans, <em>Chips</em>
+<p>Take a look through this file. you may find that it is difficult to
+understand what is going on. the file isn&#8217;t meant to be read by humans, <em>Chips</em>
 treats VHDL as a compatibility layer. <em>VHDL</em> is pretty much universally
 supported by synthesis tools.  You can run this code in an external VHDL
 simulator, but you won&#8217;t be able to synthesise it into a device because real
@@ -188,21 +199,18 @@ hardware devices don&#8217;t have a concept of a <em>Console</em>.</p>
 realisable hardware interface. The <em>Chips</em> library provides a <em>SerialOut</em>
 sink, this provides a simple way to direct the stream of characters to a
 serial port:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">chips.VHDL_plugin</span> <span class="kn">import</span> <span class="n">Plugin</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips.VHDL_plugin</span> <span class="kn">import</span> <span class="n">Plugin</span>
 
-<span class="c">#convert string into a sequence of characters</span>
-<span class="n">hello_world</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">SerialOut</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;hello_world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
 
-<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
-    <span class="n">SerialOut</span><span class="p">(</span>
-        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-
-<span class="c">#generate a VHDL model</span>
-<span class="n">code_generator</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="n">project_name</span><span class="o">=</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
-<span class="n">my_chip</span><span class="o">.</span><span class="n">write_code</span><span class="p">(</span><span class="n">code_generator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#generate a vhdl model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">code_generator</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="n">project_name</span><span class="o">=</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span><span class="o">.</span><span class="n">write_code</span><span class="p">(</span><span class="n">code_generator</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now you should have a hello_world.vhd file that you can synthesise in a real
@@ -210,34 +218,464 @@ device. By default, SerialOut will assume that you are using a 50 MHz clock
 and a baud rate of 115200. If you need something else you can use the
 clock_rate and baud_rate arguments to specify what you need.</p>
 </div>
-<div class="section" id="more-streams">
-<h2>More Streams<a class="headerlink" href="#more-streams" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="more-streams-and-sinks">
+<h2>More Streams and Sinks<a class="headerlink" href="#more-streams-and-sinks" title="Permalink to this headline">¶</a></h2>
 <p>So far we have seen three types of streams, <em>Counter</em>, <em>Sequence</em> and
-<em>Printer</em>. Chips provides a few more basic streams which you can read about
-in the Language Reference Manual. It is also possible to combine streams
-using the arithmetic operators : <tt class="docutils literal"><span class="pre">+,</span> <span class="pre">-,</span> <span class="pre">*,</span> <span class="pre">//,</span> <span class="pre">%,</span> <span class="pre">&lt;&lt;,</span> <span class="pre">&gt;&gt;,</span> <span class="pre">&amp;,</span> <span class="pre">|,</span> <span class="pre">^,</span> <span class="pre">==,</span> <span class="pre">!=,</span> <span class="pre">&lt;,</span>
-<span class="pre">&lt;=,</span> <span class="pre">&gt;,</span> <span class="pre">&gt;=</span></tt> on the whole they have the same (or very similar) meaning as
-they do in Python except that they operate on streams of data.</p>
+<em>Printer</em>. <em>Chips</em> provides a range of streams. The full documentation for
+streams is in the <a class="reference external" href="http://dawsonjon.github.com/chips/language_reference/">reference manual</a> but a quick summary is included here:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Stream</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Array()</td>
+<td>An indexable memory with an independent read and write
+port.</td>
+</tr>
+<tr><td>Counter()</td>
+<td>A versatile counter with min, max and step parameters</td>
+</tr>
+<tr><td>Decoupler()</td>
+<td>A Decoupler removes stream handshaking.</td>
+</tr>
+<tr><td>Resizer()</td>
+<td>A Resizer changes the width, in bits, of the source
+stream.</td>
+</tr>
+<tr><td>Lookup()</td>
+<td>An indexable Read Only Memory with a single read port.</td>
+</tr>
+<tr><td>Fifo()</td>
+<td>Stores data items in a buffer.</td>
+</tr>
+<tr><td>Repeater()</td>
+<td>Yields the same data item repeatedly.</td>
+</tr>
+<tr><td>InPort()</td>
+<td>Yields the value of input port pins.</td>
+</tr>
+<tr><td>SerialIn()</td>
+<td>Yields values from a serial UART.</td>
+</tr>
+<tr><td>Output()</td>
+<td>A stream that is fed by a <em>Process</em> (more on this later)</td>
+</tr>
+<tr><td>Printer()</td>
+<td>A decimal ASCII representation of the source stream.</td>
+</tr>
+<tr><td>HexPrinter()</td>
+<td>A hexadecimal ASCII representation of the source stream.</td>
+</tr>
+<tr><td>Scanner()</td>
+<td>yields the value of the decimal ASCII source stream.</td>
+</tr>
+</tbody>
+</table>
+<p>You can also combine streams using the operators : <tt class="docutils literal"><span class="pre">abs,</span> <span class="pre">~,</span> <span class="pre">+,</span> <span class="pre">-,</span> <span class="pre">*,</span> <span class="pre">//,</span> <span class="pre">%,</span>
+<span class="pre">&lt;&lt;,</span> <span class="pre">&gt;&gt;,</span> <span class="pre">&amp;,</span> <span class="pre">|,</span> <span class="pre">^,</span> <span class="pre">==,</span> <span class="pre">!=,</span> <span class="pre">&lt;,</span> <span class="pre">&lt;=,</span> <span class="pre">&gt;,</span> <span class="pre">&gt;=</span></tt> on the whole they have the same (or
+very similar) meaning as they do in <em>Python</em> except that they operate on streams
+of data. It is also possible to form an expression from regular integers and
+streams, <em>Chips</em> will automatically transform an integer into an appropriate
+<em>Repeater</em> stream. For example <tt class="docutils literal"><span class="pre">Counter(0,</span> <span class="pre">9,</span> <span class="pre">1)*2</span></tt> is a shorthand for
+<tt class="docutils literal"><span class="pre">Counter(0,</span> <span class="pre">9,</span> <span class="pre">1)*Repeater(2).</span></tt></p>
+<p>The following table summarises the available sinks:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Sink</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Response()</td>
+<td>A Response sink allows data to be transfered into
+Python.</td>
+</tr>
+<tr><td>OutPort()</td>
+<td>An OutPort sink outputs a stream of data to I/O port
+pins.</td>
+</tr>
+<tr><td>SerialOut()</td>
+<td>A SerialOut outputs data to a serial UART port.</td>
+</tr>
+<tr><td>Asserter()</td>
+<td>An Asserter causes an exception if any data in the
+source stream is zero.</td>
+</tr>
+<tr><td>Console()</td>
+<td>A Console outputs data to the simulation console.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+</blockquote>
+</div>
+<div class="section" id="types-and-bit-width">
+<h2>Types and Bit Width<a class="headerlink" href="#types-and-bit-width" title="Permalink to this headline">¶</a></h2>
+<p>For convenience, the central numerical type in <em>Chips</em> is a signed integer with
+a fixed number of bits.  This is in contrast to <em>Python</em>, where integers have a
+potentially infinite width. <em>Chips</em> tries to simplify some of the design issues
+involved with limited width numbers by doing a lot of the work for you, but it
+is not always possible to completely hide these details, so you need to how
+things are handled behind the scenes.</p>
+<p><em>Chips</em> will automatically determine the width of a stream whenever possible.
+In a <em>Repeater</em>, <em>Counter</em> or <em>Lookup</em>, <em>Chips</em> will chose use the number of
+bits needed to hold the greatest possible value. This is not possible for
+<em>InPort</em>, or <em>Array</em> streams because the maximum possible value is not known at
+compile time. When it is not possible to determine the maximum value, the width
+must be specified using the bits parameter.</p>
+<p>When streams are combined using operators, the width of the resulting stream
+will usually be chosen to handle the maximum possible value in the resulting
+stream, though there are some exceptions. Adding two 8 bit streams will result
+in a 9 bit stream, multiplying two 8 bit streams will result in a 16 bit
+stream. The precise handling of bit widths is documented more  fully in the
+<a class="reference external" href="http://dawsonjon.github.com/chips/language_reference/">reference manual</a>.</p>
+<p>You can manually change the width of a stream using the <em>Resize</em> stream. Making
+a streams smaller in width will result in large values being truncated. Making
+a stream larger in width will result in sign extension.</p>
+<blockquote>
+</blockquote>
 </div>
 <div class="section" id="introducing-processes">
 <h2>Introducing Processes<a class="headerlink" href="#introducing-processes" title="Permalink to this headline">¶</a></h2>
+<p>We have seen how the <em>Chips</em> library provides quite a few ready made streams
+out of the box. Sometimes these streams won&#8217;t suite our needs, sometimes we
+need to define new operations on streams. Suppose we wanted to double the value
+of every data item within in an existing stream, a Counter say. Thats easy,
+just use the multiply operator <tt class="docutils literal"><span class="pre">Counter(0,</span> <span class="pre">9,</span> <span class="pre">1)*2</span></tt>. Now suppose that we
+wanted to square each data item instead. Not so simple, there is no squaring
+operator, or even a power operator for that matter. Thats where the <em>Process</em>
+comes in:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="c">#create a temporary variable and initialise it to 0.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counter_squared_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">=</span><span class="n">Process</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">get_bits</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">counter</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">counter_squared_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="o">*</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">counter_squared_stream</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">1</span>
+<span class="go">4</span>
+<span class="go">9</span>
+<span class="go">16</span>
+<span class="go">25</span>
+<span class="go">36</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>This example demonstrates some of the key features of the <em>Process</em>:</p>
+<ul class="simple">
+<li>Put it simply, a <em>Process</em> is small computer program which can contain loops
+and if statements like any other language.</li>
+<li>A <em>Chip</em> can contain any number of Process objects, they will all run in
+parallel.</li>
+<li>Within a <em>Process</em>, you can use <em>Variables</em> to store data. Each variable can
+only be used within one <em>Process</em>, to communicate with another <em>Process</em> you
+need to use streams.</li>
+<li>A <em>Process</em> can read from any type of stream, in this example the process is
+reading from a <em>Counter</em> stream. Only <em>Output</em> streams can be written to.</li>
+<li>Streams can only be used for point to point communications. A stream cannot
+be read by more than one <em>Process</em>. Likewise, an <em>Output</em> stream can only be
+written to by one <em>Process</em>.</li>
+</ul>
+</div>
+<div class="section" id="process-instructions">
+<h2>Process Instructions<a class="headerlink" href="#process-instructions" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Instruction</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Variable()</td>
+<td>A Variable is used within a Process to store data.</td>
+</tr>
+<tr><td>Value()</td>
+<td>The Value statement gives a value to the surrounding
+Evaluate construct.</td>
+</tr>
+<tr><td>Evaluate()</td>
+<td>An Evaluate  expression allows a block of statements
+to be used as an expression.</td>
+</tr>
+<tr><td>Loop()</td>
+<td>The Loop statement executes instructions repeatedly.</td>
+</tr>
+<tr><td>If()</td>
+<td>The If statement conditionally executes
+instructions.</td>
+</tr>
+<tr><td>Break()</td>
+<td>The Break statement causes the flow of control to
+immediately exit the loop.</td>
+</tr>
+<tr><td>WaitUs()</td>
+<td>WaitUs causes execution to halt until the next tick
+of the microsecond timer.</td>
+</tr>
+<tr><td>Continue()</td>
+<td>The Continue statement causes the flow of control to
+immediately jump to the next iteration of the
+containing loop.</td>
+</tr>
+<tr><td>Block()</td>
+<td>The Block statement allows instructions to be nested
+into a single statement.</td>
+</tr>
+<tr><td>Output.write()</td>
+<td>This method returns a write instruction that writes a
+single data item to the Output stream.</td>
+</tr>
+<tr><td>&lt;stream&gt;.read()</td>
+<td>This method returns a read instruction that reads a
+single data item from a  stream.</td>
+</tr>
+<tr><td>Variable.set()</td>
+<td>This method returns a set instruction that assigns the
+value of an expression to a variable.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="bit-width-within-a-process">
+<h2>Bit Width Within a Process<a class="headerlink" href="#bit-width-within-a-process" title="Permalink to this headline">¶</a></h2>
+<p>We have already seen how streams are usually sized automatically to handle the
+largest possible data value. Inside a <em>Process</em> however things are handled
+differently. A <em>Process</em> has a fixed bit width. The width is the first argument
+given to a <em>Process</em>. Inside a <em>Process</em>, the value of any expression will be
+resized the width of the <em>Process</em>. When a <em>Process</em> reads from a stream, the
+value will be truncated or sign extended to the width of the <em>Process</em>. It is
+important to make sure that the width of a <em>Process</em> is sufficiently large.</p>
 </div>
 <div class="section" id="hierarchical-design">
 <h2>Hierarchical Design<a class="headerlink" href="#hierarchical-design" title="Permalink to this headline">¶</a></h2>
-<p>You may be expecting Chips to provide some mechanism for hierarchical design.
-You might expect that Chips would provide a means too group items together to
+<p>You may be expecting <em>Chips</em> to provide some mechanism for hierarchical design.
+You might expect that <em>Chips</em> would provide a means too group items together to
 form re-usable components or modules. A really good design tool would allow you
-to parameterise components and modules using generics or templates. Chips does
+to parameterise components and modules using generics or templates. <em>Chips</em> does
 not provide any of these things. It doesn&#8217;t have to.</p>
-<p>The Python language itself already provides all these things and more. If you
-want to make a reusable component you can simply write a Python function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">double</span><span class="p">(</span><span class="n">input_stream</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;If you use Python functions to build components you can take</span>
-<span class="sd">    advantage of docstrings to document your design.&quot;&quot;&quot;</span>
+<p>The <em>Python</em> language itself already provides all these things and more. If you
+want to make a reusable component you can simply write a <em>Python</em> function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-    <span class="k">return</span> <span class="n">input_stream</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">double</span><span class="p">(</span><span class="n">input_stream</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;If you use Python functions to build components you can take</span>
+<span class="gp">... </span><span class="sd">    advantage of docstrings to document your design.&quot;&quot;&quot;</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">input_stream</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">double</span><span class="p">(</span>
+<span class="gp">... </span>                <span class="n">Sequence</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="p">)</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="go">4</span>
+<span class="go">6</span>
+<span class="go">2</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="streams-from-multiple-sources">
+<h2>Streams from Multiple Sources<a class="headerlink" href="#streams-from-multiple-sources" title="Permalink to this headline">¶</a></h2>
+<p>Streams can only be have one source of data and one sink, but it is possible to
+combine data from more than one source into a single stream using a <em>Process</em>.
+The simplest approach is to read a value from each source, and write it to the
+destination thus:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">simple_arbiter</span><span class="p">(</span><span class="n">source_0</span><span class="p">,</span> <span class="n">source_1</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;Combine data from two streams into a single stream&quot;&quot;&quot;</span>
+<span class="gp">... </span>    <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">dest</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">Process</span><span class="p">(</span><span class="nb">max</span><span class="p">([</span><span class="n">source_0</span><span class="o">.</span><span class="n">get_bits</span><span class="p">(),</span> <span class="n">source_1</span><span class="o">.</span><span class="n">get_bits</span><span class="p">()]),</span>
+<span class="gp">... </span>        <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">source_0</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">source_1</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">dest</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>       <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>           <span class="n">simple_arbiter</span><span class="p">(</span>
+<span class="gp">... </span>               <span class="n">Repeater</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Repeater</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">... </span>           <span class="p">)</span>
+<span class="gp">... </span>       <span class="p">)</span>
+<span class="gp">... </span>   <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>This type of arbiter will always take an equal number of items from source_0,
+and source_1. This may be fine in some applications, but if data were not
+available on source_0, data from source_1 would also be blocked. One solution
+is to use the <em>available</em> method of a stream to test whether data is available
+before committing to a blocking read:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">non_blocking_arbiter</span><span class="p">(</span><span class="n">source_0</span><span class="p">,</span> <span class="n">source_1</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="sd">&quot;&quot;&quot;Combine data from two streams into a single stream&quot;&quot;&quot;</span>
+<span class="gp">... </span>   <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="n">dest</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>   <span class="n">Process</span><span class="p">(</span><span class="nb">max</span><span class="p">([</span><span class="n">source_0</span><span class="o">.</span><span class="n">get_bits</span><span class="p">(),</span> <span class="n">source_1</span><span class="o">.</span><span class="n">get_bits</span><span class="p">()]),</span>
+<span class="gp">... </span>       <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>           <span class="n">If</span><span class="p">(</span><span class="n">source_0</span><span class="o">.</span><span class="n">available</span><span class="p">(),</span>
+<span class="gp">... </span>               <span class="n">source_0</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>               <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>           <span class="p">),</span>
+<span class="gp">... </span>           <span class="n">If</span><span class="p">(</span><span class="n">source_1</span><span class="o">.</span><span class="n">available</span><span class="p">(),</span>
+<span class="gp">... </span>               <span class="n">source_1</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>               <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>           <span class="p">),</span>
+<span class="gp">... </span>       <span class="p">),</span>
+<span class="gp">... </span>   <span class="p">)</span>
+<span class="gp">... </span>   <span class="k">return</span> <span class="n">dest</span>
+<span class="gp">...</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blocked</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">=</span><span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="c">#outputs one value then blocks</span>
+<span class="gp">... </span>    <span class="n">blocked</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">non_blocking_arbiter</span><span class="p">(</span>
+<span class="gp">... </span>                <span class="n">blocked</span><span class="p">,</span> <span class="n">Repeater</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="p">)</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">2</span>
+<span class="go">2</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="streams-with-multiple-sinks">
+<h2>Streams with Multiple Sinks<a class="headerlink" href="#streams-with-multiple-sinks" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes a stream will need to be used in more than one place. A simple
+solution is to make a splitter or tee using a <em>Process</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">tee</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;split data into two streams&quot;&quot;&quot;</span>
+<span class="gp">... </span>    <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">dest_0</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">dest_1</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">Process</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">get_bits</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">source</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">dest_0</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">dest_1</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">dest_0</span><span class="p">,</span> <span class="n">dest_1</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dest_0</span><span class="p">,</span> <span class="n">dest_1</span> <span class="o">=</span> <span class="n">tee</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span><span class="n">dest_0</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span><span class="n">dest_1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">0</span>
+<span class="go">1</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">2</span>
+<span class="go">3</span>
+<span class="go">3</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-worked-example">
+<h2>A Worked Example<a class="headerlink" href="#a-worked-example" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="further-examples">
+<h2>Further Examples<a class="headerlink" href="#further-examples" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://github.com/downloads/dawsonjon/chips/Chips-0.1.tar.gz">source distribution</a> contains a number of more involved examples so that
+you can see for yourself how more complex hardware designs can be formed from
+these simple components.</p>
+<blockquote>
+<p>A <em>Variable</em> is used within a <em>Process</em> to store data.</p>
+<p>The <em>Value</em> statement gives a value to the surrounding <em>Evaluate</em>
+construct.</p>
+<p>An <em>Evaluate</em>  expression allows a block of statements to be used as an
+expression.</p>
+<p>The <em>Loop</em> statement executes instructions repeatedly.</p>
+<p>The <em>If</em> statement conditionally executes instructions.</p>
+<p>The <em>Break</em> statement causes the flow of control to immediately exit the loop.</p>
+<p><em>WaitUs</em> causes execution to halt until the next tick of the microsecond
+timer.</p>
+<p>The <em>Continue</em> statement causes the flow of control to immediately jump to
+the next iteration of the containing loop.</p>
+<p>The <em>Block</em> statement allows instructions to be nested into a single
+statement.</p>
+<p>This method returns a write instruction that writes a single data item to the Ouput stream.</p>
+<p>This method returns a read instruction that reads a single data item from a  stream.</p>
+<p>This method returns a set instruction that assigns the value of an expression to a variable.</p>
+</blockquote>
 </div>
 </div>
 
@@ -262,9 +700,16 @@ want to make a reusable component you can simply write a Python function:</p>
 <li><a class="reference external" href="#first-simulations">First Simulations</a></li>
 <li><a class="reference external" href="#hello-world">Hello World</a></li>
 <li><a class="reference external" href="#generating-vhdl">Generating VHDL</a></li>
-<li><a class="reference external" href="#more-streams">More Streams</a></li>
+<li><a class="reference external" href="#more-streams-and-sinks">More Streams and Sinks</a></li>
+<li><a class="reference external" href="#types-and-bit-width">Types and Bit Width</a></li>
 <li><a class="reference external" href="#introducing-processes">Introducing Processes</a></li>
+<li><a class="reference external" href="#process-instructions">Process Instructions</a></li>
+<li><a class="reference external" href="#bit-width-within-a-process">Bit Width Within a Process</a></li>
 <li><a class="reference external" href="#hierarchical-design">Hierarchical Design</a></li>
+<li><a class="reference external" href="#streams-from-multiple-sources">Streams from Multiple Sources</a></li>
+<li><a class="reference external" href="#streams-with-multiple-sinks">Streams with Multiple Sinks</a></li>
+<li><a class="reference external" href="#a-worked-example">A Worked Example</a></li>
+<li><a class="reference external" href="#further-examples">Further Examples</a></li>
 </ul>
 </li>
 </ul>

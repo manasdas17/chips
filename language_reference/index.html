@@ -56,28 +56,32 @@
 <dl class="class">
 <dt id="chips.Chip">
 <em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Chip</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#chips.Chip" title="Permalink to this definition">¶</a></dt>
-<dd><p>A Chip device containing streams, sinks and processes.</p>
+<dd><p>A Chip is device containing streams, sinks and processes.</p>
 <p>Typically a Chip is used to describe a single device. You need to provide
 the Chip object with a list of all the sinks (device outputs). You don&#8217;t
 need to include any process, variables or streams. By analysing the sinks,
 the chip can work out which processes and streams need to be included in
 the device.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">switches</span> <span class="o">=</span> <span class="n">InPort</span><span class="p">(</span><span class="s">&quot;SWITCHES&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
-<span class="n">serial_in</span> <span class="o">=</span> <span class="n">SerialIn</span><span class="p">(</span><span class="s">&quot;RX&quot;</span><span class="p">)</span>
-<span class="n">leds</span> <span class="o">=</span> <span class="n">OutPort</span><span class="p">(</span><span class="n">switches</span><span class="p">,</span> <span class="s">&quot;LEDS&quot;</span><span class="p">)</span>
-<span class="n">serial_out</span> <span class="o">=</span> <span class="n">SerialOut</span><span class="p">(</span><span class="s">&quot;TX&quot;</span><span class="p">,</span> <span class="n">serial_in</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips.VHDL_plugin</span> <span class="kn">import</span> <span class="n">Plugin</span>
 
-<span class="c">#We need to tell the *Chip* that *leds* and *serial_out* are part of</span>
-<span class="c">#the device. The *Chip* can work out for itself that *switches* and</span>
-<span class="c">#*serial_in* are part of the device.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">switches</span> <span class="o">=</span> <span class="n">InPort</span><span class="p">(</span><span class="s">&quot;SWITCHES&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serial_in</span> <span class="o">=</span> <span class="n">SerialIn</span><span class="p">(</span><span class="s">&quot;RX&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">leds</span> <span class="o">=</span> <span class="n">OutPort</span><span class="p">(</span><span class="n">switches</span><span class="p">,</span> <span class="s">&quot;LEDS&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serial_out</span> <span class="o">=</span> <span class="n">SerialOut</span><span class="p">(</span><span class="n">serial_in</span><span class="p">,</span> <span class="s">&quot;TX&quot;</span><span class="p">)</span>
 
-<span class="n">s</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
-    <span class="n">leds</span><span class="p">,</span>
-    <span class="n">serial_out</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#We need to tell the Chip that leds and serial_out are part of</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#the device. The Chip can work out for itself that switches and</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#serial_in are part of the device.</span>
 
-<span class="n">s</span><span class="o">.</span><span class="n">write_code</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">leds</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">serial_out</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plugin</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">write_code</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -99,28 +103,32 @@ Similarly, the stream will be stalled, until data is read from it. This
 provides a handy way to synchronise processes together, and simplifies the
 design of concurrent systems.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#sending process</span>
-<span class="n">theoutput</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
-<span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
-    <span class="c">#wait for 1 second</span>
-    <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
-    <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> 
-        <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-        <span class="n">WaitUs</span><span class="p">()</span>
-    <span class="p">),</span>
-    <span class="c">#send some data</span>
-    <span class="n">theoutput</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">123</span><span class="p">),</span>
-<span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="c">#receiving process</span>
-<span class="n">target_variable</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
-    <span class="c">#This instruction will stall the process until data is available</span>
-    <span class="n">theOutput</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">target_variable</span><span class="p">),</span>
-    <span class="c">#This instruction will not be run for 1 second</span>
-    <span class="c">#..</span>
-<span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#sending process</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">theoutput</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="c">#wait for 1 second</span>
+<span class="gp">... </span>    <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> 
+<span class="gp">... </span>        <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">WaitUs</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="c">#send some data</span>
+<span class="gp">... </span>    <span class="n">theoutput</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">123</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#receiving process</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_variable</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="c">#This instruction will stall the process until data is available</span>
+<span class="gp">... </span>    <span class="n">theoutput</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">target_variable</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="c">#This instruction will not be run for 1 second</span>
+<span class="gp">... </span>    <span class="c">#..</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
 </pre></div>
 </div>
 </div>
@@ -140,28 +148,30 @@ design of concurrent systems.</p>
 <em>write</em> method accepts an expression as its argument. A <em>write</em> to an output
 will stall the process until the receiver is ready to receive data.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#sending process</span>
-<span class="n">theoutput</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
-<span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
-    <span class="c">#This instruction will stall the process until data is available</span>
-    <span class="n">theoutput</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">123</span><span class="p">),</span>
-    <span class="c">#This instruction will not be run for 1 second</span>
-    <span class="c">#..</span>
-<span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c">#sending process</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">theoutput</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="c">#This instruction will stall the process until data is available</span>
+<span class="gp">... </span>    <span class="n">theoutput</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">123</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="c">#This instruction will not be run for 1 second</span>
+<span class="gp">... </span>    <span class="c">#..</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
 
-<span class="c">#receiving process</span>
-<span class="n">target_variable</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
-    <span class="c">#wait for 1 second</span>
-    <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
-    <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> 
-        <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-        <span class="n">WaitUs</span><span class="p">(),</span>
-    <span class="p">),</span>
-    <span class="c">#get some data</span>
-    <span class="n">theoutput</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">target_variable</span><span class="p">),</span>
-<span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#receiving process</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_variable</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="c">#wait for 1 second</span>
+<span class="gp">... </span>    <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> 
+<span class="gp">... </span>        <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">WaitUs</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="c">#get some data</span>
+<span class="gp">... </span>    <span class="n">theoutput</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">target_variable</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
 </pre></div>
 </div>
 </div>
@@ -171,34 +181,34 @@ will stall the process until the receiver is ready to receive data.</p>
 may only be accessed by one process.  When a <em>Variable</em> an initial value must
 be supplied. A variable will be reset to its initial value before any process
 instructions are executed.  A <em>Variable</em> may be assigned a value using the
-<em>set</em> method. The <a href="#id1"><span class="problematic" id="id2">*</span></a>set method accepts an expression as its argument.</p>
+<em>set</em> method. The <em>set</em> method accepts an expression as its argument.</p>
 <p>It is important to understand that a <em>Variable</em> object created like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>is very different from a normal Python variable created like this:</p>
+<p>is different from a normal Python variable created like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="mi">12</span>
 </pre></div>
 </div>
 <p>The key is to understand that a <em>Variable</em> will exist in the target <em>Chip</em>, and
 may be assigned and referenced as the <em>Process</em> executes. A Python variable can
 exist only in the Python environment, and not in a <em>Chip</em>. While a Python
-variable may be converted into a <em>Constant</em> in the target <em>Chip</em>, a <em>Process</em>
+variable may be converted into a constant in the target <em>Chip</em>, a <em>Process</em>
 has no way to change its value when it executes.</p>
-</div>
-<div class="section" id="constants">
-<h3>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h3>
-<p>Like a <em>Variable</em>, a constant must be supplied with an initial value when it
-is created. Unlike a <em>Variable</em>, the value of a <em>Constant</em> can never be
-changed.</p>
 </div>
 <div class="section" id="expressions">
 <h3>Expressions<a class="headerlink" href="#expressions" title="Permalink to this headline">¶</a></h3>
 <p><em>Variables</em> and <em>Constants</em> are the most basic form of expressions. More
 complex expressions can be formed by combining <em>Constants</em>, <em>Variables</em> and
-other expressions using following operators:</p>
-<div class="highlight-python"><pre>+, -, *, \/, %, &amp;, |, ^, &lt;&lt;, &gt;&gt;, ==, !=, &lt;, &lt;=, &gt;, &gt;=</pre>
+other expressions using following unary operators:</p>
+<div class="highlight-python"><pre>~</pre>
 </div>
+<p>and the folowing binary operators:</p>
+<div class="highlight-python"><pre>+, -, *, //, %, &amp;, |, ^, &lt;&lt;, &gt;&gt;, ==, !=, &lt;, &lt;=, &gt;, &gt;=</pre>
+</div>
+<p>The function <em>Not</em> evaluates to the logical negation of each data item
+equivalent to <tt class="docutils literal"><span class="pre">==0</span></tt>. The function <em>abs</em> evaluates to the magnitude of each
+data item.</p>
 <p>If one of the operands of a binary operator is not an expression, the Chips
 library will attempt to convert this operand into an integer. If the conversion
 is successful, a <em>Constant</em> object will be created using the integer value.
@@ -207,6 +217,15 @@ allows constructs such as <tt class="docutils literal"><span class="pre">a</span
 <tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">Constant(47)+Constant(10)</span></tt> or <tt class="docutils literal"><span class="pre">count.set(Constant(15)+3*2</span></tt> to be used
 as a shorthand for <tt class="docutils literal"><span class="pre">count.set(Constant(15)+Constant(6)</span></tt>.  Of course <tt class="docutils literal"><span class="pre">a=1+1</span></tt>
 still yields the integer 2 rather than an expression.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The divide <tt class="docutils literal"><span class="pre">//</span></tt> operator in <em>Chips</em> works differently then the divide
+operator in Python.  While a floor division in Python rounds to -infinite,
+in <em>Chips</em> division rounds to <tt class="docutils literal"><span class="pre">0</span></tt>. Thus <tt class="docutils literal"><span class="pre">-3//2</span></tt> rounds to <tt class="docutils literal"><span class="pre">-2</span></tt> in
+Python, it rounds to <tt class="docutils literal"><span class="pre">-1</span></tt> in <em>Chips</em>. This should be more familiar to
+users of C, C++ and VHDL. The same also applies to the modulo <tt class="docutils literal"><span class="pre">%</span></tt>
+operator.</p>
+</div>
 <p>An expression within a process will always inherit the data width in bits of
 the <em>Process</em> in which it is evaluated. A <em>Stream</em> expression such as
 <tt class="docutils literal"><span class="pre">Repeater(255)</span> <span class="pre">+</span> <span class="pre">1</span></tt> will automatically yield a 10-bit <em>Stream</em> so that the
@@ -252,8 +271,14 @@ the same precedence.</p>
 <tr><td>+, -</td>
 <td>Addition and subtraction</td>
 </tr>
-<tr><td><a href="#id3"><span class="problematic" id="id4">*</span></a>, //, %</td>
+<tr><td>*, //, %</td>
 <td>multiplication, division and modulo</td>
+</tr>
+<tr><td>~</td>
+<td>bitwise NOT</td>
+</tr>
+<tr><td>Not, abs</td>
+<td>logical NOT, absolute</td>
 </tr>
 </tbody>
 </table>
@@ -266,12 +291,73 @@ the same precedence.</p>
 <dl class="class">
 <dt id="chips.Variable">
 <em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Variable</tt><big>(</big><em>initial</em><big>)</big><a class="headerlink" href="#chips.Variable" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A <em>Variable</em> is used within a <em>Process</em> to store data. A <em>Variable</em> can
+be used in only one <em>Process</em>. If you need to communicate with another
+<em>Process</em> you must use a stream.</p>
+<p>A <em>Variable</em> accepts a single argument, the initial value. A <em>Variable</em>
+will be reset to the initial value when a simulation, or actual device is
+reset.</p>
+<p>A <em>Variable</em> can be assigned an expression using the <em>set</em> method.</p>
+</dd></dl>
 
 <dl class="class">
 <dt id="chips.VariableArray">
 <em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">VariableArray</tt><big>(</big><em>size</em><big>)</big><a class="headerlink" href="#chips.VariableArray" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A <em>VariableArray</em> is an array of variables that can be accessed from
+within a single <em>Process</em>.</p>
+<p>When a <em>VariableArray</em> is created, it accepts a single argument, the
+<em>size</em>.</p>
+<p>A <em>VariableArray</em> can be written to using the <em>write</em> method, the <em>write</em>
+method accepts two arguments, an expression indicating the <em>address</em> to
+write to, and an expression indicating the <em>data</em> to write.</p>
+<p>A <em>VariableArray</em> can be read to using the <em>read</em> method, the <em>read</em> method
+accepts a single argument, an expression indicating the <em>address</em> to read
+from. The <em>read method returns an expression that evaluates to the value
+contained at *address</em>.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">number_of_items</span><span class="p">):</span>
+<span class="gp">... </span>     <span class="sd">&quot;&quot;&quot;Read number_of_items from stream, and reverse them.&quot;&quot;&quot;</span>
+<span class="gp">... </span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>     <span class="n">index</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>     <span class="n">reversed_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>     <span class="n">data_store</span> <span class="o">=</span> <span class="n">VariableArray</span><span class="p">(</span><span class="n">number_of_items</span><span class="p">)</span>
+<span class="gp">... </span>     <span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="n">index</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="n">While</span><span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">number_of_items</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="n">stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>             <span class="n">data_store</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>             <span class="n">index</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="p">),</span>
+<span class="gp">... </span>         <span class="n">index</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">number_of_items</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="n">While</span><span class="p">(</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="n">reversed_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data_store</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">index</span><span class="p">)),</span>
+<span class="gp">... </span>             <span class="n">index</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="p">),</span>
+<span class="gp">... </span>     <span class="p">)</span>
+<span class="gp">... </span>
+<span class="gp">... </span>     <span class="k">return</span> <span class="n">reversed_stream</span>
+
+<span class="go">    </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">reverse</span><span class="p">(</span><span class="n">Sequence</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>     <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">3</span>
+<span class="go">2</span>
+<span class="go">1</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </div>
 <div class="section" id="module-chips.streams">
@@ -291,9 +377,14 @@ another stream such as a <em>Printer</em> or a <em>Lookup</em>.</li>
 <div class="section" id="stream-expressions">
 <h3>Stream Expressions<a class="headerlink" href="#stream-expressions" title="Permalink to this headline">¶</a></h3>
 <p>A Stream Expression can be formed by combining Streams or Stream Expressions
-with the following operators:</p>
-<div class="highlight-python"><pre>+, -, *, \/, %, &amp;, |, ^, &lt;&lt;, &gt;&gt;, ==, !=, &lt;, &lt;=, &gt;, &gt;=</pre>
+with the following unary operators:</p>
+<div class="highlight-python"><pre>~</pre>
 </div>
+<p>and the folowing binary operators:</p>
+<div class="highlight-python"><pre>+, -, *, //, %, &amp;, |, ^, &lt;&lt;, &gt;&gt;, ==, !=, &lt;, &lt;=, &gt;, &gt;=</pre>
+</div>
+<p>The function <em>Not</em> yields the logical negation of each data item equivalent to
+<tt class="docutils literal"><span class="pre">==0</span></tt>. The function <em>abs</em> yields the magnitude of each data item.</p>
 <p>Each data item in the resulting Stream Expression will be evaluated by removing
 a data item from each of the operand streams, and applying the operator
 function to these data items.</p>
@@ -310,6 +401,15 @@ constructs such as <tt class="docutils literal"><span class="pre">a</span> <span
 <span class="pre">Repeater(47)+InPort(&quot;in&quot;,</span> <span class="pre">8)</span></tt> or <tt class="docutils literal"><span class="pre">count</span> <span class="pre">=</span> <span class="pre">Counter(1,</span> <span class="pre">10,</span> <span class="pre">1)+3*2</span></tt> to be used as
 a shorthand for <tt class="docutils literal"><span class="pre">count</span> <span class="pre">=</span> <span class="pre">Counter(1,</span> <span class="pre">10,</span> <span class="pre">1)+Repeater(5)</span></tt>.  Of course <tt class="docutils literal"><span class="pre">a=1+1</span></tt>
 still yields the integer 2 rather than a stream.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The divide <tt class="docutils literal"><span class="pre">//</span></tt> operator in <em>Chips</em> works differently then the divide
+operator in Python.  While a floor division in Python rounds to -infinite,
+in <em>Chips</em> division rounds to <tt class="docutils literal"><span class="pre">0</span></tt>. Thus <tt class="docutils literal"><span class="pre">-3//2</span></tt> rounds to <tt class="docutils literal"><span class="pre">-2</span></tt> in
+Python, it rounds to <tt class="docutils literal"><span class="pre">-1</span></tt> in <em>Chips</em>. This should be more familiar to
+users of C, C++ and VHDL. The same also applies to the modulo <tt class="docutils literal"><span class="pre">%</span></tt>
+operator.</p>
+</div>
 <p>The operators provided in the Python Streams library are summarised in the
 table below. The bit width field specifies how many bits are used for the
 result based on the number of bits in the left and right hand operands.</p>
@@ -326,6 +426,18 @@ result based on the number of bits in the left and right hand operands.</p>
 </tr>
 </thead>
 <tbody valign="top">
+<tr><td>abs</td>
+<td>Logical Not</td>
+<td>argument</td>
+</tr>
+<tr><td>Not</td>
+<td>Logical Not</td>
+<td>1</td>
+</tr>
+<tr><td>~</td>
+<td>Bitwise not</td>
+<td>right</td>
+</tr>
 <tr><td>+</td>
 <td>Signed Add</td>
 <td>max(left, right) + 1</td>
@@ -397,8 +509,8 @@ Comparison</td>
 </tbody>
 </table>
 </div>
-<div class="section" id="id5">
-<h3>Operator Precedence<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h3>Operator Precedence<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>The operator precedence is inherited from the python language. The following
 table summarizes the operator precedences, from lowest precedence (least
 binding) to highest precedence (most binding). Operators in the same row have
@@ -435,8 +547,14 @@ the same precedence.</p>
 <tr><td>+, -</td>
 <td>Addition and subtraction</td>
 </tr>
-<tr><td><a href="#id6"><span class="problematic" id="id7">*</span></a>, //, %</td>
+<tr><td>*, //, %</td>
 <td>multiplication, division and modulo</td>
+</tr>
+<tr><td>~</td>
+<td>bitwise NOT</td>
+</tr>
+<tr><td>Not, abs</td>
+<td>logical NOT, absolute</td>
 </tr>
 </tbody>
 </table>
@@ -455,34 +573,27 @@ with independent read, and write ports.</p>
 <p>A <em>Lookup</em> accepts <em>address_in</em>, <em>data_in</em> and <em>address_out</em> arguments as
 source streams. The <em>depth</em> argument specifies the size of the lookup table.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">video_raster_stream</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">row_stream</span><span class="p">,</span> <span class="n">col_stream</span><span class="p">,</span> 
-                        <span class="n">pixel_intensity</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">video_raster_stream</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">row_stream</span><span class="p">,</span> <span class="n">col_stream</span><span class="p">,</span> 
+<span class="gp">... </span>                        <span class="n">intensity</span><span class="p">):</span>
+<span class="gp">... </span>
+<span class="gp">... </span>    <span class="n">pixel_clock</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">*</span><span class="n">height</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>     
+<span class="gp">... </span>    <span class="n">pixstream</span> <span class="o">=</span> <span class="n">Array</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">address_in</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_stream</span> <span class="o">*</span> <span class="n">width</span><span class="p">)</span> <span class="o">+</span> <span class="n">col_stream</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">data_in</span> <span class="o">=</span> <span class="n">intensity</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">address_out</span> <span class="o">=</span> <span class="n">pixel_clock</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">depth</span> <span class="o">=</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">pixstream</span>
 
-    <span class="n">pixel_clock</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">*</span><span class="n">height</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">red_intensity</span><span class="p">,</span> <span class="n">green_intensity</span><span class="p">,</span> <span class="n">blue_intensity</span> <span class="o">=</span> <span class="n">pixel_intensity</span>
-     
-    <span class="n">red</span> <span class="o">=</span> <span class="n">Array</span><span class="p">(</span>
-        <span class="n">address_in</span> <span class="o">=</span> <span class="n">row_stream</span> <span class="o">*</span> <span class="n">width_stream</span> <span class="o">+</span> <span class="n">col_stream</span><span class="p">,</span>
-        <span class="n">data_in</span> <span class="o">=</span> <span class="n">red_intensity</span><span class="p">,</span>
-        <span class="n">address_out</span> <span class="o">=</span> <span class="n">pixel_clock</span><span class="p">,</span>
-        <span class="n">depth</span> <span class="o">=</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">green</span> <span class="o">=</span> <span class="n">Array</span><span class="p">(</span>
-        <span class="n">address_in</span> <span class="o">=</span> <span class="n">row_stream</span> <span class="o">*</span> <span class="n">width_stream</span> <span class="o">+</span> <span class="n">col_stream</span><span class="p">,</span>
-        <span class="n">data_in</span> <span class="o">=</span> <span class="n">green_intensity</span><span class="p">,</span>
-        <span class="n">address_out</span> <span class="o">=</span> <span class="n">pixel_clock</span><span class="p">,</span>
-        <span class="n">depth</span> <span class="o">=</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">blue</span> <span class="o">=</span> <span class="n">Array</span><span class="p">(</span>
-        <span class="n">address_in</span> <span class="o">=</span> <span class="n">row_stream</span> <span class="o">*</span> <span class="n">width_stream</span> <span class="o">+</span> <span class="n">col_stream</span><span class="p">,</span>
-        <span class="n">data_in</span> <span class="o">=</span> <span class="n">blue_intensity</span><span class="p">,</span>
-        <span class="n">address_out</span> <span class="o">=</span> <span class="n">pixel_clock</span><span class="p">,</span>
-        <span class="n">depth</span> <span class="o">=</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pixstream</span> <span class="o">=</span> <span class="n">video_raster_stream</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="mi">64</span><span class="p">,</span> 
+<span class="gp">... </span>    <span class="mi">64</span><span class="p">,</span> 
+<span class="gp">... </span>    <span class="n">Repeater</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span> 
+<span class="gp">... </span>    <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+<span class="gp">... </span>    <span class="n">Repeater</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -494,9 +605,45 @@ source streams. The <em>depth</em> argument specifies the size of the lookup tab
 <p>A <em>Counter</em> is a versatile, and commonly used construct in device design,
 they can be used to number samples, index memories and so on.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c"># --&gt; 0 2 4 6 8 10 0 \..</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="n">Counter</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="c"># --&gt; 10 8 7 6 4 2 0 10 \..</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">=</span><span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c">#creates a 4 bit stream</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">2</span>
+<span class="go">4</span>
+<span class="go">6</span>
+<span class="go">8</span>
+<span class="go">10</span>
+<span class="go">0</span>
+<span class="gp">...</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">=</span><span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Counter</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="c">#creates a 4 bit stream</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">10</span>
+<span class="go">8</span>
+<span class="go">6</span>
+<span class="go">4</span>
+<span class="go">2</span>
+<span class="go">0</span>
+<span class="go">10</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -516,68 +663,34 @@ number of data items written into the <em>Decoupler</em> and the number read out
 do not have to be the same.</p>
 <p>A <em>Decoupler</em> accepts only one argument, the source stream.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">time_stamp_data</span><span class="p">(</span><span class="n">data_stream</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-    <span class="n">us_time</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
-    <span class="n">time</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
-        <span class="n">Loop</span><span class="p">(</span>
-            <span class="n">WaitUs</span><span class="p">,</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-            <span class="n">us_time</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
-        <span class="p">),</span>
-    <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">time_stamp_data</span><span class="p">(</span><span class="n">data_stream</span><span class="p">):</span>
+<span class="gp">... </span>
+<span class="gp">... </span>    <span class="n">us_time</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">time</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">WaitUs</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">time</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">us_time</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span>
+<span class="gp">... </span>    <span class="n">output_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">data_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">output_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">us_time</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">output_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">output_stream</span>
 
-    <span class="n">output_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
-    <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
-        <span class="n">Loop</span><span class="p">(</span>
-            <span class="n">data_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-            <span class="n">output_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-            <span class="n">us_time</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-            <span class="n">output_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-        <span class="p">),</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">output_stream</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="class">
-<dt id="chips.Resizer">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Resizer</tt><big>(</big><em>source</em>, <em>bits</em><big>)</big><a class="headerlink" href="#chips.Resizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <em>Resizer</em> changes the width, in bits, of the source stream.</p>
-<p>The <em>Resizer</em> takes two arguments, the source stream, and the <em>width</em> in
-bits. The <em>Resizer</em> will truncate data if it is reducing the width, ans
-sign extend if it is increasing the width.</p>
-<p>Example:</p>
-<div class="highlight-python"><pre>a = InPort(name="din", bits=8) a has a width of 8 bits
-b = Inport + 1 #b has a width of 9 bits
-c = Resizer(b, 8) #c is truncated to 8 bits
-Chip(OutPort(name="dout"))</pre>
-</div>
-</dd></dl>
-
-<dl class="class">
-<dt id="chips.Lookup">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Lookup</tt><big>(</big><em>source</em>, <em>*args</em><big>)</big><a class="headerlink" href="#chips.Lookup" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <em>Lookup</em> is a stream yields values from a read-only look up table.</p>
-<p>For each data item in the source stream, a <em>Lookup</em> will yield the
-addressed value in the lookup table. A <em>Lookup</em> is basically a Read Only
-Memory(ROM) with the source stream forming the address, and the <em>Lookup</em>
-itself forming the data output.</p>
-<p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">binary_2_gray</span><span class="p">(</span><span class="n">input_stream</span><span class="p">):</span> 
-    <span class="k">return</span> <span class="n">Lookup</span><span class="p">(</span><span class="n">input_stream</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The first argument to a <em>Lookup</em> is the source stream, all additional
-arguments form the lookup table. If you want to use a Python sequence
-object such as a tuple or a list to form the lookup table use the following
-syntax:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">my_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> 
-<span class="n">my_sequence</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="o">*</span><span class="n">my_list</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time_stamped_stream</span> <span class="o">=</span> <span class="n">time_stamp_data</span><span class="p">(</span><span class="n">SerialIn</span><span class="p">())</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -592,75 +705,80 @@ stored.</p>
 <p>The first argument to a <em>Fifo</em>, is the source stream, the <em>depth</em> argument
 determines the size of the Fifo buffer.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">digital_oscilloscope</span><span class="p">(</span><span class="n">ADC_stream</span><span class="p">,</span> <span class="n">trigger_level</span><span class="p">):</span> 
-    <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-    <span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
-        <span class="n">Loop</span><span class="p">(</span>
-            <span class="n">ADC_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-            <span class="n">If</span><span class="p">(</span><span class="n">temp</span> <span class="o">&gt;</span> <span class="n">trigger_level</span><span class="p">,</span>
-                <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">buffer_depth</span><span class="p">),</span>
-                <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span>
-                    <span class="n">ADC_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-                    <span class="nb">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-                    <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-                <span class="p">),</span>
-            <span class="p">),</span>
-        <span class="p">),</span>
-    <span class="p">)</span>
-            
-    <span class="k">return</span> <span class="n">SerialOut</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">Fifo</span><span class="p">(</span><span class="nb">buffer</span><span class="p">,</span> <span class="n">buffer_depth</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">scope</span><span class="p">(</span><span class="n">ADC_stream</span><span class="p">,</span> <span class="n">trigger_level</span><span class="p">,</span> <span class="n">buffer_depth</span><span class="p">):</span> 
+<span class="gp">... </span>    <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">buffer</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>
+<span class="gp">... </span>    <span class="n">Process</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">ADC_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">If</span><span class="p">(</span><span class="n">temp</span> <span class="o">&gt;</span> <span class="n">trigger_level</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="nb">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>                <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">buffer_depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>                <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span>
+<span class="gp">... </span>                    <span class="n">ADC_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="nb">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>                <span class="p">),</span>
+<span class="gp">... </span>            <span class="p">),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span>            
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">Printer</span><span class="p">(</span><span class="n">Fifo</span><span class="p">(</span><span class="nb">buffer</span><span class="p">,</span> <span class="n">buffer_depth</span><span class="p">))</span>
+<span class="gp">... </span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test_signal</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">scope</span><span class="p">(</span><span class="n">test_signal</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">3</span>
+<span class="go">4</span>
+<span class="go">5</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="class">
-<dt id="chips.Repeater">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Repeater</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#chips.Repeater" title="Permalink to this definition">¶</a></dt>
-<dd><p>A stream which repeatedly yields the specified <em>value</em>.</p>
-<p>The <em>Repeater</em> stream is one of the most fundamental streams available.</p>
-<p>The width of the stream in bits is calculated automatically. The smallest
-number of bits that can represent <em>value</em> in twos-complement format will be
-used.</p>
-<p>Examples:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Repeater</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="c">#--&gt; 5 5 5 5 \..</span>
-<span class="c">#creates a 4 bit stream.</span>
-
-<span class="n">Repeater</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c">#--&gt; 10 10 10 10 \..</span>
-<span class="c">#creates a 5 bit stream.</span>
-
-<span class="n">Repeater</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span> <span class="c">#--&gt; 10 10 10 10 \..</span>
-<span class="c">#This is shorthand for: Repeater(5)*Repeater(2)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="class">
-<dt id="chips.Sequence">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Sequence</tt><a class="headerlink" href="#chips.Sequence" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="chips.Stimulus">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Stimulus</tt><big>(</big><em>bits</em><big>)</big><a class="headerlink" href="#chips.Stimulus" title="Permalink to this definition">¶</a></dt>
-<dd><p>A Stream that allows a Python iterable to be used as a stream.</p>
-<p>A Stimulus stream allows a transparent method to pass data from the Python
-environment into the simulation environment. The sequence object is set at
-run time using the set_simulation_data() method. The sequence object can be
-any iterable Python sequence such as a list, tuple, or even a generator.</p>
+<dt id="chips.HexPrinter">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">HexPrinter</tt><big>(</big><em>source</em><big>)</big><a class="headerlink" href="#chips.HexPrinter" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <em>HexPrinter</em> turns data into hexadecimal ASCII characters.</p>
+<p>Each each data item is turned into the ASCII representation of its
+hexadecimal value, terminated with a newline character. Each character then
+forms a data item in the <em>HexPrinter</em> stream.</p>
+<p>A <em>HexPrinter</em> accepts a single argument, the source stream. A <em>HexPrinter</em>
+stream is always 8 bits wide.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">PIL</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="n">picture</span> <span class="o">=</span> <span class="n">Stimulus</span><span class="p">()</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">picture</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#print the numbers 0x0-0x10 to the console repeatedly</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">=</span><span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">HexPrinter</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Counter</span><span class="p">(</span><span class="mh">0x0</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
 
-<span class="n">im</span> <span class="o">=</span> <span class="n">PIL</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;test.bmp&quot;</span><span class="p">)</span>
-<span class="n">image_data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">getdata</span><span class="p">())</span>
-<span class="n">picture</span><span class="o">.</span><span class="n">set_simulation_data</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
-
-<span class="n">picture</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">picture</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">3</span>
+<span class="go">4</span>
+<span class="go">5</span>
+<span class="go">6</span>
+<span class="go">7</span>
+<span class="go">8</span>
+<span class="go">9</span>
+<span class="go">a</span>
+<span class="go">b</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -680,8 +798,278 @@ automatically, this must be specified using the <em>bits</em> argument.</p>
 In a VHDL implementation, <em>name</em> will be used as the port name in the
 top level entity.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">dip_switches</span> <span class="o">=</span> <span class="n">Inport</span><span class="p">(</span><span class="s">&quot;dip_switches&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> 
-<span class="n">s</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">SerialOut</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">dip_switches</span><span class="p">)))</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dip_switches</span> <span class="o">=</span> <span class="n">InPort</span><span class="p">(</span><span class="s">&quot;dip_switches&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">SerialOut</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">dip_switches</span><span class="p">)))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="chips.Lookup">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Lookup</tt><big>(</big><em>source</em>, <em>*args</em><big>)</big><a class="headerlink" href="#chips.Lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <em>Lookup</em> is a stream yields values from a read-only look up table.</p>
+<p>For each data item in the source stream, a <em>Lookup</em> will yield the
+addressed value in the lookup table. A <em>Lookup</em> is basically a Read Only
+Memory(ROM) with the source stream forming the address, and the <em>Lookup</em>
+itself forming the data output.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">binary_2_gray</span><span class="p">(</span><span class="n">input_stream</span><span class="p">):</span> 
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">Lookup</span><span class="p">(</span><span class="n">input_stream</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span><span class="n">binary_2_gray</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">1</span>
+<span class="go">3</span>
+<span class="go">2</span>
+<span class="go">6</span>
+<span class="go">7</span>
+<span class="go">5</span>
+<span class="go">4</span>
+<span class="go">0</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>The first argument to a <em>Lookup</em> is the source stream, all additional
+arguments form the lookup table. If you want to use a Python sequence
+object such as a tuple or a list to form the lookup table use the following
+syntax:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">my_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> 
+<span class="gp">... </span><span class="n">my_sequence</span> <span class="o">=</span> <span class="n">Lookup</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="o">*</span><span class="n">my_list</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="chips.Output">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Output</tt><a class="headerlink" href="#chips.Output" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <em>Output</em> is a stream that can be written to by a process.</p>
+<p>Any stream can be read from by a process. Only an <em>Output</em> stream can be
+written to by a process.  A process can be written to by using the <em>read</em>
+method. The read method accepts one argument, an expression to write.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">tee</span><span class="p">(</span><span class="n">input_stream</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">output_stream_1</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">output_stream_2</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">Process</span><span class="p">(</span><span class="n">input_stream</span><span class="o">.</span><span class="n">get_bits</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">input_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">output_stream_1</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">output_stream_2</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">output_stream_1</span><span class="p">,</span> <span class="n">output_stream_2</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os_1</span><span class="p">,</span> <span class="n">os_2</span> <span class="o">=</span> <span class="n">tee</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span><span class="n">os_1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span><span class="n">os_2</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">2</span>
+<span class="go">3</span>
+<span class="go">3</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="chips.Printer">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Printer</tt><big>(</big><em>source</em><big>)</big><a class="headerlink" href="#chips.Printer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <em>Printer</em> turns data into decimal ASCII characters.</p>
+<p>Each each data item is turned into the ASCII representation of its decimal
+value, terminated with a newline character. Each character then forms a
+data item in the <em>Printer</em> stream.</p>
+<p>A <em>Printer</em> accepts a single argument, the source stream. A <em>Printer</em>
+stream is always 8 bits wide.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#print the numbers 0-10 to the console repeatedly</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">=</span><span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">3</span>
+<span class="go">4</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="chips.Repeater">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Repeater</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#chips.Repeater" title="Permalink to this definition">¶</a></dt>
+<dd><p>A stream which repeatedly yields the specified <em>value</em>.</p>
+<p>The <em>Repeater</em> stream is one of the most fundamental streams available.</p>
+<p>The width of the stream in bits is calculated automatically. The smallest
+number of bits that can represent <em>value</em> in twos-complement format will be
+used.</p>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">=</span><span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Repeater</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="c">#creates a 4 bit stream</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">5</span>
+<span class="go">5</span>
+<span class="go">5</span>
+<span class="gp">...</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">=</span><span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Repeater</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c">#creates a 5 bit stream</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">10</span>
+<span class="go">10</span>
+<span class="go">10</span>
+<span class="gp">...</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">=</span><span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="c">#This is shorthand for: Repeater(5)*Repeater(2)</span>
+<span class="gp">... </span>            <span class="n">Repeater</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">10</span>
+<span class="go">10</span>
+<span class="go">10</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="chips.Resizer">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Resizer</tt><big>(</big><em>source</em>, <em>bits</em><big>)</big><a class="headerlink" href="#chips.Resizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <em>Resizer</em> changes the width, in bits, of the source stream.</p>
+<p>The <em>Resizer</em> takes two arguments, the source stream, and the <em>width</em> in
+bits. The <em>Resizer</em> will truncate data if it is reducing the width, ans
+sign extend if it is increasing the width.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">InPort</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;din&quot;</span><span class="p">,</span> <span class="n">bits</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span> <span class="c">#a has a width of 8 bits</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">get_bits</span><span class="p">()</span>
+<span class="go">8</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span> <span class="c">#b has a width of 9 bits</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">get_bits</span><span class="p">()</span>
+<span class="go">9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Resizer</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="c">#c is truncated to 8 bits</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">get_bits</span><span class="p">()</span>
+<span class="go">8</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Chip</span><span class="p">(</span><span class="n">OutPort</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;dout&quot;</span><span class="p">))</span>
+<span class="go">Chip(...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="chips.Scanner">
+<tt class="descclassname">chips.</tt><tt class="descname">Scanner</tt><big>(</big><em>stream</em>, <em>bits</em><big>)</big><a class="headerlink" href="#chips.Scanner" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <em>Scanner</em> converts a stream of decimal ASCII into their integer value.</p>
+<p>Numeric characters separated by non-numeric characters are interpreted as
+numbers.  As it is not possible to determine the maximum value of a
+<em>Scanner</em> stream at compile time, the width of the stream must be specified
+using the bits parameter.</p>
+<p>The <em>Scanner</em> stream accepts two inputs, the source stream and the number
+of bits.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#multiply by two and echo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Scanner</span><span class="p">(</span><span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;10 20 30 &quot;</span><span class="p">)),</span> <span class="mi">8</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="c"># doctest: +ELLIPSIS</span>
+<span class="go">20</span>
+<span class="go">40</span>
+<span class="go">60</span>
+<span class="go">20</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="chips.Sequence">
+<tt class="descclassname">chips.</tt><tt class="descname">Sequence</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#chips.Sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <em>Sequence</em> stream yields each of its arguments in turn repeatedly.</p>
+<p>A <em>Sequence</em> accepts any number of arguments. The bit width of a sequence
+is determined automatically, using the number of bits necessary to
+represent the argument with the largest magnitude. A <em>Sequence</em> allows
+Python sequences to be used within a Chips simulation using the
+<tt class="docutils literal"><span class="pre">Sequence(*python_sequence)</span></tt> syntax.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="go">hello world</span>
+<span class="go">hello world</span>
+<span class="go">hello world</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -697,83 +1085,44 @@ for the serial RX line in generated VHDL. The clock rate of the target
 device in MHz can be specified using the <em>clock_rate</em> argument. The baud
 rate of the serial input can be specified using the <em>baud_rate</em> argument.</p>
 <p>Example:</p>
-<div class="highlight-python"><pre>#echo typed characters
-my_chip = Chip(SerialOut(SerialIn())</pre>
-</div>
-</dd></dl>
-
-<dl class="class">
-<dt id="chips.Output">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Output</tt><a class="headerlink" href="#chips.Output" title="Permalink to this definition">¶</a></dt>
-<dd><p>An <em>Output</em> is a stream that can be written to by a process.</p>
-<p>Any stream can be read from by a process. Only an <em>Output</em> stream can be
-written to by a process.  A process can be written to by using the <em>read</em>
-method. The read method accepts one argument, an expression to write.</p>
-<p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">tee</span><span class="p">(</span><span class="n">input_stream</span><span class="p">):</span>
-    <span class="n">output_stream_1</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
-    <span class="n">output_stream_2</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
-    <span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">Process</span><span class="p">(</span><span class="n">input_stream</span><span class="o">.</span><span class="n">get_bits</span><span class="p">,</span>
-        <span class="n">Loop</span><span class="p">(</span>
-            <span class="n">input_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-            <span class="n">output_stream_1</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-            <span class="n">output_stream_2</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">input_stream_1</span><span class="p">,</span> <span class="n">input_stream_2</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#echo typed characters</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">SerialOut</span><span class="p">(</span><span class="n">SerialIn</span><span class="p">()))</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="class">
-<dt id="chips.Printer">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Printer</tt><big>(</big><em>source</em><big>)</big><a class="headerlink" href="#chips.Printer" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <em>Printer</em> turns data into decimal ASCII characters.</p>
-<p>Each each data item is turned into the ASCII representation of its decimal
-value, terminated with a newline character. Each character then forms a
-data item in the <em>Printer</em> stream.</p>
-<p>A <em>Printer</em> accepts a single argument, the source stream. A <em>Printer</em>
-stream is always 8 bits wide.</p>
+<dt id="chips.Stimulus">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Stimulus</tt><big>(</big><em>bits</em><big>)</big><a class="headerlink" href="#chips.Stimulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Stream that allows a Python iterable to be used as a stream.</p>
+<p>A Stimulus stream allows a transparent method to pass data from the Python
+environment into the simulation environment. The sequence object is set at
+run time using the set_simulation_data() method. The sequence object can be
+any iterable Python sequence such as a list, tuple, or even a generator.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#print the numbers 0-10 to the console repeatedly</span>
-<span class="n">Chip</span><span class="p">(</span>
-    <span class="n">Console</span><span class="p">(</span>
-        <span class="n">Printer</span><span class="p">(</span>
-            <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="p">),</span>
-    <span class="p">),</span>
-<span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stimulus</span> <span class="o">=</span> <span class="n">Stimulus</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">stimulus</span><span class="p">)))</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">count</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+<span class="gp">... </span>    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">i</span>
+<span class="gp">... </span>        <span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
+<span class="gp">... </span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stimulus</span><span class="o">.</span><span class="n">set_simulation_data</span><span class="p">(</span><span class="n">count</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 </dd></dl>
-
-<dl class="class">
-<dt id="chips.HexPrinter">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">HexPrinter</tt><big>(</big><em>source</em><big>)</big><a class="headerlink" href="#chips.HexPrinter" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <em>HexPrinter</em> turns data into hexadecimal ASCII characters.</p>
-<p>Each each data item is turned into the ASCII representation of its
-hexadecimal value, terminated with a newline character. Each character then
-forms a data item in the <em>HexPrinter</em> stream.</p>
-<p>A <em>HexPrinter</em> accepts a single argument, the source stream. A <em>HexPrinter</em>
-stream is always 8 bits wide.</p>
-<p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#print the numbers 0x0-0x10 to the console repeatedly</span>
-<span class="n">Chip</span><span class="p">(</span>
-    <span class="n">Console</span><span class="p">(</span>
-        <span class="n">Printer</span><span class="p">(</span>
-            <span class="n">Counter</span><span class="p">(</span><span class="mh">0x0</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="p">),</span>
-    <span class="p">),</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="class">
-<dt id="chips.Scanner">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Scanner</tt><a class="headerlink" href="#chips.Scanner" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </div>
 </div>
@@ -791,35 +1140,48 @@ stream is always 8 bits wide.</p>
 <div class="section" id="sinks-reference">
 <h3>Sinks Reference<a class="headerlink" href="#sinks-reference" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="chips.Response">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Response</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#chips.Response" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <em>Response</em> sink allows data to be transfered into Python.</p>
-<p>As a simulation is run, the <em>Response</em> sink accumulates data. After a
-simulation is run, you can retrieve a python iterable using the
-get_simulation_data method. Using a <em>Response</em> sink allows you to
-seamlessly integrate your <em>Chips</em> simulation into a wider Python
-simulation. This works for simulations using an external simulator as well,
-in this case you also need to pass the code generation plugin to
-get_simulation_data.</p>
-<p>A <em>Response</em> sink accepts a single stream argument as its source.</p>
+<dt id="chips.Asserter">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Asserter</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#chips.Asserter" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <em>Asserter</em> causes an exception if any data in the source stream is zero.</p>
+<p>An <em>Asserter</em> is particularly useful in automated tests, as it causes a
+simulation to fail is a condition is not met. In generated VHDL code, an
+asserter is represented by a VHDL assert statement. In practice this means
+that an <em>Asserter</em> will function correctly in a VHDL simulation, but will
+have no effect when synthesized.</p>
+<p>The <em>Asserter</em> sink accepts a source stream argument, <em>a</em>.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">PIL</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Asserter</span><span class="p">((</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">Sequence</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>Look at the Chips test suite for more examples of the Asserter being used
+for automated testing.</p>
+</dd></dl>
 
-<span class="k">def</span> <span class="nf">image_processor</span><span class="p">():</span>
-    <span class="c">#some image processing algorithm</span>
-    <span class="k">pass</span>
+<dl class="class">
+<dt id="chips.Console">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Console</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#chips.Console" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <em>Console</em> outputs data to the simulation console.</p>
+<p><em>Console</em> stores characters for output to the console in a buffer. When an
+end of line character is seen, the buffer is written to the console.  A
+<em>Console</em> interprets a stream of numbers as ASCII characters. The source
+stream must be 8 bits wide. The source stream could be truncated to 8 bits
+using a <em>Resizer</em>, but it is usually more convenient to use a <em>Printer</em> as
+the source stream. The will allow a stream of any width to be represented
+as a decimal string.</p>
+<p>A <em>Console</em> accepts a source stream argument <em>a</em>.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="n">image_processor</span><span class="p">)</span>
-<span class="n">chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#convert string into a sequence of characters</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hello_world</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span>
 
-<span class="n">chip</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">chip</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
-
-
-<span class="n">image_data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">get_simulation_data</span><span class="p">(</span><span class="n">plugin</span><span class="p">))</span>
-<span class="n">im</span> <span class="o">=</span> <span class="n">PIL</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s">&quot;L&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">))</span>
-<span class="n">im</span><span class="o">.</span><span class="n">putdata</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
-<span class="n">im</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -833,9 +1195,45 @@ time when the source stream transfers data.</p>
 <p>An output port take two arguments, the source stream <em>a</em> and a string
 <em>name</em>. Name is used as the port name in generated VHDL.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">dip_switches</span> <span class="o">=</span> <span class="n">Inport</span><span class="p">(</span><span class="s">&quot;dip_switches&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> 
-<span class="n">led_array</span> <span class="o">=</span> <span class="n">OutPort</span><span class="p">(</span><span class="n">dip_switched</span><span class="p">,</span> <span class="s">&quot;led_array&quot;</span><span class="p">)</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">led_array</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dip_switches</span> <span class="o">=</span> <span class="n">InPort</span><span class="p">(</span><span class="s">&quot;dip_switches&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led_array</span> <span class="o">=</span> <span class="n">OutPort</span><span class="p">(</span><span class="n">dip_switches</span><span class="p">,</span> <span class="s">&quot;led_array&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">led_array</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="chips.Response">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Response</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#chips.Response" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <em>Response</em> sink allows data to be transfered into Python.</p>
+<p>As a simulation is run, the <em>Response</em> sink accumulates data. After a
+simulation is run, you can retrieve a python iterable using the
+get_simulation_data method. Using a <em>Response</em> sink allows you to
+seamlessly integrate your <em>Chips</em> simulation into a wider Python
+simulation. This works for simulations using an external simulator as well,
+in this case you also need to pass the code generation plugin to
+get_simulation_data.</p>
+<p>A <em>Response</em> sink accepts a single stream argument as its source.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">streams</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">PIL.Image</span> <span class="c">#You need the Python Imaging Library for this</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">image_processor</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="c">#black -&gt; white</span>
+<span class="gp">... </span>   <span class="k">return</span> <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">4</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="n">image_processor</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chip</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chip</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">get_simulation_data</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_data</span> <span class="o">=</span> <span class="n">image_data</span><span class="p">[:(</span><span class="mi">64</span><span class="o">*</span><span class="mi">64</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span> <span class="o">=</span> <span class="n">PIL</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s">&quot;L&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span><span class="o">.</span><span class="n">putdata</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -856,58 +1254,16 @@ clock rate of the target device in MHz can be specified using the
 <em>clock_rate</em> argument. The baud rate of the serial output can be specified
 using the <em>baud_rate</em> argument.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#convert string into a sequence of characters</span>
-<span class="n">hello_world</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
-    <span class="n">SerialOut</span><span class="p">(</span>
-        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#convert string into a sequence of characters</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hello_world</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
 
-<dl class="class">
-<dt id="chips.Asserter">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Asserter</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#chips.Asserter" title="Permalink to this definition">¶</a></dt>
-<dd><p>An <em>Asserter</em> causes an exception if any data in the source stream is zero.</p>
-<p>An <em>Asserter</em> is particularly useful in automated tests, as it causes a
-simulation to fail is a condition is not met. In generated VHDL code, an
-asserter is represented by a VHDL assert statement. In practice this means
-that an <em>Asserter</em> will function correctly in a VHDL simulation, but will
-have no effect when synthesized.</p>
-<p>The <em>Asserter</em> sink accepts a source stream argument, <em>a</em>.</p>
-<p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="n">Chip</span><span class="p">(</span><span class="n">Asserter</span><span class="p">((</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">Sequence</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
-</pre></div>
-</div>
-<p>Look at the Chips test suite for more examples of the Asserter being used
-for automated testing.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="chips.Console">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Console</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#chips.Console" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <em>Console</em> outputs data to the simulation console.</p>
-<p><em>Console</em> stores characters for output to the console in a buffer. When an
-end of line character is seen, the buffer is written to the console.  A
-<em>Console</em> interprets a stream of numbers as ASCII characters. The source
-stream must be 8 bits wide. The source stream could be truncated to 8 bits
-using a <em>Resizer</em>, but it is usually more convenient to use a <em>Printer</em> as
-the source stream. The will allow a stream of any width to be represented
-as a decimal string.</p>
-<p>A <em>Console</em> accepts a source stream argument <em>a</em>.</p>
-<p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#convert string into a sequence of characters</span>
-<span class="n">hello_world</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span>
-
-<span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
-    <span class="n">Console</span><span class="p">(</span>
-        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">SerialOut</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="n">hello_world</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -924,14 +1280,21 @@ as a decimal string.</p>
 <em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Block</tt><big>(</big><em>instructions</em><big>)</big><a class="headerlink" href="#chips.Block" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <em>Block</em> statement allows instructions to be nested into a single
 statement. Using a <em>Block</em> allows a group of instructions to be stored as a
-single object.</p>
+single object. A block accepts a single argument, <em>instructions</em>, a Python
+Sequence of instructions</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Initialise</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">c</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
-<span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
-    <span class="n">initialise</span><span class="p">,</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">c</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
-    <span class="n">initialise</span><span class="p">,</span>
-<span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">initialise</span> <span class="o">=</span> <span class="n">Block</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">c</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">initialise</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">a</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">c</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -943,7 +1306,7 @@ single object.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c">#equivalent to a While loop</span>
 <span class="n">Loop</span><span class="p">(</span>
-    <span class="n">If</span><span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">If</span><span class="p">(</span><span class="n">Not</span><span class="p">(</span><span class="n">condition</span><span class="p">),</span>
         <span class="n">Break</span><span class="p">(),</span>
     <span class="p">),</span>
     <span class="c">#do stuff here</span>
@@ -954,7 +1317,7 @@ single object.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c">#equivalent to a DoWhile loop</span>
 <span class="n">Loop</span><span class="p">(</span>
     <span class="c">#do stuff here</span>
-    <span class="n">If</span><span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">If</span><span class="p">(</span><span class="n">Not</span><span class="p">(</span><span class="n">condition</span><span class="p">),</span>
         <span class="n">Break</span><span class="p">(),</span>
     <span class="p">),</span>
 <span class="p">),</span>
@@ -968,18 +1331,68 @@ single object.</p>
 <dd><p>The <em>Continue</em> statement causes the flow of control to immediately jump to
 the next iteration of the containing loop.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Process</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span>
-    <span class="n">Loop</span><span class="p">(</span>
-        <span class="n">in_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
-        <span class="n">If</span><span class="p">(</span><span class="n">a</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">Continue</span><span class="p">(),</span>
-        <span class="p">),</span>
-        <span class="n">out_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
-    <span class="p">),</span>
-<span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">in_stream</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#allow only even numbers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">in_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">If</span><span class="p">(</span><span class="n">a</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">Continue</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>        <span class="n">out_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">out_stream</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">2</span>
+<span class="go">4</span>
+<span class="go">6</span>
+<span class="go">8</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="function">
+<dt id="chips.DoUntil">
+<tt class="descclassname">chips.</tt><tt class="descname">DoUntil</tt><big>(</big><em>condition</em>, <em>*instructions</em><big>)</big><a class="headerlink" href="#chips.DoUntil" title="Permalink to this definition">¶</a></dt>
+<dd><p>A loop in which one iteration will be executed each time the condition
+is false. The condition is tested after each loop iteration.</p>
+<p>Equivalent to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Loop</span><span class="p">(</span> 
+     <span class="n">instructions</span><span class="p">,</span>
+     <span class="n">If</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">Break</span><span class="p">()),</span>
+ <span class="p">)</span> 
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="chips.DoWhile">
+<tt class="descclassname">chips.</tt><tt class="descname">DoWhile</tt><big>(</big><em>condition</em>, <em>*instructions</em><big>)</big><a class="headerlink" href="#chips.DoWhile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A loop in which one iteration will be executed each time the condition
+is true. The condition is tested after each loop iteration.</p>
+<p>Equivalent to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Loop</span><span class="p">(</span> 
+     <span class="n">instructions</span><span class="p">,</span>
+     <span class="n">If</span><span class="p">(</span><span class="n">Not</span><span class="p">(</span><span class="n">condition</span><span class="p">),</span> <span class="n">Break</span><span class="p">()),</span>
+ <span class="p">)</span> 
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="chips.Evaluate">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Evaluate</tt><big>(</big><em>*instructions</em><big>)</big><a class="headerlink" href="#chips.Evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="class">
 <dt id="chips.If">
@@ -1010,22 +1423,133 @@ the instructions in the optional <em>Else</em> branch will be evaluated.</p>
 instruction causes the remainder of instructions in the loop to be skipped.
 Execution then repeats from the beginning of the <em>Loop</em>.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#filter filter values over 50 out of a stream</span>
-<span class="n">Loop</span><span class="p">(</span>
-    <span class="n">in_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
-    <span class="n">If</span><span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">,</span> <span class="n">Continue</span><span class="p">()),</span>
-    <span class="n">out_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
-<span class="p">),</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#filter values over 50 out of a stream</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">in_stream</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">in_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">If</span><span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">,</span> <span class="n">Continue</span><span class="p">()),</span>
+<span class="gp">... </span>        <span class="n">out_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Console</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Printer</span><span class="p">(</span><span class="n">out_stream</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">10</span>
+<span class="go">20</span>
+<span class="go">30</span>
+<span class="go">40</span>
+<span class="go">50</span>
+<span class="go">10</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#initialise an array</span>
-<span class="n">Loop</span><span class="p">(</span>
-    <span class="n">If</span><span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">Break</span><span class="p">(),</span>
-    <span class="p">),</span>
-    <span class="n">myarray</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
-<span class="p">),</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#initialise an array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myarray</span> <span class="o">=</span> <span class="n">VariableArray</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">index</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">If</span><span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="mi">100</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">Break</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">myarray</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Loop(...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="chips.Print">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Print</tt><big>(</big><em>stream</em>, <em>exp</em>, <em>minimum_number_of_digits=None</em><big>)</big><a class="headerlink" href="#chips.Print" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>Print</em> instruction write an integer to a stream in decimal ASCII
+format.</p>
+<p>Print will not add any white space or line ends (in contrast to the
+<em>Printer</em>) The <em>Print</em> instruction accepts two arguments, the destination
+<em>stream</em>, which must be an <em>Output</em> stream, and a numeric expression,
+<em>exp</em>. An optional third argument specifies the minimum number of digits to
+print (leading 0 characters are added).</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c">#multiply by 2 and echo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inp</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;1 2 3 &quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">=</span><span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Scan</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">out_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">out_stream</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="go">4</span>
+<span class="go">6</span>
+<span class="go">2</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="chips.Scan">
+<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Scan</tt><big>(</big><em>stream</em>, <em>variable</em><big>)</big><a class="headerlink" href="#chips.Scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>Scan</em> instruction reads an integer value from a stream of decimal
+ASCII characters.</p>
+<p>Numeric characters separated by non-numeric characters are interpreted as
+numbers. If <em>Scan</em> encounters a number that is too large to represent in a
+process, the result is undefined.</p>
+<p>The <em>Scan</em> accepts two arguments, the source stream and a destination variable.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#multiply by 2 and echo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">temp</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inp</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;1 2 3 &quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">=</span><span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">Scan</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">temp</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">out</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="c"># doctest: +ELLIPSIS</span>
+<span class="go">2</span>
+<span class="go">4</span>
+<span class="go">6</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="chips.Until">
+<tt class="descclassname">chips.</tt><tt class="descname">Until</tt><big>(</big><em>condition</em>, <em>*instructions</em><big>)</big><a class="headerlink" href="#chips.Until" title="Permalink to this definition">¶</a></dt>
+<dd><p>A loop in which one iteration will be executed each time the condition
+is false. The condition is tested before each loop iteration.</p>
+<p>Equivalent to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Loop</span><span class="p">(</span> 
+    <span class="n">If</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">Break</span><span class="p">()),</span>
+   <span class="n">instructions</span><span class="p">,</span>
+<span class="p">)</span> 
 </pre></div>
 </div>
 </dd></dl>
@@ -1039,15 +1563,31 @@ construct.</p>
 expression. When a <em>Value</em> is encountered, the supplied expression becomes
 the value of the whole evaluate statement.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#provide a And expression similar to Pythons and expression</span>
-<span class="k">def</span> <span class="nf">LogicalAnd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">Evaluate</span><span class="p">(</span>
-        <span class="n">If</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>
-            <span class="n">Value</span><span class="p">(</span><span class="n">b</span><span class="p">),</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">Else</span><span class="p">(</span>
-            <span class="mi">0</span><span class="p">,</span>
-        <span class="p">),</span>
-    <span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#provide a And expression similar to Pythons and expression</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">LogicalAnd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">Evaluate</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">If</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">Value</span><span class="p">(</span><span class="n">b</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">)</span><span class="o">.</span><span class="n">Else</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Value</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">If</span><span class="p">(</span><span class="n">LogicalAnd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">check</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="c">#true</span>
+<span class="gp">... </span>    <span class="p">)</span><span class="o">.</span><span class="n">Else</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">check</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="c">#false</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Asserter</span><span class="p">(</span><span class="n">check</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1063,43 +1603,41 @@ counter function because the execution time of statements does not affect
 the time between <em>WaitUs</em> statements (Providing the statements do not take
 more than 1 microsecond to execute of course!).</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">seconds</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Process</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span>
-    <span class="n">seconds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
-    <span class="n">Loop</span><span class="p">(</span>
-        <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
-        <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span>
-            <span class="n">WaitUs</span><span class="p">(),</span>
-            <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-        <span class="p">),</span>
-        <span class="n">seconds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">seconds</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">out_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">seconds</span><span class="p">),</span>
-    <span class="p">),</span>
-<span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chips</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">seconds</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">count</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out_stream</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Process</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">seconds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">Loop</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">While</span><span class="p">(</span><span class="n">count</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">WaitUs</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">count</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>        <span class="n">seconds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">seconds</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">out_stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">seconds</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Process(...</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="class">
+<dl class="function">
 <dt id="chips.While">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">While</tt><a class="headerlink" href="#chips.While" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="chips.Scan">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Scan</tt><big>(</big><em>stream</em>, <em>variable</em><big>)</big><a class="headerlink" href="#chips.Scan" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="chips.Print">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Print</tt><big>(</big><em>stream</em>, <em>exp</em>, <em>minimum_number_of_digits=None</em><big>)</big><a class="headerlink" href="#chips.Print" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="chips.Evaluate">
-<em class="property">class </em><tt class="descclassname">chips.</tt><tt class="descname">Evaluate</tt><big>(</big><em>*instructions</em><big>)</big><a class="headerlink" href="#chips.Evaluate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descclassname">chips.</tt><tt class="descname">While</tt><big>(</big><em>condition</em>, <em>*instructions</em><big>)</big><a class="headerlink" href="#chips.While" title="Permalink to this definition">¶</a></dt>
+<dd><p>A loop in which one iteration will be executed each time the condition
+is true. The condition is tested before each loop iteration.</p>
+<p>Equivalent to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Loop</span><span class="p">(</span> 
+    <span class="n">If</span><span class="p">(</span><span class="n">Not</span><span class="p">(</span><span class="n">condition</span><span class="p">),</span> <span class="n">Break</span><span class="p">()),</span>
+    <span class="n">instructions</span><span class="p">,</span>
+<span class="p">)</span> 
+</pre></div>
+</div>
+</dd></dl>
 
 </div>
 </div>
@@ -1122,14 +1660,13 @@ more than 1 microsecond to execute of course!).</p>
 <li><a class="reference external" href="#process-inputs">Process Inputs</a></li>
 <li><a class="reference external" href="#process-outputs">Process Outputs</a></li>
 <li><a class="reference external" href="#variables">Variables</a></li>
-<li><a class="reference external" href="#constants">Constants</a></li>
 <li><a class="reference external" href="#expressions">Expressions</a></li>
 <li><a class="reference external" href="#operator-precedence">Operator Precedence</a></li>
 </ul>
 </li>
 <li><a class="reference external" href="#module-chips.streams">Streams</a><ul>
 <li><a class="reference external" href="#stream-expressions">Stream Expressions</a></li>
-<li><a class="reference external" href="#id5">Operator Precedence</a></li>
+<li><a class="reference external" href="#id1">Operator Precedence</a></li>
 <li><a class="reference external" href="#streams-reference">Streams Reference</a></li>
 </ul>
 </li>
