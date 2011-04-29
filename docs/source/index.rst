@@ -73,9 +73,14 @@ A Quick Taster
 
 Download
 ========
-You can download a source distribution or a windows self installer from the `GitHub`_ homepage.
+You can download the `source distribution`_ or the `windows  installer`_ from
+the `GitHub`_ homepage.
 
 .. _`GitHub`: http://github.com/dawsonjon/chips/
+
+.. _`source distribution` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.tar.gz
+
+.. _`windows installer` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.win32.exe
 
 Documentation
 =============
@@ -98,8 +103,12 @@ Links
 =====
 
 - `SciPy`_ Scientific Tools for Python.
+
 - `matplotlib`_ 2D plotting library for Python.
-- `Python Imaging Library (PIL)`_ Python Imaging Library adds image processing capabilities to Python.
+
+- `Python Imaging Library (PIL)`_ Python Imaging Library adds image processing
+  capabilities to Python.
+
 - `MyHDL`_ A Hardware description language based on Python.
 
 .. _`SciPy`: http://scipy.org

@@ -587,6 +587,7 @@ solution is to make a splitter or tee using a *Process*::
 
 A Worked Example
 ----------------
+
 TODO
 
 Further Examples
@@ -598,31 +599,3 @@ these simple components.
 
 .. _`source distribution` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.tar.gz
 
-    A *Variable* is used within a *Process* to store data.
-
-    The *Value* statement gives a value to the surrounding *Evaluate*
-    construct.
-    
-    An *Evaluate*  expression allows a block of statements to be used as an
-    expression. 
-
-    The *Loop* statement executes instructions repeatedly.
-
-    The *If* statement conditionally executes instructions.
-
-    The *Break* statement causes the flow of control to immediately exit the loop.
-
-    *WaitUs* causes execution to halt until the next tick of the microsecond
-    timer. 
-
-    The *Continue* statement causes the flow of control to immediately jump to
-    the next iteration of the containing loop.
-
-    The *Block* statement allows instructions to be nested into a single
-    statement.
-
-    This method returns a write instruction that writes a single data item to the Ouput stream.
-
-    This method returns a read instruction that reads a single data item from a  stream.
-
-    This method returns a set instruction that assigns the value of an expression to a variable.
