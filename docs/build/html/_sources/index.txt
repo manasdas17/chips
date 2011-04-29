@@ -98,6 +98,7 @@ News
 ====
 
 - 2011-04-09 Chips Library Published on GitHub.
+- 2011-04-29 Chips Library Published on Python Package Index.
 
 Links
 =====
