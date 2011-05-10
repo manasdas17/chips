@@ -4,7 +4,7 @@
 import sys
 
 from chips import *
-from chips_visual import Plugin
+from chips.visual_plugin import Plugin
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
