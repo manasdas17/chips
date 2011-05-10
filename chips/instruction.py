@@ -215,38 +215,38 @@ class Expression:
         return Binary(constantize(other), self, 'OP_GT')
     def __le__(self, other): 
         return Binary(constantize(other), self, 'OP_GE')
-    def __radd__(other, self): 
-        return Binary(self, constantize(other), 'OP_ADD')
-    def __rsub__(other, self): 
-        return Binary(self, constantize(other), 'OP_SUB')
-    def __rmul__(other, self): 
-        return Binary(self, constantize(other), 'OP_MUL')
-    def __rmod__(other, self): 
-        return Binary(self, constantize(other), 'OP_MOD')
-    def __rfloordiv__(other, self): 
-        return Binary(self, constantize(other), 'OP_DIV')
-    def __rand__(other, self): 
-        return Binary(self, constantize(other), 'OP_BAND')
-    def __ror__(other, self): 
-        return Binary(self, constantize(other), 'OP_BOR')
-    def __rxor__(other, self): 
-        return Binary(self, constantize(other), 'OP_BXOR')
-    def __rrshift__(other, self): 
-        return Binary(self, constantize(other), 'OP_SR')
-    def __rlshift__(other, self): 
-        return Binary(self, constantize(other), 'OP_SL')
-    def __req__(other, self): 
-        return Binary(self, constantize(other), 'OP_EQ')
-    def __rne__(other, self): 
-        return Binary(self, constantize(other), 'OP_NE')
-    def __rgt__(other, self): 
-        return Binary(self, constantize(other), 'OP_GT')
-    def __rge__(other, self): 
-        return Binary(self, constantize(other), 'OP_GE')
-    def __rlt__(other, self): 
+    def __radd__(self, other): 
+        return Binary(constantize(other), self, 'OP_ADD')
+    def __rsub__(self, other): 
+        return Binary(constantize(other), self, 'OP_SUB')
+    def __rmul__(self, other): 
+        return Binary(constantize(other), self, 'OP_MUL')
+    def __rmod__(self, other): 
+        return Binary(constantize(other), self, 'OP_MOD')
+    def __rfloordiv__(self, other): 
+        return Binary(constantize(other), self, 'OP_DIV')
+    def __rand__(self, other): 
+        return Binary(constantize(other), self, 'OP_BAND')
+    def __ror__(self, other): 
+        return Binary(constantize(other), self, 'OP_BOR')
+    def __rxor__(self, other): 
+        return Binary(constantize(other), self, 'OP_BXOR')
+    def __rrshift__(self, other): 
+        return Binary(constantize(other), self, 'OP_SR')
+    def __rlshift__(self, other): 
+        return Binary(constantize(other), self, 'OP_SL')
+    def __req__(self, other): 
+        return Binary(constantize(other), self, 'OP_EQ')
+    def __rne__(self, other): 
+        return Binary(constantize(other), self, 'OP_NE')
+    def __rgt__(self, other): 
         return Binary(constantize(other), self, 'OP_GT')
-    def __rle__(other, self): 
+    def __rge__(self, other): 
         return Binary(constantize(other), self, 'OP_GE')
+    def __rlt__(self, other): 
+        return Binary(self, constantize(other), 'OP_GT')
+    def __rle__(self, other): 
+        return Binary(self, constantize(other), 'OP_GE')
     def is_expression(self):
         return True
 

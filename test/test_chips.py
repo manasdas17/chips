@@ -2,6 +2,7 @@
 """Test suite for native chips simulation."""
 
 from chips import *
+import chips.common
 stop_on_fail = True
 
 __author__ = "Jon Dawson"
@@ -913,6 +914,329 @@ s=Chip(Asserter(expected_response == z))
 good = good and s.test("integer < test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
+for a in range(-8, 8):
+
+    #Test reverse Integer +
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a+j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a+b)
+    ))
+    s=Chip( Asserter(expected_response == z))
+
+    #simulate in python
+    good = good and s.test("reverse integer + test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+
+    #Test reverse Integer -
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a-j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a-b)
+    ))
+    s=Chip(Asserter(expected_response == z))
+
+    #simulate in python
+    good = good and s.test("reverse integer - test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer *
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a*j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a*b)
+    ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer * test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer //
+    b, z = [], []
+    for j in range(-16, 0)+range(1, 16):
+        b.append(j)
+        z.append(c_style_division(a, j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a//b)
+    ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer // test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer %
+    b, z = [], []
+    for j in range(-16, 0)+range(1, 16):
+        b.append(j)
+        z.append(c_style_modulo(a, j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a%b)
+    ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer % test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer &
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a&j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a&b)
+    ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer & test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer |
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a|j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a|b)
+    ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer | test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer ^
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a^j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a^b)
+    ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer ^ test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer <<
+    b, z = [], []
+    for j in range(0, 8):
+        b.append(j)
+        z.append(a<<j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(16, Loop(
+        stimulus_b.read(b),
+        z.write(a<<b)
+    ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer << test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer >>
+    b, z = [], []
+    for j in range(0, 8):
+        b.append(j)
+        z.append(a>>j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a>>b)
+    ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer >> test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer ==
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a!=j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a!=b)
+        ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer != test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer ==
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a==j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a==b)
+        ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer == test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer >=
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a>=j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a>=b)
+        ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer >= test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer <=
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a<=j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a<=b)
+        ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer <= test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer >
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a>j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a>b)
+        ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer > test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test reverse Integer <
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a<j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    b = Variable(0)
+    z = Output()
+    Process(8, Loop(
+        stimulus_b.read(b),
+        z.write(a<b)
+        ))
+    s=Chip(Asserter(expected_response == z))
+
+    good = good and s.test("reverse integer < test_{0} ".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
 #Test Chain
 expected_response = Sequence(0, 1, 2, 3, 4, 5, 6)
 z = Output()
@@ -1066,38 +1390,6 @@ expected_response = Sequence(*z)
 s=Chip( Asserter(expected_response==stimulus_a.shift_right(2)))
 
 good = good and s.test("chips shift_right(8) test", stop_cycles=1000)
-if not good and stop_on_fail: exit()
-
-#Test Binary -
-a, b, z = [], [], []
-for i in range(-8, 8):
-    for j in range(-8, 8):
-        a.append(i)
-        b.append(j)
-        z.append(i-j)
-
-stimulus_a =        Sequence(*a)
-stimulus_b =        Sequence(*b)
-expected_response = Sequence(*z)
-s=Chip(Asserter(expected_response == stimulus_a - stimulus_b))
-
-good = good and s.test("chips - test ", stop_cycles=1000)
-if not good and stop_on_fail: exit()
-
-#Test Binary *
-a, b, z = [], [], []
-for i in range(-8, 8):
-    for j in range(-8, 8):
-        a.append(i)
-        b.append(j)
-        z.append(i*j)
-
-stimulus_a =        Sequence(*a)
-stimulus_b =        Sequence(*b)
-expected_response = Sequence(*z)
-s=Chip(Asserter(expected_response == stimulus_a * stimulus_b))
-
-good = good and s.test("chips * test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
 
 #Test Binary +
@@ -1354,6 +1646,214 @@ s=Chip(Asserter(expected_response == (stimulus_a < stimulus_b)))
 
 good = good and s.test("chips < test ", stop_cycles=1000)
 if not good and stop_on_fail: exit()
+
+for a in range(-8, 8):
+    #Test Binary +
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a+j)
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip( Asserter(expected_response==a+stimulus_b))
+
+    good = good and s.test("chips reverse + test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary -
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a-j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == a - stimulus_b))
+
+    good = good and s.test("chips reverse - test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary *
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a*j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == a * stimulus_b))
+
+    good = good and s.test("chips reverse * test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary //
+    b, z = [], []
+    for j in range(-16, 0)+range(1, 16):
+        b.append(j)
+        z.append(c_style_division(a,j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == a // stimulus_b))
+
+    good = good and s.test("chips reverse // test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary %
+    b, z = [], []
+    for j in range(-16, 0)+range(1, 16):
+        b.append(j)
+        z.append(c_style_modulo(a,j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == a % stimulus_b))
+
+    good = good and s.test("chips reverse % test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary &
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a&j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == a & stimulus_b))
+
+    good = good and s.test("chips reverse & test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary |
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a|j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == a | stimulus_b))
+
+    good = good and s.test("chips reverse | test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary ^
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(a^j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == a ^ stimulus_b))
+
+    good = good and s.test("chips reverse ^ test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary <<
+    b, z = [], []
+    for j in range(0, 8):
+        b.append(j)
+        z.append(resize(a<<j, chips.common.how_many_bits(a)))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == (a << stimulus_b)))
+
+    good = good and s.test("chips reverse << test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary >>
+    b, z = [], []
+    for j in range(0, 8):
+        b.append(j)
+        z.append(resize(a, chips.common.how_many_bits(a))>>j)
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == (a >> stimulus_b)))
+
+    good = good and s.test("chips reverse >> test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary ==
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a==j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == (a == stimulus_b)))
+
+    good = good and s.test("chips reverse == test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary !=
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a!=j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == (a != stimulus_b)))
+
+    good = good and s.test("chips reverse != test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary >=
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a>=j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == (a >= stimulus_b)))
+
+    good = good and s.test("chips reverse >= test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary <=
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a<=j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == (a <= stimulus_b)))
+
+    good = good and s.test("chips reverse <= test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary >
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a>j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == (a > stimulus_b)))
+
+    good = good and s.test("chips reverse > test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
+
+    #Test Binary <
+    b, z = [], []
+    for j in range(-8, 8):
+        b.append(j)
+        z.append(-int(a<j))
+
+    stimulus_b =        Sequence(*b)
+    expected_response = Sequence(*z)
+    s=Chip(Asserter(expected_response == (a < stimulus_b)))
+
+    good = good and s.test("chips reverse < test {0}".format(a), stop_cycles=100)
+    if not good and stop_on_fail: exit()
 
 #Test Printer
 s=Chip(Asserter(Printer(Repeater(10))==Sequence(ord('1'), ord('0'), ord('\n'))))

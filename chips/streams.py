@@ -361,38 +361,38 @@ class Stream:
         return Binary(self, _repeaterize(other), 'lt')
     def __le__(self, other): 
         return Binary(self, _repeaterize(other), 'le')
-    def __radd__(other, self): 
-        return Binary(self, _repeaterize(other), 'add')
-    def __rsub__(other, self): 
-        return Binary(self, _repeaterize(other), 'sub')
-    def __rmul__(other, self): 
-        return Binary(self, _repeaterize(other), 'mul')
-    def __rmod__(other, self): 
-        return Binary(self, _repeaterize(other), 'mod')
-    def __rfloordiv__(other, self): 
-        return Binary(self, _repeaterize(other), 'div')
-    def __rand__(other, self): 
-        return Binary(self, _repeaterize(other), 'and')
-    def __ror__(other, self): 
-        return Binary(self, _repeaterize(other), 'or')
-    def __rxor__(other, self): 
-        return Binary(self, _repeaterize(other), 'xor')
-    def __rrshift__(other, self): 
-        return Binary(self, _repeaterize(other), 'sr')
-    def __rlshift__(other, self): 
-        return Binary(self, _repeaterize(other), 'sl')
-    def __req__(other, self): 
-        return Binary(self, _repeaterize(other), 'eq')
-    def __rne__(other, self): 
-        return Binary(self, _repeaterize(other), 'ne')
-    def __rgt__(other, self): 
-        return Binary(self, _repeaterize(other), 'gt')
-    def __rge__(other, self): 
-        return Binary(self, _repeaterize(other), 'ge')
-    def __rlt__(other, self): 
-        return Binary(self, _repeaterize(other), 'lt')
-    def __rle__(other, self): 
-        return Binary(self, _repeaterize(other), 'le')
+    def __radd__(self, other): 
+        return Binary(_repeaterize(other), self, 'add')
+    def __rsub__(self, other): 
+        return Binary(_repeaterize(other), self, 'sub')
+    def __rmul__(self, other): 
+        return Binary(_repeaterize(other), self, 'mul')
+    def __rmod__(self, other): 
+        return Binary(_repeaterize(other), self, 'mod')
+    def __rfloordiv__(self, other): 
+        return Binary(_repeaterize(other), self, 'div')
+    def __rand__(self, other): 
+        return Binary(_repeaterize(other), self, 'and')
+    def __ror__(self, other): 
+        return Binary(_repeaterize(other), self, 'or')
+    def __rxor__(self, other): 
+        return Binary(_repeaterize(other), self, 'xor')
+    def __rrshift__(self, other): 
+        return Binary(_repeaterize(other), self, 'sr')
+    def __rlshift__(self, other): 
+        return Binary(_repeaterize(other), self, 'sl')
+    def __req__(self, other): 
+        return Binary(_repeaterize(other), self, 'eq')
+    def __rne__(self, other): 
+        return Binary(_repeaterize(other), self, 'ne')
+    def __rgt__(self, other): 
+        return Binary(_repeaterize(other), self, 'gt')
+    def __rge__(self, other): 
+        return Binary(_repeaterize(other), self, 'ge')
+    def __rlt__(self, other): 
+        return Binary(_repeaterize(other), self, 'lt')
+    def __rle__(self, other): 
+        return Binary(_repeaterize(other), self, 'le')
     def get_type(self):
         return "integer"
     def read(self, variable):
