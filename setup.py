@@ -3,14 +3,14 @@
 from distutils.core import setup
 
 setup(name="Chips",
-      version="0.1",
+      version="0.1.1",
       description="Design hardware with Python",
       long_description="""\
     
 Chips
 -----
 
-The Chips library allows hardware devces to be designed in python
+The Chips library allows hardware devices to be designed in python
 
 Features
 
@@ -18,8 +18,7 @@ Features
 
 - Provides fast native simulations that integrate with Python.
 
-- Python extension modules such asch as Scipy, Numpy, Matplotlib and PIL provide a rich
-  verification environment.
+- Python extension modules such as Scipy, Numpy, Matplotlib and PIL provide a rich verification environment.
 
 - Automatic generation of synthesisable VHDL.
 
@@ -53,5 +52,8 @@ Features
           "chips.VHDL_plugin", 
           "chips.visual_plugin", 
       ],
+      package_data={
+          "chips.ip" : ["*.vhd"]
+      }
 )
 
