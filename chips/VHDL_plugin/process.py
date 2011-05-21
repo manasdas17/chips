@@ -28,6 +28,9 @@ def write_process(process, plugin):
 ################################################################################
 #CALCULATE PROCESS PARAMETERS
 ################################################################################
+    pc_to_execute_latency = 2
+    register_to_execution_latency = 1
+
     process_instructions = tuple(process.instructions)
     process_instructions = hazard_remover.optimize(process_instructions)
     operations = []
@@ -129,13 +132,13 @@ def write_process(process, plugin):
         output_instructions.extend([
 "          when OP_WRITE_{0}_{1} =>".format(i.get_identifier(), process_id),
 "            STATE_{0} <= WRITE_STREAM_{1};".format(process_id, i.get_identifier()),
-"            DEST_2_{0} <= DEST_1_{0};".format(process_id),
+"            STREAM_{0} <= STD_RESIZE(REGA_1_{1}, {2});".format(i.get_identifier(), process_id, i.get_bits()),
+"            STREAM_{0}_STB <= '0';".format(i.get_identifier()),
 "            PC_{0} <= PC_{0};".format(process_id),
         ])
         write_outputs.extend([
 "      when WRITE_STREAM_{0} =>".format(i.get_identifier()),
 "        STREAM_{0}_STB <= '1';".format(i.get_identifier()),
-"        STREAM_{0} <= STD_RESIZE(REGA_1_{1}, {2});".format(i.get_identifier(), process_id, i.get_bits()),
 "        if STREAM_{0}_ACK = '1' then".format(i.get_identifier()),
 "          STREAM_{0}_STB <= '0';".format(i.get_identifier()),
 "          STATE_{0} <= EXECUTE;".format(process.get_identifier(), i.get_identifier()),
@@ -337,10 +340,10 @@ def write_process(process, plugin):
 "    IMMEDIATE_0_{0} <= INSTRUCTION({1} downto {2});".format(process_id, immediate_hi, immediate_lo), 
 "    OPERATION_0_{0} <= INSTRUCTION({1} downto {2});".format(process_id, operation_hi, operation_lo), 
 "  end process;",
-
+"",
 "  -- PIPELINE STAGE 1",
 "  process",
-"    variable REGISTERS    : REGISTERS_TYPE_{0};".format(process_id),
+"    variable REGISTERS : REGISTERS_TYPE_{0};".format(process_id),
 "  begin",
 "    wait until rising_edge(CLK);",
 "    REGA_1_{0}      <= REGISTERS(to_integer(unsigned(SRCA_0_{0})));".format(process_id),
@@ -355,7 +358,8 @@ def write_process(process, plugin):
 "",
 "  -- PIPELINE STAGE 2",
 "  process",
-"    variable MODULO       : unsigned({0} downto 0);".format(process_bits-1)])
+"    variable MODULO       : unsigned({0} downto 0);".format(process_bits-1),
+"    variable STALL_COUNT  : integer range 0 to {0};".format(pc_to_execute_latency - 1)])
 
     if ("OP_EQ" in operations) or ("OP_NE" in operations) or ("OP_GE" in operations):
         plugin.definitions.append("    variable FLAG_EQ      : std_logic;")
@@ -373,7 +377,11 @@ def write_process(process, plugin):
 "    case STATE_{0} is".format(process_id),
 "      when STALL =>",
 "        PC_{0} <= PC_{0} + 1;".format(process_id),
-"        STATE_{0} <= EXECUTE;".format(process_id),
+"        if STALL_COUNT = 0 then",
+"          STATE_{0} <= EXECUTE;".format(process_id),
+"        else",
+"          STALL_COUNT := STALL_COUNT - 1;",
+"        end if;",
 "      when EXECUTE =>",
 "        DEST_2_{0} <= DEST_1_{0};".format(process_id),
 "        RESULT_2_{0} <= REGA_1_{0};".format(process_id),
@@ -397,7 +405,7 @@ def write_process(process, plugin):
 
     if ("OP_GT" in operations) or ("OP_GE" in operations):
         plugin.definitions.extend([
-"        if signed(REGA_0_{0}) > signed(REGB_0_{0}) then".format(process_id),
+"        if signed(REGA_1_{0}) > signed(REGB_1_{0}) then".format(process_id),
 "          FLAG_GT := '1';",
 "        else",
 "          FLAG_GT := '0';",
@@ -421,7 +429,7 @@ def write_process(process, plugin):
 
     if ("OP_NOOP" in operations):
         plugin.definitions.extend([
-"          when OP_MOVE_{0} => ".format(process_id),
+"          when OP_NOOP_{0} => ".format(process_id),
 "            REGISTER_EN_2_{0} <= '0';".format(process_id)])
 
     if ("OP_MUL" in operations):
@@ -511,7 +519,7 @@ def write_process(process, plugin):
     if ("OP_INVERT" in operations):
         plugin.definitions.extend([
 "          when OP_INVERT_{0}  => ".format(process_id),
-"            RESULT_2_{0} <= not REGA_1_{0};",
+"            RESULT_2_{0} <= not REGA_1_{0};".format(process_id),
 "            REGISTER_EN_2_{0} <= '1';".format(process_id)])
 
     for i in left_shifts:
@@ -546,6 +554,7 @@ def write_process(process, plugin):
         plugin.definitions.extend([
 "          when OP_JMP_{0} =>".format(process_id),
 "            STATE_{0} <= STALL;".format(process_id),
+"            STALL_COUNT := {0};".format(pc_to_execute_latency - 1),
 "            PC_{0} <= resize(unsigned(IMMEDIATE_1_{0}), {1});".format(process_id, instruction_address_bits)])
 
     if ("OP_JMPF" in operations):
@@ -553,8 +562,9 @@ def write_process(process, plugin):
 "          when OP_JMPF_{0} =>".format(process_id),
 "            if RESULT_2_{0} = {1} then".format(process_id, common.binary(0, process_bits)),
 "              STATE_{0} <= STALL;".format(process_id),
+"              STALL_COUNT := {0};".format(pc_to_execute_latency - 1),
 "              PC_{0} <= resize(unsigned(IMMEDIATE_1_{0}), {1});".format(process_id, instruction_address_bits),
-"            end if;".format(process_id),])
+"            end if;".format(process_id)])
 
     if ("OP_WAIT_US" in operations):
         plugin.definitions.extend([
@@ -586,6 +596,7 @@ def write_process(process, plugin):
 "",
 "    if RST = '1' then",
 "      STATE_{0} <= STALL;".format(process_id),
+"      STALL_COUNT := {0};".format(pc_to_execute_latency - 1),
 "      PC_{0} <= {1};".format(process_id, common.binary(0, instruction_address_bits)),
 "\n".join(reset_streams),
 "    end if;",

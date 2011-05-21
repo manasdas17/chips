@@ -14,13 +14,13 @@ from chips.instruction import Instruction
 register_modifying_instructions = [
       "OP_ADD", "OP_SUB", "OP_MUL", "OP_DIV", "OP_BAND", "OP_BOR", "OP_BXOR", 
       "OP_SL", "OP_SR", "OP_EQ", "OP_NE", "OP_GT", "OP_GE", 
-      "OP_IMM", "OP_MOVE", "OP_MOD", 
+      "OP_IMM", "OP_MOVE", "OP_MOD", "OP_LNOT", "OP_ABS", "OP_INVERT"
     ]
 
 srca_dependent_instructions = [
       "OP_ADD", "OP_SUB", "OP_MUL", "OP_DIV", "OP_BAND", "OP_BOR", "OP_BXOR", 
       "OP_SL", "OP_SR", "OP_EQ", "OP_NE", "OP_GT", "OP_GE", 
-      "OP_MOD"
+      "OP_MOD", "OP_LNOT", "OP_ABS", "OP_INVERT", "OP_JMPF"
     ]
 
 srcb_dependent_instructions = [
@@ -34,12 +34,22 @@ def is_register_modifying(instruction):
         return True
     if instruction.operation.startswith("OP_READ"):
         return True
+    if instruction.operation.startswith("OP_SLN"):
+        return True
+    if instruction.operation.startswith("OP_SRN"):
+        return True
+    if instruction.operation.startswith("OP_AVAILABLE"):
+        return True
     return False
 
 def is_srca_dependent(instruction):
     if instruction.operation in srca_dependent_instructions:
         return True
     if instruction.operation.startswith("OP_WRITE"):
+        return True
+    if instruction.operation.startswith("OP_SLN"):
+        return True
+    if instruction.operation.startswith("OP_SRN"):
         return True
     return False
 
@@ -55,7 +65,7 @@ def is_srcb_dependent(instruction):
 #    new_instructions = []
 #    for instruction in instructions:
 #        new_instructions.append(instruction)
-#        for i in range(3):
+#        for i in range(2):
 #            new_instructions.append(Instruction("OP_NOOP"))
 #    return new_instructions
 
@@ -87,18 +97,16 @@ def optimize(instructions):
             #determine dependencies
             has_dependencies = False
             if is_srca_dependent(instruction):
-                if instruction.srca in (wait_1, wait_2): #, wait_3):
+                if instruction.srca in (wait_1, wait_2):
                     has_dependencies = True
             if is_srcb_dependent(instruction):
-                if instruction.srcb in (wait_1, wait_2): #, wait_3):
+                if instruction.srcb in (wait_1, wait_2):
                     has_dependencies = True
 
             #add waits noops if needed
             if has_dependencies:
                 new_instructions.append(Instruction("OP_NOOP"))
                 wait_1 = wait_2
-                #wait_2 = wait_3
-                #wait_3 = None
                 wait_2 = None
                 continue
             else:
@@ -109,11 +117,11 @@ def optimize(instructions):
 
         #modify state of data availability
         wait_1 = wait_2
-        #wait_2 = wait_3
-        #wait_3 = None
         wait_2 = None
         if is_register_modifying(instruction):
-            #wait_3 = instruction.srca 
             wait_2 = instruction.srca 
+
+        new_instructions.append(Instruction("OP_NOOP"))
+        new_instructions.append(Instruction("OP_NOOP"))
 
     return new_instructions

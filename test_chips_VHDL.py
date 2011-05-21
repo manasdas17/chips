@@ -294,7 +294,7 @@ s=Chip(Asserter(expected_response == z))
 #simulate in python
 simulation_plugin = Plugin()
 s.write_code(simulation_plugin)
-good = good and simulation_plugin.ghdl_test("integer abs test ", stop_cycles=1000)
+good = good and simulation_plugin.ghdl_test("integer abs test ", stop_cycles=1000, generate_wave=True)
 if not good and stop_on_fail: exit()
 
 #Test Integer Not
