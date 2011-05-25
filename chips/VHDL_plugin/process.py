@@ -23,16 +23,16 @@ def address_bits(length):
     else:
         return int(ceil(log(length, 2)))
 
+#test option to force testing in long and short pipeline configurations
+force_long_pipeline = False
+
 def write_process(process, plugin):
 
 ################################################################################
 #CALCULATE PROCESS PARAMETERS
 ################################################################################
-    pc_to_execute_latency = 2
-    register_to_execution_latency = 1
 
-    process_instructions = tuple(process.instructions)
-    process_instructions = hazard_remover.optimize(process_instructions)
+    process_instructions = process.instructions
     operations = []
     states = ["STALL", "EXECUTE"]
     left_shifts = []
@@ -44,8 +44,7 @@ def write_process(process, plugin):
         for j in ["OP_DIV", "OP_MOD", "OP_MUL", "OP_ADD", "OP_SUB", "OP_BAND",
                 "OP_BOR", "OP_BXOR", "OP_SL", "OP_SR", "OP_EQ", "OP_NE", 
                 "OP_GE", "OP_GT", "OP_WAIT_US", "OP_JMP", "OP_JMPF", "OP_MOVE",
-                "OP_IMM", "OP_WAIT_US", "OP_LNOT", "OP_ABS", "OP_INVERT",
-                "OP_NOOP"]:
+                "OP_IMM", "OP_WAIT_US", "OP_LNOT", "OP_ABS", "OP_INVERT"]:
             if instruction.operation == j:
                 if j not in operations:
                     operations.append(j)
@@ -68,6 +67,27 @@ def write_process(process, plugin):
         if instruction.operation == "OP_WAIT_US":
             if "WAIT_US" not in states:
                 states.append("WAIT_US")
+
+    operations.append("OP_NOOP")
+
+    #Pipeline instructions
+    pipeline_stages = 3
+    pipelined_multiplier = False
+
+    #multipliers > 18 have long delays, so pipeline them
+    if ((process.get_bits() > 18 and "OP_MUL" in operations) or
+        force_long_pipeline):
+        if process.get_bits() <= 35:
+            pipeline_stages = 4
+            pipelined_multiplier = True
+
+
+    pc_to_execute_latency = pipeline_stages - 1
+    register_to_execute_latency = pipeline_stages - 2
+    process_instructions = hazard_remover.optimize(
+            register_to_execute_latency,
+            process_instructions
+    )
 
     #calculate processor parameters
     number_of_operations = len(operations) + len(process.inputs) + len(process.outputs)
@@ -100,8 +120,8 @@ def write_process(process, plugin):
 "      when READ_STREAM_{0} =>".format(i.get_identifier()),
 "        if STREAM_{0}_STB = '1' then".format(i.get_identifier()),
 "          STREAM_{0}_ACK <= '1';".format(i.get_identifier()),
-"          REGISTER_EN_2_{0} <= '1';".format(process_id),
-"          RESULT_2_{0} <= STD_RESIZE(STREAM_{1}, {2});".format(process_id, i.get_identifier(), process_bits),
+"          REGISTER_EN_3_{0} <= '1';".format(process_id),
+"          RESULT_3_{0} <= STD_RESIZE(STREAM_{1}, {2});".format(process_id, i.get_identifier(), process_bits),
 "          STATE_{0} <= ACK_STREAM_{1};".format(process.get_identifier(), i.get_identifier()),
 "        end if;",
 "      when ACK_STREAM_{0} =>".format(i.get_identifier()),
@@ -132,7 +152,7 @@ def write_process(process, plugin):
         output_instructions.extend([
 "          when OP_WRITE_{0}_{1} =>".format(i.get_identifier(), process_id),
 "            STATE_{0} <= WRITE_STREAM_{1};".format(process_id, i.get_identifier()),
-"            STREAM_{0} <= STD_RESIZE(REGA_1_{1}, {2});".format(i.get_identifier(), process_id, i.get_bits()),
+"            STREAM_{0} <= STD_RESIZE(REGA_2_{1}, {2});".format(i.get_identifier(), process_id, i.get_bits()),
 "            STREAM_{0}_STB <= '0';".format(i.get_identifier()),
 "            PC_{0} <= PC_{0};".format(process_id),
         ])
@@ -203,26 +223,28 @@ def write_process(process, plugin):
     divider_arithmetic = []
     if ("OP_DIV" in operations) or ("OP_MOD" in operations):
         divider_decode = []
+
         if "OP_DIV" in operations:
             divider_decode.extend([
 "          when OP_DIV_{0} =>".format(process_id),
 "            MOD_DIV_{0} <= '1';".format(process_id),
-"            A_{0} <= std_logic_vector(abs(signed(REGA_1_{0})));".format(process_id),
-"            B_{0} <= std_logic_vector(abs(signed(REGB_1_{0})));".format(process_id),
-"            SIGN_{0} <= REGA_1_{0}({1}) xor REGB_1_{0}({1});".format(process_id, process_bits-1),
+"            A_{0} <= std_logic_vector(abs(signed(REGA_2_{0})));".format(process_id),
+"            B_{0} <= std_logic_vector(abs(signed(REGB_2_{0})));".format(process_id),
+"            SIGN_{0} <= REGA_2_{0}({1}) xor REGB_2_{0}({1});".format(process_id, process_bits-1),
 "            STATE_{0} <= DIVIDE_0;".format(process_id),
 "            PC_{0} <= PC_{0};".format(process_id),])
+
         if "OP_MOD" in operations:
             divider_decode.extend([
 "          when OP_MOD_{0} =>".format(process_id),
 "            MOD_DIV_{0} <= '0';".format(process_id),
-"            A_{0} <= std_logic_vector(abs(signed(REGA_1_{0})));".format(process_id),
-"            B_{0} <= std_logic_vector(abs(signed(REGB_1_{0})));".format(process_id),
-"            SIGN_{0} <= REGA_1_{0}({1});".format(process_id, process_bits-1),
+"            A_{0} <= std_logic_vector(abs(signed(REGA_2_{0})));".format(process_id),
+"            B_{0} <= std_logic_vector(abs(signed(REGB_2_{0})));".format(process_id),
+"            SIGN_{0} <= REGA_2_{0}({1});".format(process_id, process_bits-1),
 "            STATE_{0} <= DIVIDE_0;".format(process_id),
 "            PC_{0} <= PC_{0};".format(process_id)])
+
         divider_logic = [
-"",
 "      when DIVIDE_0 =>",
 "        QUOTIENT_{0} <= (others => '0');".format(process_id),
 "        SHIFTER_{0} <= (others => '0');".format(process_id),
@@ -230,7 +252,6 @@ def write_process(process, plugin):
 "        A_{0} <= A_{0}({1} downto 0) & '0';".format(process_id, process_bits-2),
 "        COUNT_{0} <= {1};".format(process_id, process_bits-1),
 "        STATE_{0} <= DIVIDE_1;".format(process_id),
-"",
 "      when DIVIDE_1 => --subtract",
 "       --if SHIFTER - B is positive or zero",
 "       if REMAINDER_{0}({1}) = '0' then".format(process_id, process_bits-1),
@@ -246,26 +267,26 @@ def write_process(process, plugin):
 "       else",
 "         COUNT_{0} <= COUNT_{0} - 1;".format(process_id),
 "       end if;",
-"",
-"     when DIVIDE_2 =>",
-"      REGISTER_EN_2_{0} <= '1';".format(process_id),
-"      if MOD_DIV_{0} = '1' then --if division".format(process_id),
-"        if SIGN_{0} = '1' then --if negative".format(process_id),
-"          RESULT_2_{0} <= std_logic_vector(-signed(QUOTIENT_{0}));".format(process_id),
-"        else",
-"          RESULT_2_{0} <= QUOTIENT_{0};".format(process_id),
-"        end if;",
-"      else",
-"        MODULO := unsigned(SHIFTER_{0})/2;".format(process_id),
-"        if SIGN_{0} = '1' then --if negative".format(process_id),
-"          RESULT_2_{0} <= std_logic_vector(0-MODULO);".format(process_id),
-"        else",
-"          RESULT_2_{0} <= std_logic_vector(  MODULO);".format(process_id),
-"        end if;",
-"      end if;",
-"      STATE_{0} <= EXECUTE;".format(process_id),
-"      PC_{0} <= PC_{0} + 1;".format(process_id),
+"      when DIVIDE_2 =>",
+"       REGISTER_EN_3_{0} <= '1';".format(process_id),
+"       if MOD_DIV_{0} = '1' then --if division".format(process_id),
+"         if SIGN_{0} = '1' then --if negative".format(process_id),
+"           RESULT_3_{0} <= std_logic_vector(-signed(QUOTIENT_{0}));".format(process_id),
+"         else",
+"           RESULT_3_{0} <= QUOTIENT_{0};".format(process_id),
+"         end if;",
+"       else",
+"         MODULO := unsigned(SHIFTER_{0})/2;".format(process_id),
+"         if SIGN_{0} = '1' then --if negative".format(process_id),
+"           RESULT_3_{0} <= std_logic_vector(0-MODULO);".format(process_id),
+"         else",
+"           RESULT_3_{0} <= std_logic_vector(  MODULO);".format(process_id),
+"         end if;",
+"       end if;",
+"       STATE_{0} <= EXECUTE;".format(process_id),
+"       PC_{0} <= PC_{0} + 1;".format(process_id),
         ]
+
         divider_arithmetic = [
 "",
 "  --subtractor",
@@ -296,11 +317,20 @@ def write_process(process, plugin):
 "  signal DEST_1_{0}         : std_logic_vector({1} downto 0);".format(process_id, register_address_bits-1),
 
 "  --Pipeline stage 2 outputs",
-"  signal RESULT_2_{0}       : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
+"  signal OPERATION_2_{0}    : std_logic_vector({1} downto 0);".format(process_id, operation_bits-1),
+"  signal IMMEDIATE_2_{0}    : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
+"  signal REGA_2_{0}         : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
+"  signal REGB_2_{0}         : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
 "  signal DEST_2_{0}         : std_logic_vector({1} downto 0);".format(process_id, register_address_bits-1),
-"  signal REGISTER_EN_2_{0}  : std_logic;".format(process_id),
+"  signal PRODUCT_A_2_{0}    : signed(35 downto 0);".format(process_id),
+"  signal PRODUCT_B_2_{0}    : signed(35 downto 0);".format(process_id),
+"  signal PRODUCT_C_2_{0}    : signed(35 downto 0);".format(process_id),
+"  signal PRODUCT_D_2_{0}    : signed(35 downto 0);".format(process_id),
 
-"  --Pipeline stage 2 outputs",
+"  --Pipeline stage 3 outputs",
+"  signal RESULT_3_{0}       : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
+"  signal DEST_3_{0}         : std_logic_vector({1} downto 0);".format(process_id, register_address_bits-1),
+"  signal REGISTER_EN_3_{0}  : std_logic;".format(process_id),
 "  signal STATE_{0}          : PROCESS_{0}_STATE_TYPE;".format(process.get_identifier()),
 "  signal PC_{0}             : unsigned({1} downto 0);".format(process_id, instruction_address_bits - 1),
 "  signal ZERO_{0}           : std_logic;".format(process_id),
@@ -329,51 +359,119 @@ def write_process(process, plugin):
     immediate_lo = 0
 
     plugin.definitions.extend([
-"  -- PIPELINE STAGE 0",
+"  -- PIPELINE STAGE 0 - INSTRUCTION FETCH",
 "  process",
 "    variable INSTRUCTION : std_logic_vector({1} downto 0);".format(process_id, instruction_bits-1),
 "  begin",
 "    wait until rising_edge(CLK);",
-"    INSTRUCTION := INSTRUCTIONS_{0}(to_integer(PC_{0}));".format(process_id),
-"    SRCA_0_{0}      <= INSTRUCTION({1} downto {2});".format(process_id, srca_hi, srca_lo), 
-"    SRCB_0_{0}      <= INSTRUCTION({1} downto {2});".format(process_id, srcb_hi, srcb_lo), 
-"    IMMEDIATE_0_{0} <= INSTRUCTION({1} downto {2});".format(process_id, immediate_hi, immediate_lo), 
-"    OPERATION_0_{0} <= INSTRUCTION({1} downto {2});".format(process_id, operation_hi, operation_lo), 
+"    if STATE_{0} = EXECUTE or STATE_{0} = STALL then".format(process_id),
+"      INSTRUCTION := INSTRUCTIONS_{0}(to_integer(PC_{0}));".format(process_id),
+"      SRCA_0_{0}      <= INSTRUCTION({1} downto {2});".format(process_id, srca_hi, srca_lo), 
+"      SRCB_0_{0}      <= INSTRUCTION({1} downto {2});".format(process_id, srcb_hi, srcb_lo), 
+"      IMMEDIATE_0_{0} <= INSTRUCTION({1} downto {2});".format(process_id, immediate_hi, immediate_lo), 
+"      OPERATION_0_{0} <= INSTRUCTION({1} downto {2});".format(process_id, operation_hi, operation_lo), 
+"    end if;",
 "  end process;",
 "",
-"  -- PIPELINE STAGE 1",
+"  -- PIPELINE STAGE 1 - REGISTER FETCH",
 "  process",
 "    variable REGISTERS : REGISTERS_TYPE_{0};".format(process_id),
 "  begin",
 "    wait until rising_edge(CLK);",
-"    REGA_1_{0}      <= REGISTERS(to_integer(unsigned(SRCA_0_{0})));".format(process_id),
-"    REGB_1_{0}      <= REGISTERS(to_integer(unsigned(SRCB_0_{0})));".format(process_id),
-"    DEST_1_{0}      <= SRCA_0_{0};".format(process_id),
-"    OPERATION_1_{0} <= OPERATION_0_{0};".format(process_id), 
-"    IMMEDIATE_1_{0} <= IMMEDIATE_0_{0};".format(process_id), 
-"    if REGISTER_EN_2_{0} = '1' then".format(process_id),
-"      REGISTERS(to_integer(unsigned(DEST_2_{0}))) := RESULT_2_{0};".format(process_id),
+"    if REGISTER_EN_3_{0} = '1' then".format(process_id),
+"      REGISTERS(to_integer(unsigned(DEST_3_{0}))) := RESULT_3_{0};".format(process_id),
 "    end if;".format(process_id),
+"    if STATE_{0} = EXECUTE or STATE_{0} = STALL then".format(process_id),
+"      REGA_1_{0}      <= REGISTERS(to_integer(unsigned(SRCA_0_{0})));".format(process_id),
+"      REGB_1_{0}      <= REGISTERS(to_integer(unsigned(SRCB_0_{0})));".format(process_id),
+"      DEST_1_{0}      <= SRCA_0_{0};".format(process_id),
+"      OPERATION_1_{0} <= OPERATION_0_{0};".format(process_id), 
+"      IMMEDIATE_1_{0} <= IMMEDIATE_0_{0};".format(process_id), 
+"    end if;",
 "  end process;",
-"",
-"  -- PIPELINE STAGE 2",
+""])
+
+    #Add extra pipeline registers for longer pipeline
+    if pipeline_stages == 4:
+        if pipelined_multiplier:
+            plugin.definitions.extend([
+"  -- PIPELINE STAGE 2 - PRE_EXECUTE",
+"  process",
+"    variable A_35 : signed(34 downto 0);",
+"    variable B_35 : signed(34 downto 0);",
+"    variable A_LO : signed(17 downto 0);",
+"    variable A_HI : signed(17 downto 0);",
+"    variable B_LO : signed(17 downto 0);",
+"    variable B_HI : signed(17 downto 0);",
+"  begin",
+"    wait until rising_edge(CLK);",
+"    if STATE_{0} = EXECUTE or STATE_{0} = STALL then".format(process_id),
+"      REGA_2_{0}      <= REGA_1_{0};".format(process_id),
+"      REGB_2_{0}      <= REGB_1_{0};".format(process_id),
+"      DEST_2_{0}      <= DEST_1_{0};".format(process_id),
+"      OPERATION_2_{0} <= OPERATION_1_{0};".format(process_id), 
+"      IMMEDIATE_2_{0} <= IMMEDIATE_1_{0};".format(process_id), 
+"      A_35 := resize(signed(REGA_1_{0}), 35);".format(process_id),
+"      B_35 := resize(signed(REGB_1_{0}), 35);".format(process_id),
+"      A_LO := signed('0' & A_35(16 downto 0));",
+"      A_HI := signed(      A_35(34 downto 17));",
+"      B_LO := signed('0' & B_35(16 downto 0));",
+"      B_HI := signed(      B_35(34 downto 17));",
+"      PRODUCT_A_2_{0} <= A_LO * B_LO;".format(process_id),
+"      PRODUCT_B_2_{0} <= A_HI * B_LO;".format(process_id),
+"      PRODUCT_C_2_{0} <= A_LO * B_HI;".format(process_id),
+"      PRODUCT_D_2_{0} <= A_HI * B_HI;".format(process_id),
+"    end if;",
+"  end process;",
+""])
+        else:
+            plugin.definitions.extend([
+"  -- PIPELINE STAGE 2 - PRE_EXECUTE",
+"  process",
+"  begin",
+"    wait until rising_edge(CLK);",
+"    if STATE_{0} = EXECUTE or STATE_{0} = STALL then".format(process_id),
+"      REGA_2_{0}      <= REGA_1_{0};".format(process_id),
+"      REGB_2_{0}      <= REGB_1_{0};".format(process_id),
+"      DEST_2_{0}      <= DEST_1_{0};".format(process_id),
+"      OPERATION_2_{0} <= OPERATION_1_{0};".format(process_id), 
+"      IMMEDIATE_2_{0} <= IMMEDIATE_1_{0};".format(process_id), 
+"    end if;",
+"  end process;",
+""])
+
+    #shorcut pipeline registers for shorter pipeline
+    if pipeline_stages == 3:
+        plugin.definitions.extend([
+"  -- PIPELINE STAGE 2 - PRE_EXECUTE",
+"  REGA_2_{0}      <= REGA_1_{0};".format(process_id),
+"  REGB_2_{0}      <= REGB_1_{0};".format(process_id),
+"  DEST_2_{0}      <= DEST_1_{0};".format(process_id),
+"  OPERATION_2_{0} <= OPERATION_1_{0};".format(process_id), 
+"  IMMEDIATE_2_{0} <= IMMEDIATE_1_{0};".format(process_id), 
+""])
+
+    plugin.definitions.extend([
+"  -- PIPELINE STAGE 3 - EXECUTE",
 "  process",
 "    variable MODULO       : unsigned({0} downto 0);".format(process_bits-1),
 "    variable STALL_COUNT  : integer range 0 to {0};".format(pc_to_execute_latency - 1)])
 
     if ("OP_EQ" in operations) or ("OP_NE" in operations) or ("OP_GE" in operations):
-        plugin.definitions.append("    variable FLAG_EQ      : std_logic;")
+        plugin.definitions.append("    variable FLAG_EQ : std_logic;")
     if ("OP_NE" in operations):
-        plugin.definitions.append("    variable FLAG_NE      : std_logic;")
+        plugin.definitions.append("    variable FLAG_NE : std_logic;")
     if ("OP_GT" in operations) or ("OP_GE" in operations):
-        plugin.definitions.append("    variable FLAG_GT      : std_logic;")
+        plugin.definitions.append("    variable FLAG_GT : std_logic;")
     if ("OP_GE" in operations):
-        plugin.definitions.append("    variable FLAG_GE      : std_logic;")
+        plugin.definitions.append("    variable FLAG_GE : std_logic;")
+    if pipelined_multiplier:
+        plugin.definitions.append("    variable SUM : std_logic_vector(69 downto 0);")
 
     plugin.definitions.extend([
 "  begin",
 "    wait until rising_edge(CLK);",
-"    REGISTER_EN_2_{0} <= '0';".format(process_id),
+"    REGISTER_EN_3_{0} <= '0';".format(process_id),
 "    case STATE_{0} is".format(process_id),
 "      when STALL =>",
 "        PC_{0} <= PC_{0} + 1;".format(process_id),
@@ -383,15 +481,15 @@ def write_process(process, plugin):
 "          STALL_COUNT := STALL_COUNT - 1;",
 "        end if;",
 "      when EXECUTE =>",
-"        DEST_2_{0} <= DEST_1_{0};".format(process_id),
-"        RESULT_2_{0} <= REGA_1_{0};".format(process_id),
+"        DEST_3_{0} <= DEST_2_{0};".format(process_id),
+"        RESULT_3_{0} <= REGA_2_{0};".format(process_id),
 "        PC_{0} <= PC_{0} + 1;".format(process_id),
 ""])
 
     if ("OP_EQ" in operations) or ("OP_NE" in operations) or ("OP_GE" in operations):
         plugin.definitions.extend([
 "        --share comparator logic",
-"        if REGA_1_{0} = REGB_1_{0} then".format(process_id),
+"        if REGA_2_{0} = REGB_2_{0} then".format(process_id),
 "          FLAG_EQ := '1';",
 "        else",
 "          FLAG_EQ := '0';",
@@ -405,7 +503,7 @@ def write_process(process, plugin):
 
     if ("OP_GT" in operations) or ("OP_GE" in operations):
         plugin.definitions.extend([
-"        if signed(REGA_1_{0}) > signed(REGB_1_{0}) then".format(process_id),
+"        if signed(REGA_2_{0}) > signed(REGB_2_{0}) then".format(process_id),
 "          FLAG_GT := '1';",
 "        else",
 "          FLAG_GT := '0';",
@@ -419,151 +517,164 @@ def write_process(process, plugin):
 
     plugin.definitions.extend([
 "        --execute instructions",
-"        case OPERATION_1_{0} is".format(process_id)])
+"        case OPERATION_2_{0} is".format(process_id)])
 
     if ("OP_MOVE" in operations):
         plugin.definitions.extend([
 "          when OP_MOVE_{0} => ".format(process_id),
-"            RESULT_2_{0} <= REGB_1_{0};".format(process_id),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= REGB_2_{0};".format(process_id),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_NOOP" in operations):
         plugin.definitions.extend([
 "          when OP_NOOP_{0} => ".format(process_id),
-"            REGISTER_EN_2_{0} <= '0';".format(process_id)])
+"            REGISTER_EN_3_{0} <= '0';".format(process_id),
+"            RESULT_3_{0} <= RESULT_3_{0};".format(process_id)])
 
     if ("OP_MUL" in operations):
-        plugin.definitions.extend([
+        if not pipelined_multiplier:
+            plugin.definitions.extend([
 "          when OP_MUL_{0}  => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE( MUL(REGA_1_{0}, REGB_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE( MUL(REGA_2_{0}, REGB_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
+        else:
+            plugin.definitions.extend([
+"          when OP_MUL_{0}  => ".format(process_id),
+"            SUM := std_logic_vector(",
+"              resize(PRODUCT_A_2_{0}, 70) +".format(process_id),
+"              resize(shift_left(PRODUCT_B_2_{0}, 17), 70) +".format(process_id),
+"              resize(shift_left(PRODUCT_C_2_{0}, 17), 70) +".format(process_id),
+"              resize(shift_left(PRODUCT_D_2_{0}, 34), 70)".format(process_id),
+"            );",
+"            RESULT_3_{0} <= STD_RESIZE(SUM, {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_ADD" in operations):
         plugin.definitions.extend([
 "          when OP_ADD_{0}  => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE( ADD(REGA_1_{0}, REGB_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE( ADD(REGA_2_{0}, REGB_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_SUB" in operations):
         plugin.definitions.extend([
 "          when OP_SUB_{0}  => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE( SUB(REGA_1_{0}, REGB_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE( SUB(REGA_2_{0}, REGB_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_BAND" in operations):
         plugin.definitions.extend([
 "          when OP_BAND_{0} => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE(BAND(REGA_1_{0}, REGB_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE(BAND(REGA_2_{0}, REGB_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_BOR" in operations):
         plugin.definitions.extend([
 "          when OP_BOR_{0}  => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE( BOR(REGA_1_{0}, REGB_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE( BOR(REGA_2_{0}, REGB_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_BXOR" in operations):
         plugin.definitions.extend([
 "          when OP_BXOR_{0} => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE(BXOR(REGA_1_{0}, REGB_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE(BXOR(REGA_2_{0}, REGB_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_SL" in operations):
         plugin.definitions.extend([
 "          when OP_SL_{0}   => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE(  SL(REGA_1_{0}, REGB_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE(  SL(REGA_2_{0}, REGB_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_SR" in operations):
         plugin.definitions.extend([
 "          when OP_SR_{0}   => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE(  SR(REGA_1_{0}, REGB_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE(  SR(REGA_2_{0}, REGB_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_EQ" in operations):
         plugin.definitions.extend([
 "          when OP_EQ_{0}   => ".format(process_id),
-"            RESULT_2_{0} <= (others => FLAG_EQ);".format(process_id),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= (others => FLAG_EQ);".format(process_id),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_NE" in operations):
         plugin.definitions.extend([
 "          when OP_NE_{0}   => ".format(process_id),
-"            RESULT_2_{0} <= (others => FLAG_NE);".format(process_id),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= (others => FLAG_NE);".format(process_id),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_GT" in operations):
         plugin.definitions.extend([
 "          when OP_GT_{0}   => ".format(process_id),
-"            RESULT_2_{0} <= (others => FLAG_GT);".format(process_id),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= (others => FLAG_GT);".format(process_id),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_GE" in operations):
         plugin.definitions.extend([
 "          when OP_GE_{0}   => ".format(process_id),
-"            RESULT_2_{0} <= (others => FLAG_GE);".format(process_id),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= (others => FLAG_GE);".format(process_id),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_IMM" in operations):
         plugin.definitions.extend([
 "          when OP_IMM_{0}  => ".format(process_id),
-"            RESULT_2_{0} <= IMMEDIATE_1_{0};".format(process_id),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= IMMEDIATE_2_{0};".format(process_id),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_ABS" in operations):
         plugin.definitions.extend([
 "          when OP_ABS_{0}  => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE( ABSOLUTE(REGA_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE( ABSOLUTE(REGA_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_INVERT" in operations):
         plugin.definitions.extend([
 "          when OP_INVERT_{0}  => ".format(process_id),
-"            RESULT_2_{0} <= not REGA_1_{0};".format(process_id),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= not REGA_2_{0};".format(process_id),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     for i in left_shifts:
         plugin.definitions.extend([
 "          when OP_SLN_{0}_{1}  => ".format(i, process_id),
-"            RESULT_2_{0} <= STD_RESIZE( SL(REGA_1_{0}, {1}), {2});".format(process_id, common.binary(i, process_bits), process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE( SL(REGA_2_{0}, {1}), {2});".format(process_id, common.binary(i, process_bits), process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     for i in right_shifts:
         plugin.definitions.extend([
 "          when OP_SRN_{0}_{1}  => ".format(i, process_id),
-"            RESULT_2_{0} <= STD_RESIZE( SR(REGA_1_{0}, {1}), {2});".format(process_id, common.binary(i, process_bits), process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE( SR(REGA_2_{0}, {1}), {2});".format(process_id, common.binary(i, process_bits), process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     for i in availables:
         plugin.definitions.extend([
 "          when OP_AVAILABLE_{0}_{1}  => ".format(i, process_id),
 "            if STREAM_{0}_STB = '1' then".format(i),
-"              RESULT_2_{0} <= {1};".format(process_id, common.binary(-1, process_bits)),
+"              RESULT_3_{0} <= {1};".format(process_id, common.binary(-1, process_bits)),
 "            else",
-"              RESULT_2_{0} <= {1};".format(process_id, common.binary(0, process_bits)),
+"              RESULT_3_{0} <= {1};".format(process_id, common.binary(0, process_bits)),
 "            end if;",
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_LNOT" in operations):
         plugin.definitions.extend([
 "          when OP_LNOT_{0}  => ".format(process_id),
-"            RESULT_2_{0} <= STD_RESIZE( LNOT(REGA_1_{0}), {1});".format(process_id, process_bits),
-"            REGISTER_EN_2_{0} <= '1';".format(process_id)])
+"            RESULT_3_{0} <= STD_RESIZE( LNOT(REGA_2_{0}), {1});".format(process_id, process_bits),
+"            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_JMP" in operations):
         plugin.definitions.extend([
 "          when OP_JMP_{0} =>".format(process_id),
 "            STATE_{0} <= STALL;".format(process_id),
 "            STALL_COUNT := {0};".format(pc_to_execute_latency - 1),
-"            PC_{0} <= resize(unsigned(IMMEDIATE_1_{0}), {1});".format(process_id, instruction_address_bits)])
+"            PC_{0} <= resize(unsigned(IMMEDIATE_2_{0}), {1});".format(process_id, instruction_address_bits)])
 
     if ("OP_JMPF" in operations):
         plugin.definitions.extend([
 "          when OP_JMPF_{0} =>".format(process_id),
-"            if RESULT_2_{0} = {1} then".format(process_id, common.binary(0, process_bits)),
+"            if RESULT_3_{0} = {1} then".format(process_id, common.binary(0, process_bits)),
 "              STATE_{0} <= STALL;".format(process_id),
 "              STALL_COUNT := {0};".format(pc_to_execute_latency - 1),
-"              PC_{0} <= resize(unsigned(IMMEDIATE_1_{0}), {1});".format(process_id, instruction_address_bits),
+"              PC_{0} <= resize(unsigned(IMMEDIATE_2_{0}), {1});".format(process_id, instruction_address_bits),
 "            end if;".format(process_id)])
 
     if ("OP_WAIT_US" in operations):
@@ -572,16 +683,19 @@ def write_process(process, plugin):
 "            STATE_{0} <= WAIT_US;".format(process_id),
 "            PC_{0} <= PC_{0};".format(process_id)])
 
+    plugin.definitions.extend(divider_decode)
+    plugin.definitions.extend(output_instructions)
+    plugin.definitions.extend(input_instructions)
+
     plugin.definitions.extend([
-'\n'.join(divider_decode),
-'\n'.join(output_instructions),
-'\n'.join(input_instructions),
 "          when others => null;",
 "        end case;",
 "",
-'\n'.join(divider_logic),
-'\n'.join(read_inputs),
-'\n'.join(write_outputs)])
+    ])
+
+    plugin.definitions.extend(divider_logic)
+    plugin.definitions.extend(read_inputs)
+    plugin.definitions.extend(write_outputs)
 
     if ("OP_WAIT_US" in operations):
         plugin.definitions.extend([

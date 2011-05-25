@@ -185,7 +185,7 @@ the same precedence.
 
 """
 
-from common import Unique, resize
+from common import Unique, resize, calculate_jumps
 from instruction import Write, Block
 from inspect import currentframe, getsourcefile
 from chips_exceptions import ChipsSyntaxError
@@ -258,7 +258,8 @@ class Process(Unique):
         for i in self.outputs:
             self.receivers[i.get_identifier()] = i
         self.instructions = tuple(Block(instructions))
-        self.instruction_memory = dict(enumerate(self.instructions))
+        instructions = calculate_jumps(self.instructions)
+        self.instruction_memory = dict(enumerate(instructions))
 
     def set_chip(self, chip):
         if self not in chip.processes:

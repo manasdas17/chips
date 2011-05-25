@@ -3,6 +3,7 @@
 """Common utilities for Streams library"""
 
 from math import log
+from copy import copy
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -45,3 +46,21 @@ def c_style_modulo(x, y):
 
 def c_style_division(x, y):
     return sign(x)*sign(y)*(abs(x)//abs(y))
+
+def calculate_jumps(instructions):
+    address = 0
+    new_instructions = []
+    labels = {}
+
+    for instruction in instructions:
+        if instruction.label:
+            labels[instruction.label] = address
+        else:
+            address += 1
+            new_instructions.append(copy(instruction))
+
+    for instruction in new_instructions:
+        if type(instruction.immediate) is str:
+            instruction.immediate = labels[instruction.immediate]
+
+    return new_instructions

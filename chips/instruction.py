@@ -21,8 +21,6 @@ class Statement:
         instructions = self.initialise(rmap) + self.comp(rmap)
         instructions.append(Instruction("LABEL", label="END"))
         instructions.append(Instruction("OP_JMP", immediate="END"))
-        instructions.append(Instruction("OP_JMP", immediate=0))
-        instructions = calculate_jumps(instructions)
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         return instructions.__iter__()
@@ -156,12 +154,13 @@ class Instruction:
         self.filename = filename
         self.lineno = lineno
     def __repr__(self):
-        s = "Instruction(operation={0}, srca={1}, srcb={2}, immediate={3})"
+        s = "Instruction(operation={0}, srca={1}, srcb={2}, immediate={3}, label={4})"
         return s.format(
             self.operation, 
             self.srca, 
             self.srcb, 
-            self.immediate
+            self.immediate,
+            self.label
         )
 
 def constantize(possible_constant):
@@ -531,24 +530,6 @@ class Constant(Expression):
                 filename=self.filename
             )
         ]
-
-def calculate_jumps(instructions):
-    address = 0
-    new_instructions = []
-    labels = {}
-
-    for instruction in instructions:
-        if instruction.label:
-            labels[instruction.label] = address
-        else:
-            address += 1
-            new_instructions.append(instruction)
-
-    for instruction in new_instructions:
-        if type(instruction.immediate) is str:
-            instruction.immediate = labels[instruction.immediate]
-
-    return new_instructions
 
 class Value(Statement):
     """

@@ -9,6 +9,10 @@ __maintainer__ = "Jon Dawson"
 __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
 
+from collections import deque
+
+
+from chips.common import calculate_jumps
 from chips.instruction import Instruction
 
 register_modifying_instructions = [
@@ -58,8 +62,8 @@ def is_srcb_dependent(instruction):
         return True
     return False
 
-#simlest version, inserts 3 NOOPS after every instruction
-#def optimize(instructions):
+#simplest version, inserts 3 NOOPS after every instruction
+#def optimize(latency, instructions):
 #
 #    #reorder instructions to prevent data hazards
 #    new_instructions = []
@@ -81,33 +85,36 @@ def is_srcb_dependent(instruction):
 #                new_instructions.append(Instruction("OP_NOOP"))
 #    return new_instructions
 
-
 #register aware version adds noops if a dependency exists
-def optimize(instructions):
+def optimize(latency, instructions):
 
     new_instructions = []
-    wait_1 = None
-    wait_2 = None
-    #wait_3 = None
+    wait = deque()
+    for i in range(latency):
+        wait.append(None)
 
     for instruction in instructions:
 
-        #add wait states until data dependencies are fullfilled
+        if instruction.operation == "LABEL":
+            new_instructions.append(instruction)
+            continue
+
+        #add wait states until data dependencies are fulfilled
         while True:
             #determine dependencies
             has_dependencies = False
             if is_srca_dependent(instruction):
-                if instruction.srca in (wait_1, wait_2):
+                if instruction.srca in wait:
                     has_dependencies = True
             if is_srcb_dependent(instruction):
-                if instruction.srcb in (wait_1, wait_2):
+                if instruction.srcb in wait:
                     has_dependencies = True
 
             #add waits noops if needed
             if has_dependencies:
                 new_instructions.append(Instruction("OP_NOOP"))
-                wait_1 = wait_2
-                wait_2 = None
+                wait.append(None)
+                wait.popleft()
                 continue
             else:
                 break
@@ -116,12 +123,14 @@ def optimize(instructions):
         new_instructions.append(instruction)
 
         #modify state of data availability
-        wait_1 = wait_2
-        wait_2 = None
+        wait.popleft()
         if is_register_modifying(instruction):
-            wait_2 = instruction.srca 
+            wait.append(instruction.srca)
+        else:
+            wait.append(None)
 
-        new_instructions.append(Instruction("OP_NOOP"))
+    for i in range(latency+1):
         new_instructions.append(Instruction("OP_NOOP"))
 
+    new_instructions = calculate_jumps(new_instructions)
     return new_instructions
