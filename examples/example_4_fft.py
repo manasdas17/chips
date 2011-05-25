@@ -17,7 +17,7 @@ from math import pi, sin, log, cos
 import sys
 
 from chips import *
-from chips_VHDL import Plugin
+from chips.VHDL_plugin import Plugin
 
 #define a few fixed point routines
 ################################################################################
@@ -240,7 +240,7 @@ if "simulate_vhdl" in sys.argv:
     #run the simulation
     plugin = Plugin()
     chip.write_code(plugin)
-    plugin.ghdl_test("test fft", stop_cycles = 100000)
+    plugin.ghdl_test("test fft", stop_cycles = 200000)
 
     #unpack the frequency domain representation
     real_frequency = list(rer.get_simulation_data(plugin))

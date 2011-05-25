@@ -2,6 +2,7 @@
 """VHDL generation of processes"""
 
 from math import ceil, log
+from chips.common import calculate_jumps
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -27,7 +28,7 @@ def write_process(process, plugin):
 #############################################################################
 #CALCULATE PROCESS PARAMETERS
 #############################################################################
-    process_instructions = tuple(process.instructions)
+    process_instructions = calculate_jumps(tuple(process.instructions))
     operations = ["OP_DIV", "OP_MOD", "OP_MUL", "OP_ADD", "OP_SUB",
             "OP_BAND", "OP_BOR", "OP_BXOR", "OP_SL", "OP_SR", "OP_EQ",
             "OP_NE", "OP_GE", "OP_GT", "OP_WAIT_US", "OP_JMP", "OP_JMPF",

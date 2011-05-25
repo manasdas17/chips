@@ -16,7 +16,7 @@ import sys
 from PIL import Image
 
 from chips import *
-from chips_VHDL import Plugin
+from chips.VHDL_plugin import Plugin
 
 #define a few fixed point routines
 ################################################################################
