@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name="Chips",
-      version="0.1.1",
+      version="0.1.2",
       description="Design hardware with Python",
       long_description="""\
     
