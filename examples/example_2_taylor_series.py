@@ -95,7 +95,7 @@ elif "simulate_vhdl" in sys.argv:
     chip = Chip(response)
     plugin = Plugin()
     chip.write_code(plugin)
-    plugin.ghdl_test("test taylor series", stop_cycles=1000000)
+    plugin.ghdl_test("test taylor series", stop_cycles=300000)
     sin_x=[from_fixed(i) for i in response.get_simulation_data(plugin)]
     pl.plot(sin_x[:100], label="Taylor series approximation")
     pl.plot(n.sin(n.linspace(0,pi,100)), label="sin(x)")
