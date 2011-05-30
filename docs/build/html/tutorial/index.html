@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -12,12 +14,13 @@
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '0.1',
-        COLLAPSE_MODINDEX: false,
+        COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../_static/chips.ico"/>
     <link rel="top" title="Chips v0.1 documentation" href="../index.html" />
@@ -32,8 +35,8 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="../language_reference/index.html" title="Chips Language Reference Manual"
              accesskey="N">next</a> |</li>
@@ -209,14 +212,19 @@ serial port:</p>
 <span class="gp">... </span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="c">#generate a vhdl model</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">code_generator</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="n">project_name</span><span class="o">=</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">code_generator</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="n">project_name</span><span class="o">=</span><span class="s">&quot;hello world&quot;</span><span class="p">,</span> <span class="n">internal_clock</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">internal_reset</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_chip</span><span class="o">.</span><span class="n">write_code</span><span class="p">(</span><span class="n">code_generator</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now you should have a hello_world.vhd file that you can synthesise in a real
-device. By default, SerialOut will assume that you are using a 50 MHz clock
-and a baud rate of 115200. If you need something else you can use the
-clock_rate and baud_rate arguments to specify what you need.</p>
+device. By default, SerialOut will assume that you are using a 50 MHz clock and
+a baud rate of 115200. If you need something else you can use the clock_rate
+and baud_rate arguments to specify what you need. Note that the
+<em>internal_clock</em> and <em>internal_reset</em> parameters have been set to falser.
+Usually, the VHDL plugin includes a clock and reset in the VHDL model, this
+allows a simulation to be run without adding any extra VHDL code for the test
+bench. In a real chip however, the clock and reset will usually be derived from
+outside the device.</p>
 </div>
 <div class="section" id="more-streams-and-sinks">
 <h2>More Streams and Sinks<a class="headerlink" href="#more-streams-and-sinks" title="Permalink to this headline">¶</a></h2>
@@ -384,7 +392,7 @@ comes in:</p>
 <p>This example demonstrates some of the key features of the <em>Process</em>:</p>
 <ul class="simple">
 <li>Put it simply, a <em>Process</em> is small computer program which can contain loops
-and if statements like any other language.</li>
+and if statements like any other programming language.</li>
 <li>A <em>Chip</em> can contain any number of Process objects, they will all run in
 parallel.</li>
 <li>Within a <em>Process</em>, you can use <em>Variables</em> to store data. Each variable can
@@ -669,56 +677,56 @@ these simple components.</p>
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/chips.png" alt="Logo"/>
             </a></p>
-            <h3><a href="../index.html">Table Of Contents</a></h3>
-            <ul>
-<li><a class="reference external" href="#">Tutorial</a><ul>
-<li><a class="reference external" href="#learn-python">Learn Python</a></li>
-<li><a class="reference external" href="#install-chips">Install Chips</a><ul>
-<li><a class="reference external" href="#windows">Windows</a></li>
-<li><a class="reference external" href="#linux">Linux</a></li>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tutorial</a><ul>
+<li><a class="reference internal" href="#learn-python">Learn Python</a></li>
+<li><a class="reference internal" href="#install-chips">Install Chips</a><ul>
+<li><a class="reference internal" href="#windows">Windows</a></li>
+<li><a class="reference internal" href="#linux">Linux</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#first-simulations">First Simulations</a></li>
-<li><a class="reference external" href="#hello-world">Hello World</a></li>
-<li><a class="reference external" href="#generating-vhdl">Generating VHDL</a></li>
-<li><a class="reference external" href="#more-streams-and-sinks">More Streams and Sinks</a></li>
-<li><a class="reference external" href="#types-and-bit-width">Types and Bit Width</a></li>
-<li><a class="reference external" href="#introducing-processes">Introducing Processes</a></li>
-<li><a class="reference external" href="#process-instructions">Process Instructions</a></li>
-<li><a class="reference external" href="#bit-width-within-a-process">Bit Width Within a Process</a></li>
-<li><a class="reference external" href="#hierarchical-design">Hierarchical Design</a></li>
-<li><a class="reference external" href="#streams-from-multiple-sources">Streams from Multiple Sources</a></li>
-<li><a class="reference external" href="#streams-with-multiple-sinks">Streams with Multiple Sinks</a></li>
-<li><a class="reference external" href="#a-worked-example">A Worked Example</a></li>
-<li><a class="reference external" href="#further-examples">Further Examples</a></li>
+<li><a class="reference internal" href="#first-simulations">First Simulations</a></li>
+<li><a class="reference internal" href="#hello-world">Hello World</a></li>
+<li><a class="reference internal" href="#generating-vhdl">Generating VHDL</a></li>
+<li><a class="reference internal" href="#more-streams-and-sinks">More Streams and Sinks</a></li>
+<li><a class="reference internal" href="#types-and-bit-width">Types and Bit Width</a></li>
+<li><a class="reference internal" href="#introducing-processes">Introducing Processes</a></li>
+<li><a class="reference internal" href="#process-instructions">Process Instructions</a></li>
+<li><a class="reference internal" href="#bit-width-within-a-process">Bit Width Within a Process</a></li>
+<li><a class="reference internal" href="#hierarchical-design">Hierarchical Design</a></li>
+<li><a class="reference internal" href="#streams-from-multiple-sources">Streams from Multiple Sources</a></li>
+<li><a class="reference internal" href="#streams-with-multiple-sinks">Streams with Multiple Sinks</a></li>
+<li><a class="reference internal" href="#a-worked-example">A Worked Example</a></li>
+<li><a class="reference internal" href="#further-examples">Further Examples</a></li>
 </ul>
 </li>
 </ul>
 
-            <h4>Previous topic</h4>
-            <p class="topless"><a href="../introduction/index.html"
-                                  title="previous chapter">Introduction</a></p>
-            <h4>Next topic</h4>
-            <p class="topless"><a href="../language_reference/index.html"
-                                  title="next chapter">Chips Language Reference Manual</a></p>
-            <h3>This Page</h3>
-            <ul class="this-page-menu">
-              <li><a href="../_sources/tutorial/index.txt"
-                     rel="nofollow">Show Source</a></li>
-            </ul>
-          <div id="searchbox" style="display: none">
-            <h3>Quick search</h3>
-              <form class="search" action="../search.html" method="get">
-                <input type="text" name="q" size="18" />
-                <input type="submit" value="Go" />
-                <input type="hidden" name="check_keywords" value="yes" />
-                <input type="hidden" name="area" value="default" />
-              </form>
-              <p class="searchtip" style="font-size: 90%">
-              Enter search terms or a module, class or function name.
-              </p>
-          </div>
-          <script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../introduction/index.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../language_reference/index.html"
+                        title="next chapter">Chips Language Reference Manual</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/tutorial/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -730,7 +738,7 @@ these simple components.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../modindex.html" title="Global Module Index"
+          <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
           <a href="../language_reference/index.html" title="Chips Language Reference Manual"
@@ -742,8 +750,8 @@ these simple components.</p>
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2011, Jonathan P Dawson.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.6.
+        &copy; Copyright 2011, Jonathan P Dawson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.1.
     </div>
   </body>
 </html>

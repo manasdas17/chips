@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -12,12 +14,13 @@
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
         VERSION:     '0.1',
-        COLLAPSE_MODINDEX: false,
+        COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/chips.ico"/>
     <link rel="top" title="Chips v0.1 documentation" href="#" />
@@ -31,8 +34,8 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="introduction/index.html" title="Introduction"
              accesskey="N">next</a> |</li>
@@ -111,58 +114,62 @@ provide a rich verification environment.</li>
 </div>
 <div class="section" id="download">
 <h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
-<p>You can download the <a class="reference external" href="https://github.com/downloads/dawsonjon/chips/Chips-0.1.tar.gz">source distribution</a> or the <a class="reference external" href="https://github.com/downloads/dawsonjon/chips/Chips-0.1.win32.exe">windows  installer</a> from
+<p>You can download the <a class="reference external" href="https://github.com/downloads/dawsonjon/chips/Chips-0.1.2.tar.gz">source distribution</a> or the <a class="reference external" href="https://github.com/downloads/dawsonjon/chips/Chips-0.1.2.win32.exe">windows  installer</a> from
 the <a class="reference external" href="http://github.com/dawsonjon/chips/">GitHub</a> homepage.</p>
 </div>
 <div class="section" id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference external" href="introduction/index.html">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference external" href="introduction/index.html#a-new-approach-to-device-design">A new approach to device design</a></li>
-<li class="toctree-l2"><a class="reference external" href="introduction/index.html#a-language-within-a-language">A language within a language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction/index.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction/index.html#a-new-approach-to-device-design">A new approach to device design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction/index.html#a-language-within-a-language">A language within a language</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="tutorial/index.html">Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#learn-python">Learn Python</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#install-chips">Install Chips</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#first-simulations">First Simulations</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#hello-world">Hello World</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#generating-vhdl">Generating VHDL</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#more-streams-and-sinks">More Streams and Sinks</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#types-and-bit-width">Types and Bit Width</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#introducing-processes">Introducing Processes</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#process-instructions">Process Instructions</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#bit-width-within-a-process">Bit Width Within a Process</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#hierarchical-design">Hierarchical Design</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#streams-from-multiple-sources">Streams from Multiple Sources</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#streams-with-multiple-sinks">Streams with Multiple Sinks</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#a-worked-example">A Worked Example</a></li>
-<li class="toctree-l2"><a class="reference external" href="tutorial/index.html#further-examples">Further Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#learn-python">Learn Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#install-chips">Install Chips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#first-simulations">First Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#hello-world">Hello World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#generating-vhdl">Generating VHDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#more-streams-and-sinks">More Streams and Sinks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#types-and-bit-width">Types and Bit Width</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#introducing-processes">Introducing Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#process-instructions">Process Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#bit-width-within-a-process">Bit Width Within a Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#hierarchical-design">Hierarchical Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#streams-from-multiple-sources">Streams from Multiple Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#streams-with-multiple-sinks">Streams with Multiple Sinks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#a-worked-example">A Worked Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#further-examples">Further Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="language_reference/index.html">Chips Language Reference Manual</a><ul>
-<li class="toctree-l2"><a class="reference external" href="language_reference/index.html#chip">Chip</a></li>
-<li class="toctree-l2"><a class="reference external" href="language_reference/index.html#module-chips.process">Process</a></li>
-<li class="toctree-l2"><a class="reference external" href="language_reference/index.html#module-chips.streams">Streams</a></li>
-<li class="toctree-l2"><a class="reference external" href="language_reference/index.html#module-chips.sinks">Sinks</a></li>
-<li class="toctree-l2"><a class="reference external" href="language_reference/index.html#module-chips.instruction">Instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="language_reference/index.html">Chips Language Reference Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="language_reference/index.html#chip">Chip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_reference/index.html#module-chips.process">Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_reference/index.html#module-chips.streams">Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_reference/index.html#module-chips.sinks">Sinks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_reference/index.html#module-chips.instruction">Instructions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="automatic_code_generation/index.html">Automatic Code Generation</a><ul>
-<li class="toctree-l2"><a class="reference external" href="automatic_code_generation/index.html#module-chips.VHDL_plugin">VHDL Code Generation</a></li>
-<li class="toctree-l2"><a class="reference external" href="automatic_code_generation/index.html#module-chips.cpp_plugin">C++ Code Generation</a></li>
-<li class="toctree-l2"><a class="reference external" href="automatic_code_generation/index.html#module-chips.visual_plugin">Visualisation Code Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="automatic_code_generation/index.html">Automatic Code Generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="automatic_code_generation/index.html#module-chips.VHDL_plugin">VHDL Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="automatic_code_generation/index.html#module-chips.cpp_plugin">C++ Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="automatic_code_generation/index.html#module-chips.visual_plugin">Visualisation Code Generation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="ip_library/index.html">IP library</a></li>
-<li class="toctree-l1"><a class="reference external" href="extending_chips/index.html">Extending the Chips Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ip_library/index.html">IP library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending_chips/index.html">Extending the Chips Library</a></li>
 </ul>
+</div>
 </div>
 <div class="section" id="news">
 <h2>News<a class="headerlink" href="#news" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>2011-04-09 Chips Library Published on GitHub.</li>
 <li>2011-04-29 Chips Library Published on Python Package Index.</li>
+<li>2011-05-19 Version 0.1.1 released.</li>
+<li>2011-05-27 Version 0.1.2 released.</li>
 </ul>
 </div>
 <div class="section" id="links">
@@ -178,9 +185,9 @@ capabilities to Python.</li>
 <div class="section" id="indices-and-tables">
 <h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference external" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference external" href="modindex.html"><em>Module Index</em></a></li>
-<li><a class="reference external" href="search.html"><em>Search Page</em></a></li>
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
 </ul>
 </div>
 </div>
@@ -194,44 +201,44 @@ capabilities to Python.</li>
             <p class="logo"><a href="#">
               <img class="logo" src="_static/chips.png" alt="Logo"/>
             </a></p>
-            <h3><a href="#">Table Of Contents</a></h3>
-            <ul>
-<li><a class="reference external" href="#">Chips - Hardware Design in Python</a><ul>
-<li><a class="reference external" href="#what-is-chips">What is Chips?</a></li>
-<li><a class="reference external" href="#features">Features</a></li>
-<li><a class="reference external" href="#a-quick-taster">A Quick Taster</a></li>
-<li><a class="reference external" href="#download">Download</a></li>
-<li><a class="reference external" href="#documentation">Documentation</a><ul>
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Chips - Hardware Design in Python</a><ul>
+<li><a class="reference internal" href="#what-is-chips">What is Chips?</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#a-quick-taster">A Quick Taster</a></li>
+<li><a class="reference internal" href="#download">Download</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a><ul>
 </ul>
 </li>
-<li><a class="reference external" href="#news">News</a></li>
-<li><a class="reference external" href="#links">Links</a></li>
-<li><a class="reference external" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#news">News</a></li>
+<li><a class="reference internal" href="#links">Links</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
 </ul>
 
-            <h4>Next topic</h4>
-            <p class="topless"><a href="introduction/index.html"
-                                  title="next chapter">Introduction</a></p>
-            <h3>This Page</h3>
-            <ul class="this-page-menu">
-              <li><a href="_sources/index.txt"
-                     rel="nofollow">Show Source</a></li>
-            </ul>
-          <div id="searchbox" style="display: none">
-            <h3>Quick search</h3>
-              <form class="search" action="search.html" method="get">
-                <input type="text" name="q" size="18" />
-                <input type="submit" value="Go" />
-                <input type="hidden" name="check_keywords" value="yes" />
-                <input type="hidden" name="area" value="default" />
-              </form>
-              <p class="searchtip" style="font-size: 90%">
-              Enter search terms or a module, class or function name.
-              </p>
-          </div>
-          <script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="introduction/index.html"
+                        title="next chapter">Introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -243,7 +250,7 @@ capabilities to Python.</li>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
+          <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
           <a href="introduction/index.html" title="Introduction"
@@ -252,8 +259,8 @@ capabilities to Python.</li>
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2011, Jonathan P Dawson.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.6.
+        &copy; Copyright 2011, Jonathan P Dawson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.1.
     </div>
   </body>
 </html>

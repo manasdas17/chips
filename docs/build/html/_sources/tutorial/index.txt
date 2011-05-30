@@ -174,13 +174,18 @@ serial port::
         ... )
 
         >>> #generate a vhdl model
-        >>> code_generator = Plugin(project_name="hello world")
+        >>> code_generator = Plugin(project_name="hello world", internal_clock=False, internal_reset=False)
         >>> my_chip.write_code(code_generator)
 
 Now you should have a hello_world.vhd file that you can synthesise in a real
-device. By default, SerialOut will assume that you are using a 50 MHz clock
-and a baud rate of 115200. If you need something else you can use the
-clock_rate and baud_rate arguments to specify what you need.
+device. By default, SerialOut will assume that you are using a 50 MHz clock and
+a baud rate of 115200. If you need something else you can use the clock_rate
+and baud_rate arguments to specify what you need. Note that the
+*internal_clock* and *internal_reset* parameters have been set to falser.
+Usually, the VHDL plugin includes a clock and reset in the VHDL model, this
+allows a simulation to be run without adding any extra VHDL code for the test
+bench. In a real chip however, the clock and reset will usually be derived from
+outside the device.
 
 More Streams and Sinks
 ----------------------
@@ -335,7 +340,7 @@ comes in::
 This example demonstrates some of the key features of the *Process*:
 
 - Put it simply, a *Process* is small computer program which can contain loops
-  and if statements like any other language.  
+  and if statements like any other programming language.  
   
 - A *Chip* can contain any number of Process objects, they will all run in
   parallel.  

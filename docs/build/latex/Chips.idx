@@ -4,10 +4,10 @@
 \indexentry{Variable (class in chips)|hyperpage}{22}
 \indexentry{VariableArray (class in chips)|hyperpage}{22}
 \indexentry{chips.streams (module)|hyperpage}{23}
-\indexentry{Array (class in chips)|hyperpage}{25}
+\indexentry{Array (class in chips)|hyperpage}{24}
 \indexentry{Counter (class in chips)|hyperpage}{25}
 \indexentry{Decoupler (class in chips)|hyperpage}{26}
-\indexentry{Fifo (class in chips)|hyperpage}{27}
+\indexentry{Fifo (class in chips)|hyperpage}{26}
 \indexentry{HexPrinter (class in chips)|hyperpage}{27}
 \indexentry{InPort (class in chips)|hyperpage}{28}
 \indexentry{Lookup (class in chips)|hyperpage}{28}
@@ -15,31 +15,31 @@
 \indexentry{Printer (class in chips)|hyperpage}{30}
 \indexentry{Repeater (class in chips)|hyperpage}{30}
 \indexentry{Resizer (class in chips)|hyperpage}{31}
-\indexentry{Scanner() (in module chips)|hyperpage}{32}
+\indexentry{Scanner() (in module chips)|hyperpage}{31}
 \indexentry{Sequence() (in module chips)|hyperpage}{32}
-\indexentry{SerialIn (class in chips)|hyperpage}{33}
-\indexentry{Stimulus (class in chips)|hyperpage}{33}
+\indexentry{SerialIn (class in chips)|hyperpage}{32}
+\indexentry{Stimulus (class in chips)|hyperpage}{32}
 \indexentry{chips.sinks (module)|hyperpage}{33}
-\indexentry{Asserter (class in chips)|hyperpage}{34}
-\indexentry{Console (class in chips)|hyperpage}{34}
+\indexentry{Asserter (class in chips)|hyperpage}{33}
+\indexentry{Console (class in chips)|hyperpage}{33}
 \indexentry{OutPort (class in chips)|hyperpage}{34}
 \indexentry{Response (class in chips)|hyperpage}{34}
 \indexentry{SerialOut (class in chips)|hyperpage}{35}
 \indexentry{chips.instruction (module)|hyperpage}{35}
-\indexentry{Block (class in chips)|hyperpage}{36}
+\indexentry{Block (class in chips)|hyperpage}{35}
 \indexentry{Break (class in chips)|hyperpage}{36}
 \indexentry{Continue (class in chips)|hyperpage}{36}
-\indexentry{DoUntil() (in module chips)|hyperpage}{37}
+\indexentry{DoUntil() (in module chips)|hyperpage}{36}
 \indexentry{DoWhile() (in module chips)|hyperpage}{37}
 \indexentry{Evaluate (class in chips)|hyperpage}{37}
 \indexentry{If (class in chips)|hyperpage}{37}
-\indexentry{Loop (class in chips)|hyperpage}{38}
+\indexentry{Loop (class in chips)|hyperpage}{37}
 \indexentry{Print (class in chips)|hyperpage}{38}
 \indexentry{Scan (class in chips)|hyperpage}{39}
 \indexentry{Until() (in module chips)|hyperpage}{39}
-\indexentry{Value (class in chips)|hyperpage}{40}
+\indexentry{Value (class in chips)|hyperpage}{39}
 \indexentry{WaitUs (class in chips)|hyperpage}{40}
-\indexentry{While() (in module chips)|hyperpage}{41}
+\indexentry{While() (in module chips)|hyperpage}{40}
 \indexentry{chips.VHDL\_plugin (module)|hyperpage}{41}
 \indexentry{chips.cpp\_plugin (module)|hyperpage}{41}
 \indexentry{chips.visual\_plugin (module)|hyperpage}{41}

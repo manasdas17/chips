@@ -10,8 +10,8 @@
 \contentsline {section}{\numberline {5.2}Tutorial}{10}{section.5.2}
 \contentsline {subsection}{\numberline {5.2.1}Learn Python}{10}{subsection.5.2.1}
 \contentsline {subsection}{\numberline {5.2.2}Install Chips}{10}{subsection.5.2.2}
-\contentsline {subsubsection}{Windows}{10}{subsubsection*.2}
-\contentsline {subsubsection}{Linux}{10}{subsubsection*.3}
+\contentsline {subsubsection}{Windows}{10}{subsubsection*.3}
+\contentsline {subsubsection}{Linux}{10}{subsubsection*.4}
 \contentsline {subsection}{\numberline {5.2.3}First Simulations}{11}{subsection.5.2.3}
 \contentsline {subsection}{\numberline {5.2.4}Hello World}{11}{subsection.5.2.4}
 \contentsline {subsection}{\numberline {5.2.5}Generating VHDL}{12}{subsection.5.2.5}
@@ -22,25 +22,25 @@
 \contentsline {subsection}{\numberline {5.2.10}Bit Width Within a Process}{15}{subsection.5.2.10}
 \contentsline {subsection}{\numberline {5.2.11}Hierarchical Design}{15}{subsection.5.2.11}
 \contentsline {subsection}{\numberline {5.2.12}Streams from Multiple Sources}{16}{subsection.5.2.12}
-\contentsline {subsection}{\numberline {5.2.13}Streams with Multiple Sinks}{18}{subsection.5.2.13}
+\contentsline {subsection}{\numberline {5.2.13}Streams with Multiple Sinks}{17}{subsection.5.2.13}
 \contentsline {subsection}{\numberline {5.2.14}A Worked Example}{18}{subsection.5.2.14}
 \contentsline {subsection}{\numberline {5.2.15}Further Examples}{18}{subsection.5.2.15}
 \contentsline {section}{\numberline {5.3}Chips Language Reference Manual}{19}{section.5.3}
 \contentsline {subsection}{\numberline {5.3.1}Chip}{19}{subsection.5.3.1}
 \contentsline {subsection}{\numberline {5.3.2}Process}{19}{subsection.5.3.2}
-\contentsline {subsubsection}{Process Inputs}{19}{subsubsection*.4}
-\contentsline {subsubsection}{Process Outputs}{20}{subsubsection*.5}
-\contentsline {subsubsection}{Variables}{21}{subsubsection*.6}
-\contentsline {subsubsection}{Expressions}{21}{subsubsection*.7}
-\contentsline {subsubsection}{Operator Precedence}{22}{subsubsection*.8}
+\contentsline {subsubsection}{Process Inputs}{19}{subsubsection*.6}
+\contentsline {subsubsection}{Process Outputs}{20}{subsubsection*.7}
+\contentsline {subsubsection}{Variables}{21}{subsubsection*.8}
+\contentsline {subsubsection}{Expressions}{21}{subsubsection*.9}
+\contentsline {subsubsection}{Operator Precedence}{21}{subsubsection*.10}
 \contentsline {subsection}{\numberline {5.3.3}Streams}{23}{subsection.5.3.3}
-\contentsline {subsubsection}{Stream Expressions}{23}{subsubsection*.9}
-\contentsline {subsubsection}{Operator Precedence}{24}{subsubsection*.10}
-\contentsline {subsubsection}{Streams Reference}{25}{subsubsection*.11}
+\contentsline {subsubsection}{Stream Expressions}{23}{subsubsection*.14}
+\contentsline {subsubsection}{Operator Precedence}{24}{subsubsection*.15}
+\contentsline {subsubsection}{Streams Reference}{24}{subsubsection*.16}
 \contentsline {subsection}{\numberline {5.3.4}Sinks}{33}{subsection.5.3.4}
-\contentsline {subsubsection}{Sinks Reference}{34}{subsubsection*.12}
+\contentsline {subsubsection}{Sinks Reference}{33}{subsubsection*.32}
 \contentsline {subsection}{\numberline {5.3.5}Instructions}{35}{subsection.5.3.5}
-\contentsline {subsubsection}{Instructions Reference}{36}{subsubsection*.13}
+\contentsline {subsubsection}{Instructions Reference}{35}{subsubsection*.38}
 \contentsline {section}{\numberline {5.4}Automatic Code Generation}{41}{section.5.4}
 \contentsline {subsection}{\numberline {5.4.1}VHDL Code Generation}{41}{subsection.5.4.1}
 \contentsline {subsection}{\numberline {5.4.2}C++ Code Generation}{41}{subsection.5.4.2}
@@ -50,5 +50,5 @@
 \contentsline {chapter}{\numberline {6}News}{43}{chapter.6}
 \contentsline {chapter}{\numberline {7}Links}{45}{chapter.7}
 \contentsline {chapter}{\numberline {8}Indices and tables}{47}{chapter.8}
-\contentsline {chapter}{Module Index}{49}{section*.14}
-\contentsline {chapter}{Index}{51}{section*.15}
+\contentsline {chapter}{Python Module Index}{49}{section*.53}
+\contentsline {chapter}{Index}{51}{section*.54}

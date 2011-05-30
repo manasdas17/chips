@@ -78,9 +78,9 @@ the `GitHub`_ homepage.
 
 .. _`GitHub`: http://github.com/dawsonjon/chips/
 
-.. _`source distribution` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.tar.gz
+.. _`source distribution` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.2.tar.gz
 
-.. _`windows installer` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.win32.exe
+.. _`windows installer` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.2.win32.exe
 
 Documentation
 =============
@@ -99,6 +99,8 @@ News
 
 - 2011-04-09 Chips Library Published on GitHub.
 - 2011-04-29 Chips Library Published on Python Package Index.
+- 2011-05-19 Version 0.1.1 released.
+- 2011-05-27 Version 0.1.2 released.
 
 Links
 =====
