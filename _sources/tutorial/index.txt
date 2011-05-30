@@ -24,15 +24,15 @@ Linux
 1. First `install Python`_. You need *Python* 2.6 or later, but not *Python* 3.
 2. Then install the *Chips* library from the `source distribution`_::
 
-        desktop:~$ tar -zxf chips-0.1.tar.gz
-        desktop:~$ cd chips-0.1
+        desktop:~$ tar -zxf chips-0.1.2.tar.gz
+        desktop:~$ cd chips-0.1.2
         desktop:~$ python setup.py install #run as root
 
 .. _`install Python` : http://python.org/download
 
-.. _`source distribution` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.tar.gz
+.. _`source distribution` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.2.tar.gz
 
-.. _`windows installer` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.win32.exe
+.. _`windows installer` : https://github.com/downloads/dawsonjon/chips/Chips-0.1.2.win32.exe
 
 First Simulations
 -----------------
