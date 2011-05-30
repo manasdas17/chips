@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -12,12 +14,13 @@
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '0.1',
-        COLLAPSE_MODINDEX: false,
+        COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../_static/chips.ico"/>
     <link rel="top" title="Chips v0.1 documentation" href="../index.html" />
@@ -32,8 +35,8 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="../automatic_code_generation/index.html" title="Automatic Code Generation"
              accesskey="N">next</a> |</li>
@@ -88,7 +91,7 @@ the device.</p>
 
 </div>
 <div class="section" id="module-chips.process">
-<h2>Process<a class="headerlink" href="#module-chips.process" title="Permalink to this headline">¶</a></h2>
+<span id="process"></span><h2>Process<a class="headerlink" href="#module-chips.process" title="Permalink to this headline">¶</a></h2>
 <p><em>Processes</em> are used to define the programs that will be executed in the target
 <em>Chip</em>.  Each <em>Process</em> contains a single program made up of instructions. When
 a <em>Chip</em> is simulated, or run in real hardware, the program within each process
@@ -361,7 +364,7 @@ contained at *address</em>.</p>
 
 </div>
 <div class="section" id="module-chips.streams">
-<h2>Streams<a class="headerlink" href="#module-chips.streams" title="Permalink to this headline">¶</a></h2>
+<span id="streams"></span><h2>Streams<a class="headerlink" href="#module-chips.streams" title="Permalink to this headline">¶</a></h2>
 <p>Streams are a fundamental component of the <em>Chips</em> library.</p>
 <dl class="docutils">
 <dt>A stream is used to represent a flow of data. A stream can act as a:</dt>
@@ -1036,7 +1039,7 @@ of bits.</p>
 <span class="gp">... </span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="c"># doctest: +ELLIPSIS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> 
 <span class="go">20</span>
 <span class="go">40</span>
 <span class="go">60</span>
@@ -1127,7 +1130,7 @@ any iterable Python sequence such as a list, tuple, or even a generator.</p>
 </div>
 </div>
 <div class="section" id="module-chips.sinks">
-<h2>Sinks<a class="headerlink" href="#module-chips.sinks" title="Permalink to this headline">¶</a></h2>
+<span id="sinks"></span><h2>Sinks<a class="headerlink" href="#module-chips.sinks" title="Permalink to this headline">¶</a></h2>
 <p>Sinks are a fundamental component of the <em>Chips</em> library.</p>
 <dl class="docutils">
 <dt>A sink is used to terminate a stream. A sink may act as:</dt>
@@ -1271,7 +1274,7 @@ using the <em>baud_rate</em> argument.</p>
 </div>
 </div>
 <div class="section" id="module-chips.instruction">
-<h2>Instructions<a class="headerlink" href="#module-chips.instruction" title="Permalink to this headline">¶</a></h2>
+<span id="instructions"></span><h2>Instructions<a class="headerlink" href="#module-chips.instruction" title="Permalink to this headline">¶</a></h2>
 <p>The instructions provided here form the basis of the software that can be run inside <em>Processes</em>.</p>
 <div class="section" id="instructions-reference">
 <h3>Instructions Reference<a class="headerlink" href="#instructions-reference" title="Permalink to this headline">¶</a></h3>
@@ -1531,7 +1534,7 @@ process, the result is undefined.</p>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Chip</span><span class="p">(</span><span class="n">Console</span><span class="p">(</span><span class="n">Printer</span><span class="p">(</span><span class="n">out</span><span class="p">)))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="c"># doctest: +ELLIPSIS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> 
 <span class="go">2</span>
 <span class="go">4</span>
 <span class="go">6</span>
@@ -1652,60 +1655,60 @@ is true. The condition is tested before each loop iteration.</p>
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/chips.png" alt="Logo"/>
             </a></p>
-            <h3><a href="../index.html">Table Of Contents</a></h3>
-            <ul>
-<li><a class="reference external" href="#">Chips Language Reference Manual</a><ul>
-<li><a class="reference external" href="#chip">Chip</a></li>
-<li><a class="reference external" href="#module-chips.process">Process</a><ul>
-<li><a class="reference external" href="#process-inputs">Process Inputs</a></li>
-<li><a class="reference external" href="#process-outputs">Process Outputs</a></li>
-<li><a class="reference external" href="#variables">Variables</a></li>
-<li><a class="reference external" href="#expressions">Expressions</a></li>
-<li><a class="reference external" href="#operator-precedence">Operator Precedence</a></li>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Chips Language Reference Manual</a><ul>
+<li><a class="reference internal" href="#chip">Chip</a></li>
+<li><a class="reference internal" href="#module-chips.process">Process</a><ul>
+<li><a class="reference internal" href="#process-inputs">Process Inputs</a></li>
+<li><a class="reference internal" href="#process-outputs">Process Outputs</a></li>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#expressions">Expressions</a></li>
+<li><a class="reference internal" href="#operator-precedence">Operator Precedence</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#module-chips.streams">Streams</a><ul>
-<li><a class="reference external" href="#stream-expressions">Stream Expressions</a></li>
-<li><a class="reference external" href="#id1">Operator Precedence</a></li>
-<li><a class="reference external" href="#streams-reference">Streams Reference</a></li>
+<li><a class="reference internal" href="#module-chips.streams">Streams</a><ul>
+<li><a class="reference internal" href="#stream-expressions">Stream Expressions</a></li>
+<li><a class="reference internal" href="#id1">Operator Precedence</a></li>
+<li><a class="reference internal" href="#streams-reference">Streams Reference</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#module-chips.sinks">Sinks</a><ul>
-<li><a class="reference external" href="#sinks-reference">Sinks Reference</a></li>
+<li><a class="reference internal" href="#module-chips.sinks">Sinks</a><ul>
+<li><a class="reference internal" href="#sinks-reference">Sinks Reference</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#module-chips.instruction">Instructions</a><ul>
-<li><a class="reference external" href="#instructions-reference">Instructions Reference</a></li>
+<li><a class="reference internal" href="#module-chips.instruction">Instructions</a><ul>
+<li><a class="reference internal" href="#instructions-reference">Instructions Reference</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 
-            <h4>Previous topic</h4>
-            <p class="topless"><a href="../tutorial/index.html"
-                                  title="previous chapter">Tutorial</a></p>
-            <h4>Next topic</h4>
-            <p class="topless"><a href="../automatic_code_generation/index.html"
-                                  title="next chapter">Automatic Code Generation</a></p>
-            <h3>This Page</h3>
-            <ul class="this-page-menu">
-              <li><a href="../_sources/language_reference/index.txt"
-                     rel="nofollow">Show Source</a></li>
-            </ul>
-          <div id="searchbox" style="display: none">
-            <h3>Quick search</h3>
-              <form class="search" action="../search.html" method="get">
-                <input type="text" name="q" size="18" />
-                <input type="submit" value="Go" />
-                <input type="hidden" name="check_keywords" value="yes" />
-                <input type="hidden" name="area" value="default" />
-              </form>
-              <p class="searchtip" style="font-size: 90%">
-              Enter search terms or a module, class or function name.
-              </p>
-          </div>
-          <script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../tutorial/index.html"
+                        title="previous chapter">Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../automatic_code_generation/index.html"
+                        title="next chapter">Automatic Code Generation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/language_reference/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -1717,7 +1720,7 @@ is true. The condition is tested before each loop iteration.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../modindex.html" title="Global Module Index"
+          <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
           <a href="../automatic_code_generation/index.html" title="Automatic Code Generation"
@@ -1729,8 +1732,8 @@ is true. The condition is tested before each loop iteration.</p>
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2011, Jonathan P Dawson.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.6.
+        &copy; Copyright 2011, Jonathan P Dawson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.1.
     </div>
   </body>
 </html>
