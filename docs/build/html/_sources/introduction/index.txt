@@ -9,10 +9,10 @@ convert *Streams*, *Processes* and *Sinks* into a Hardware Description
 Language, which can be synthesised into real hardware. 
 
 Python programs cannot themselves be converted into real hardware, but it is
-possible to programmatically generate which construct *Chips*, which can
-in-turn be converted into hardware. When combined with the extensive
-libraries already supported by Python, such as NumPy and SciPy, Python and
-Chips make the ideal design and verification environment.
+possible to programmatically construct *Chips*, which can in-turn be converted
+into hardware. When combined with the extensive libraries already supported by
+Python, such as NumPy and SciPy, Python and Chips make the ideal design and
+verification environment.
 
 A new approach to device design
 -------------------------------
