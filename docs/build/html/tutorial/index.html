@@ -220,7 +220,7 @@ serial port:</p>
 device. By default, SerialOut will assume that you are using a 50 MHz clock and
 a baud rate of 115200. If you need something else you can use the clock_rate
 and baud_rate arguments to specify what you need. Note that the
-<em>internal_clock</em> and <em>internal_reset</em> parameters have been set to falser.
+<em>internal_clock</em> and <em>internal_reset</em> parameters have been set to false.
 Usually, the VHDL plugin includes a clock and reset in the VHDL model, this
 allows a simulation to be run without adding any extra VHDL code for the test
 bench. In a real chip however, the clock and reset will usually be derived from
@@ -336,7 +336,7 @@ involved with limited width numbers by doing a lot of the work for you, but it
 is not always possible to completely hide these details, so you need to how
 things are handled behind the scenes.</p>
 <p><em>Chips</em> will automatically determine the width of a stream whenever possible.
-In a <em>Repeater</em>, <em>Counter</em> or <em>Lookup</em>, <em>Chips</em> will chose use the number of
+In a <em>Repeater</em>, <em>Counter</em> or <em>Lookup</em>, <em>Chips</em> will calculate the number of
 bits needed to hold the greatest possible value. This is not possible for
 <em>InPort</em>, or <em>Array</em> streams because the maximum possible value is not known at
 compile time. When it is not possible to determine the maximum value, the width

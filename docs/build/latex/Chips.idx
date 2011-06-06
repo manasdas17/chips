@@ -35,12 +35,12 @@
 \indexentry{If (class in chips)|hyperpage}{37}
 \indexentry{Loop (class in chips)|hyperpage}{37}
 \indexentry{Print (class in chips)|hyperpage}{38}
-\indexentry{Scan (class in chips)|hyperpage}{39}
+\indexentry{Scan (class in chips)|hyperpage}{38}
 \indexentry{Until() (in module chips)|hyperpage}{39}
 \indexentry{Value (class in chips)|hyperpage}{39}
-\indexentry{WaitUs (class in chips)|hyperpage}{40}
+\indexentry{WaitUs (class in chips)|hyperpage}{39}
 \indexentry{While() (in module chips)|hyperpage}{40}
-\indexentry{chips.VHDL\_plugin (module)|hyperpage}{41}
-\indexentry{chips.cpp\_plugin (module)|hyperpage}{41}
-\indexentry{chips.visual\_plugin (module)|hyperpage}{41}
-\indexentry{chips.ip (module)|hyperpage}{41}
+\indexentry{chips.VHDL\_plugin (module)|hyperpage}{40}
+\indexentry{chips.cpp\_plugin (module)|hyperpage}{40}
+\indexentry{chips.visual\_plugin (module)|hyperpage}{40}
+\indexentry{chips.ip (module)|hyperpage}{40}

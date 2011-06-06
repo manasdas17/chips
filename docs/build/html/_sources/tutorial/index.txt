@@ -1,3 +1,4 @@
+
 Tutorial
 ========
 
@@ -181,7 +182,7 @@ Now you should have a hello_world.vhd file that you can synthesise in a real
 device. By default, SerialOut will assume that you are using a 50 MHz clock and
 a baud rate of 115200. If you need something else you can use the clock_rate
 and baud_rate arguments to specify what you need. Note that the
-*internal_clock* and *internal_reset* parameters have been set to falser.
+*internal_clock* and *internal_reset* parameters have been set to false.
 Usually, the VHDL plugin includes a clock and reset in the VHDL model, this
 allows a simulation to be run without adding any extra VHDL code for the test
 bench. In a real chip however, the clock and reset will usually be derived from
@@ -279,7 +280,7 @@ is not always possible to completely hide these details, so you need to how
 things are handled behind the scenes.  
 
 *Chips* will automatically determine the width of a stream whenever possible.
-In a *Repeater*, *Counter* or *Lookup*, *Chips* will chose use the number of
+In a *Repeater*, *Counter* or *Lookup*, *Chips* will calculate the number of
 bits needed to hold the greatest possible value. This is not possible for
 *InPort*, or *Array* streams because the maximum possible value is not known at
 compile time. When it is not possible to determine the maximum value, the width

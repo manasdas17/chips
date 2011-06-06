@@ -12,7 +12,7 @@
 
 
 \title{Chips Documentation}
-\date{June 02, 2011}
+\date{June 06, 2011}
 \release{0.1}
 \author{Jonathan P Dawson}
 \newcommand{\sphinxlogo}{\includegraphics{chips.png}\par}
@@ -524,7 +524,7 @@ Now you should have a hello\_world.vhd file that you can synthesise in a real
 device. By default, SerialOut will assume that you are using a 50 MHz clock and
 a baud rate of 115200. If you need something else you can use the clock\_rate
 and baud\_rate arguments to specify what you need. Note that the
-\emph{internal\_clock} and \emph{internal\_reset} parameters have been set to falser.
+\emph{internal\_clock} and \emph{internal\_reset} parameters have been set to false.
 Usually, the VHDL plugin includes a clock and reset in the VHDL model, this
 allows a simulation to be run without adding any extra VHDL code for the test
 bench. In a real chip however, the clock and reset will usually be derived from
@@ -679,7 +679,7 @@ is not always possible to completely hide these details, so you need to how
 things are handled behind the scenes.
 
 \emph{Chips} will automatically determine the width of a stream whenever possible.
-In a \emph{Repeater}, \emph{Counter} or \emph{Lookup}, \emph{Chips} will chose use the number of
+In a \emph{Repeater}, \emph{Counter} or \emph{Lookup}, \emph{Chips} will calculate the number of
 bits needed to hold the greatest possible value. This is not possible for
 \emph{InPort}, or \emph{Array} streams because the maximum possible value is not known at
 compile time. When it is not possible to determine the maximum value, the width
@@ -2792,40 +2792,7 @@ Example:
 \index{Print (class in chips)}
 
 \begin{fulllineitems}
-\phantomsection\label{language_reference/index:chips.Print}\pysiglinewithargsret{\strong{class }\code{chips.}\bfcode{Print}}{\emph{stream}, \emph{exp}, \emph{minimum\_number\_of\_digits=None}}{}
-The \emph{Print} instruction write an integer to a stream in decimal ASCII
-format.
-
-Print will not add any white space or line ends (in contrast to the
-\emph{Printer}) The \emph{Print} instruction accepts two arguments, the destination
-\emph{stream}, which must be an \emph{Output} stream, and a numeric expression,
-\emph{exp}. An optional third argument specifies the minimum number of digits to
-print (leading 0 characters are added).
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{c}{\PYGZsh{}multiply by 2 and echo}
-\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{temp} \PYG{o}{=} \PYG{n}{Variable}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
-\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{inp} \PYG{o}{=} \PYG{n}{Sequence}\PYG{p}{(}\PYG{o}{*}\PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{ord}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{1 2 3 }\PYG{l+s}{"}\PYG{p}{)}\PYG{p}{)}
-\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{out\PYGZus{}stream} \PYG{o}{=} \PYG{n}{Output}\PYG{p}{(}\PYG{p}{)}
-\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{p}\PYG{o}{=}\PYG{n}{Process}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,}
-\PYG{g+gp}{... }    \PYG{n}{Loop}\PYG{p}{(}
-\PYG{g+gp}{... }        \PYG{n}{Scan}\PYG{p}{(}\PYG{n}{inp}\PYG{p}{,} \PYG{n}{temp}\PYG{p}{)}\PYG{p}{,}
-\PYG{g+gp}{... }        \PYG{n}{out\PYGZus{}stream}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{temp}\PYG{o}{*}\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{p}{,}
-\PYG{g+gp}{... }    \PYG{p}{)}
-\PYG{g+gp}{... }\PYG{p}{)}
-
-\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c} \PYG{o}{=} \PYG{n}{Chip}\PYG{p}{(}\PYG{n}{Console}\PYG{p}{(}\PYG{n}{Printer}\PYG{p}{(}\PYG{n}{out\PYGZus{}stream}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
-\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}
-\PYG{g+gp}{\textgreater{}\textgreater{}\textgreater{} }\PYG{n}{c}\PYG{o}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+m+mi}{1000}\PYG{p}{)}
-\PYG{g+go}{2}
-\PYG{g+go}{4}
-\PYG{g+go}{6}
-\PYG{g+go}{2}
-\PYG{g+gp}{...}
-\end{Verbatim}
-
+\phantomsection\label{language_reference/index:chips.Print}\pysiglinewithargsret{\strong{class }\code{chips.}\bfcode{Print}}{\emph{*args}}{}
 \end{fulllineitems}
 
 \index{Scan (class in chips)}

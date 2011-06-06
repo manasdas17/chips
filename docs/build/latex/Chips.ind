@@ -13,14 +13,14 @@
   \indexspace
   \bigletter C
   \item Chip (class in chips), \hyperpage{19}
-  \item chips.cpp\_plugin (module), \hyperpage{41}
+  \item chips.cpp\_plugin (module), \hyperpage{40}
   \item chips.instruction (module), \hyperpage{35}
-  \item chips.ip (module), \hyperpage{41}
+  \item chips.ip (module), \hyperpage{40}
   \item chips.process (module), \hyperpage{19}
   \item chips.sinks (module), \hyperpage{33}
   \item chips.streams (module), \hyperpage{23}
-  \item chips.VHDL\_plugin (module), \hyperpage{41}
-  \item chips.visual\_plugin (module), \hyperpage{41}
+  \item chips.VHDL\_plugin (module), \hyperpage{40}
+  \item chips.visual\_plugin (module), \hyperpage{40}
   \item Console (class in chips), \hyperpage{33}
   \item Continue (class in chips), \hyperpage{36}
   \item Counter (class in chips), \hyperpage{25}
@@ -72,7 +72,7 @@
 
   \indexspace
   \bigletter S
-  \item Scan (class in chips), \hyperpage{39}
+  \item Scan (class in chips), \hyperpage{38}
   \item Scanner() (in module chips), \hyperpage{31}
   \item Sequence() (in module chips), \hyperpage{32}
   \item SerialIn (class in chips), \hyperpage{32}
@@ -91,7 +91,7 @@
 
   \indexspace
   \bigletter W
-  \item WaitUs (class in chips), \hyperpage{40}
+  \item WaitUs (class in chips), \hyperpage{39}
   \item While() (in module chips), \hyperpage{40}
 
 \end{theindex}
