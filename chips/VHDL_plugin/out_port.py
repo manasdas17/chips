@@ -29,11 +29,12 @@ def write(stream):
     "  process",
     "  begin",
     "    wait until rising_edge(CLK);",
+    "    STREAM_{0}_ACK <= '0';".format(identifier),
     "    if STREAM_{0}_STB = '1' then".format(identifier),
+    "      STREAM_{0}_ACK <= '1';".format(identifier),
     "      OUT_{1} <= STREAM_{0};".format(identifier,  name),
     "    end if;"
     "  end process;",
-    "  STREAM_{0}_ACK <= '1';".format(identifier),
     "",
     ]
 
