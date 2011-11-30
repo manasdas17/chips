@@ -8,7 +8,7 @@ from math import ceil, log
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
 __license__ = "None"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __maintainer__ = "Jon Dawson"
 __email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
@@ -153,7 +153,7 @@ def write_process(process, plugin):
 "          when OP_WRITE_{0}_{1} =>".format(i.get_identifier(), process_id),
 "            STATE_{0} <= WRITE_STREAM_{1};".format(process_id, i.get_identifier()),
 "            STREAM_{0} <= STD_RESIZE(REGA_2_{1}, {2});".format(i.get_identifier(), process_id, i.get_bits()),
-"            STREAM_{0}_STB <= '0';".format(i.get_identifier()),
+"            STREAM_{0}_STB <= '1';".format(i.get_identifier()),
 "            PC_{0} <= PC_{0};".format(process_id),
         ])
         write_outputs.extend([

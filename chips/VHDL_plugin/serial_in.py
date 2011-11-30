@@ -7,7 +7,7 @@ import common
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
 __license__ = "MIT"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __maintainer__ = "Jon Dawson"
 __email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
@@ -65,19 +65,22 @@ def write(stream):
 "    wait until rising_edge(CLK);",
 "    SERIAL_DEGLITCH_{0} <= SERIAL_DEGLITCH_{0}(0) & {1};".format(identifier, name),
 "    if X16CLK_EN_{0} = '1' then".format(identifier),
-"      if SERIAL_DEGLITCH_{0}(1) = '1' then".format(identifier),
-"        if COUNT_{0} = 3 then".format(identifier),
-"          INT_SERIAL_{0} <= '1';".format(identifier),
-"        else ",
-"          COUNT_{0} <= COUNT_{0} + 1;".format(identifier),
-"        end if;",
-"      else",
+"      if SERIAL_DEGLITCH_{0}(1) = '0' then".format(identifier),
 "        if COUNT_{0} = 0 then".format(identifier),
 "          INT_SERIAL_{0} <= '0';".format(identifier),
-"        else",
+"        else ",
 "          COUNT_{0} <= COUNT_{0} - 1;".format(identifier),
 "        end if;",
+"      else",
+"        if COUNT_{0} = 3 then".format(identifier),
+"          INT_SERIAL_{0} <= '1';".format(identifier),
+"        else",
+"          COUNT_{0} <= COUNT_{0} + 1;".format(identifier),
+"        end if;",
 "      end if;",
+"    end if;",
+"    if RST = '1' then",
+'      SERIAL_DEGLITCH_{0} <= "11";'.format(identifier, name),
 "    end if;",
 "  end process;",
 "",  
@@ -154,9 +157,9 @@ def write(stream):
 "        if X16CLK_EN_{0} = '1' and BIT_SPACING_{0} = 15 then".format(identifier),
 "            BIT_SPACING_{0} <= 0;".format(identifier),
 "            STATE_{0} <= OUTPUT_DATA;".format(identifier),
+"            STREAM_{0}_STB <= '1';".format(identifier),
 "        end if;",
 "      when OUTPUT_DATA =>",
-"          STREAM_{0}_STB <= '1';".format(identifier),
 "          if STREAM_{0}_ACK = '1' then".format(identifier),
 "            STREAM_{0}_STB <= '0';".format(identifier),
 "            STATE_{0} <= IDLE;".format(identifier),

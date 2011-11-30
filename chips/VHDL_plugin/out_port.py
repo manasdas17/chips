@@ -3,7 +3,7 @@
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
 __license__ = "MIT"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __maintainer__ = "Jon Dawson"
 __email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
@@ -29,12 +29,11 @@ def write(stream):
     "  process",
     "  begin",
     "    wait until rising_edge(CLK);",
-    "    STREAM_{0}_ACK <= '0';".format(identifier),
     "    if STREAM_{0}_STB = '1' then".format(identifier),
-    "      STREAM_{0}_ACK <= '1';".format(identifier),
     "      OUT_{1} <= STREAM_{0};".format(identifier,  name),
     "    end if;"
     "  end process;",
+    "  STREAM_{0}_ACK <= '1';".format(identifier),
     "",
     ]
 

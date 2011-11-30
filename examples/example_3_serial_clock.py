@@ -9,7 +9,6 @@ build - compile onto a xilinx fpga
 """
 
 from chips import *
-from chips_VHDL import Plugin
 import sys
 
 hours = Variable(0)
@@ -63,7 +62,7 @@ Process(16,
 )
 
 if "build" in sys.argv:
-    from chips.VHDL_plugin import Plugin()
+    from chips.VHDL_plugin import Plugin
     import os
     import shutil
     s = Chip(SerialOut(Resizer(serialout, 8)))

@@ -4,7 +4,7 @@
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
 __license__ = "None"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __maintainer__ = "Jon Dawson"
 __email__ = "jon@jondawson.org.uk"
 __status__ = "Prototype"
