@@ -17,6 +17,7 @@ from common import how_many_bits, Unique, resize, c_style_modulo,\
     c_style_division
 from instruction import Write, Read
 from chips_exceptions import ChipsSyntaxError, ChipsSimulationError
+from streams import Repeater
 
 __author__ = "Jon Dawson"
 __copyright__ = "Copyright 2010, Jonathan P Dawson"
@@ -25,6 +26,12 @@ __version__ = "0.1.3"
 __maintainer__ = "Jon Dawson"
 __email__ = "chips@jondawson.org.uk"
 __status__ = "Prototype"
+
+def _repeaterize(potential_repeater):
+    if hasattr(potential_repeater, "write_code"):
+        return potential_repeater
+    else:
+        return Repeater(int(potential_repeater))
 
 class Response(Unique):
     """
@@ -65,7 +72,7 @@ class Response(Unique):
     """
 
     def __init__(self, a):
-        self.a = a
+        self.a = _repeaterize(a)
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
@@ -135,7 +142,7 @@ class OutPort(Unique):
     """
 
     def __init__(self, a, name):
-        self.name, self.a = name, a
+        self.name, self.a = name, _repeaterize(a)
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
@@ -172,11 +179,7 @@ class OutPort(Unique):
         self.a.get()
 
     def __repr__(self):
-        return '\n'.join([
-        "  out_port( name = ", 
-        self.name, 
-        ")"
-        ])
+        return "Outport(a = {0}, name = {1})".format(self.a, self.name)
 
 class SerialOut(Unique):
     """
@@ -212,7 +215,7 @@ class SerialOut(Unique):
     """
 
     def __init__(self, a, name="TX", clock_rate=50000000, baud_rate=115200):
-        self.a=a
+        self.a=_repeaterize(a)
         self.name = name
         self.clock_rate = clock_rate
         self.baud_rate = baud_rate
@@ -288,7 +291,7 @@ class Asserter(Unique):
     """
 
     def __init__(self, a):
-        self.a = a
+        self.a = _repeaterize(a)
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
         Unique.__init__(self)
@@ -330,9 +333,7 @@ class Asserter(Unique):
             )
 
     def __repr__(self):
-        return '\n'.join([
-        "  Asserter()", 
-        ])
+        return "Asserter(a={0})".format(self.a)
 
 class Console(Unique):
     """
@@ -367,7 +368,7 @@ class Console(Unique):
     def __init__(self, a):
         self.filename = getsourcefile(currentframe().f_back)
         self.lineno = currentframe().f_back.f_lineno
-        self.a = a
+        self.a = _repeaterize(a)
         Unique.__init__(self)
         if hasattr(self.a, "receiver"):
             raise ChipsSyntaxError(
@@ -409,4 +410,4 @@ class Console(Unique):
                 self.string.append(chr(val&0xff))
 
     def __repr__(self):
-        return "Console()"
+        return "Console(a={0})".format(self.a)

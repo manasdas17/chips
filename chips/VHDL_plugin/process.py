@@ -100,7 +100,8 @@ def write_process(process, plugin):
     register_address_bits = address_bits(num_registers)
     num_registers = 2**register_address_bits
     operation_bits = address_bits(number_of_operations)
-    instruction_bits = operation_bits + register_address_bits + max((register_address_bits, process_bits))
+    immediate_bits = max([instruction_address_bits, process_bits])
+    instruction_bits = operation_bits + register_address_bits + max((register_address_bits, immediate_bits))
 
 
 ################################################################################
@@ -188,7 +189,7 @@ def write_process(process, plugin):
                     operation, 
                     process_id,
                     common.binary(srca, register_address_bits),
-                    common.binary(resize(immediate, process_bits) | srcb, process_bits),
+                    common.binary(resize(immediate, int(immediate_bits)) | srcb, process_bits),
                     instruction.filename,
                     instruction.lineno
                 )
@@ -200,7 +201,7 @@ def write_process(process, plugin):
                     operation, 
                     process_id,
                     common.binary(srca, register_address_bits),
-                    common.binary(resize(immediate, process_bits) | srcb, process_bits),
+                    common.binary(resize(immediate, int(immediate_bits)) | srcb, process_bits),
                     instruction.filename,
                     instruction.lineno
                 )
@@ -307,18 +308,18 @@ def write_process(process, plugin):
 "  signal OPERATION_0_{0}  : std_logic_vector({1} downto 0);".format(process_id, operation_bits-1),
 "  signal SRCA_0_{0}       : std_logic_vector({1} downto 0);".format(process_id, register_address_bits-1),
 "  signal SRCB_0_{0}       : std_logic_vector({1} downto 0);".format(process_id, register_address_bits-1),
-"  signal IMMEDIATE_0_{0}  : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
+"  signal IMMEDIATE_0_{0}  : std_logic_vector({1} downto 0);".format(process_id, immediate_bits-1),
 
 "  --Pipeline stage 1 outputs",
 "  signal OPERATION_1_{0}    : std_logic_vector({1} downto 0);".format(process_id, operation_bits-1),
-"  signal IMMEDIATE_1_{0}    : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
+"  signal IMMEDIATE_1_{0}    : std_logic_vector({1} downto 0);".format(process_id, immediate_bits-1),
 "  signal REGA_1_{0}         : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
 "  signal REGB_1_{0}         : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
 "  signal DEST_1_{0}         : std_logic_vector({1} downto 0);".format(process_id, register_address_bits-1),
 
 "  --Pipeline stage 2 outputs",
 "  signal OPERATION_2_{0}    : std_logic_vector({1} downto 0);".format(process_id, operation_bits-1),
-"  signal IMMEDIATE_2_{0}    : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
+"  signal IMMEDIATE_2_{0}    : std_logic_vector({1} downto 0);".format(process_id, immediate_bits-1),
 "  signal REGA_2_{0}         : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
 "  signal REGB_2_{0}         : std_logic_vector({1} downto 0);".format(process_id, process_bits-1),
 "  signal DEST_2_{0}         : std_logic_vector({1} downto 0);".format(process_id, register_address_bits-1),
@@ -618,7 +619,7 @@ def write_process(process, plugin):
     if ("OP_IMM" in operations):
         plugin.definitions.extend([
 "          when OP_IMM_{0}  => ".format(process_id),
-"            RESULT_3_{0} <= IMMEDIATE_2_{0};".format(process_id),
+"            RESULT_3_{0} <= STD__RESIZE(IMMEDIATE_2_{0}, {1});".format(process_id, process_bits),
 "            REGISTER_EN_3_{0} <= '1';".format(process_id)])
 
     if ("OP_ABS" in operations):

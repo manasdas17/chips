@@ -411,6 +411,7 @@ class Stream:
         if hasattr(self, "b"): self.b.set_chip(chip)
         if hasattr(self, "c"): self.c.set_chip(chip)
 
+
 #streams sources
 ################################################################################
 
@@ -1144,6 +1145,9 @@ class  Binary(Stream, Unique):
         self.stored_a = None
         self.stored_b = None
         return resize(val, self.get_bits())
+
+    def __repr__(self):
+        return "Binary({0}, {1}, {2})".format(self.a, self.b, repr(self.function))
 
 _unary_functions = {
     'not' : lambda a, b: not a,
